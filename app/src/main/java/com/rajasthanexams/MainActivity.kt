@@ -81,6 +81,8 @@ fun AppNavigation(
     var quizUserAnswers by remember { mutableStateOf<Map<Int, Int>>(emptyMap()) }
     var unreadNotificationCount by remember { mutableStateOf(2) } 
     
+    var selectedExamId by remember { mutableStateOf("") }
+    
     val showBottomBar = currentScreen in listOf(Screen.HOME, Screen.TESTS, Screen.RANKERS, Screen.COMMUNITY, Screen.PROFILE)
     val context = androidx.compose.ui.platform.LocalContext.current
     
@@ -131,10 +133,13 @@ fun AppNavigation(
                     isDarkTheme = isDarkTheme,
                     onExamClick = { test ->
                         selectedExam = test.title
+                        selectedTestId = test.id
+                        selectedExamId = test.id // If mapping exam->test directly
                         currentScreen = Screen.DETAIL
                     },
                     onCategoryClick = { category ->
                         selectedCategory = category.title 
+                        selectedExamId = category.id
                         currentScreen = Screen.TEST_TYPES
                     },
                     onNotificationClick = {
@@ -156,10 +161,12 @@ fun AppNavigation(
                     onExamClick = { test ->
                         selectedExam = test.title
                         selectedTestId = test.id
+                        selectedExamId = test.id // Assuming explicit selection logic
                         currentScreen = Screen.DETAIL
                     },
                     onCategoryClick = { category ->
                         selectedCategory = category.title
+                        selectedExamId = category.id
                         currentScreen = Screen.TEST_TYPES
                     },
                     onNotificationClick = {
@@ -207,10 +214,14 @@ fun AppNavigation(
             }
             Screen.DETAIL -> {
                 ExamDetailScreen(
+                    examId = selectedExamId,
                     examName = selectedExam,
                     testType = selectedTestType,
                     onBackClick = { currentScreen = Screen.HOME },
-                    onStartPractice = { currentScreen = Screen.PRACTICE }
+                    onStartPractice = { testId -> 
+                        selectedTestId = testId
+                        currentScreen = Screen.PRACTICE 
+                    }
                 )
             }
             Screen.PRACTICE -> {

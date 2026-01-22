@@ -48,8 +48,8 @@ class TestViewModel(application: Application) : AndroidViewModel(application) {
                 _uiState.value = TestUiState.Success(uiQuestions)
             }.onFailure {
                 // Determine if we should fallback by ID or just show error
-                // For demo, if ID is 'mock', use mock data
-                if (testId.startsWith("1")) { // Mock IDs in MockData start with 100 series
+                // Only fallback if it's explicitly a mock ID (e.g. 101, 102)
+                if (testId.length < 5) { 
                      _uiState.value = TestUiState.Success(com.rajasthanexams.data.MockData.sampleQuestions)
                 } else {
                      _uiState.value = TestUiState.Error("Failed to load questions: ${it.message}")

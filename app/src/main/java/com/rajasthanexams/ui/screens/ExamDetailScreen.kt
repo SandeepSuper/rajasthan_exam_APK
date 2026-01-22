@@ -3,6 +3,8 @@
 import androidx.compose.foundation.background
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.collectAsState
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -52,15 +54,23 @@ import com.rajasthanexams.ui.components.HeritagePatternBackground
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ExamDetailScreen(
+    examId: String,
     examName: String, 
     testType: TestType? = null,
     onBackClick: () -> Unit,
-    onStartPractice: () -> Unit
+    onStartPractice: (String) -> Unit,
+    viewModel: com.rajasthanexams.ui.viewmodels.ExamDetailViewModel = androidx.lifecycle.viewmodel.compose.viewModel()
 ) {
-    val tests = if (testType != null) {
-        MockData.popularTests.filter { it.type == testType }
+    val uiState by viewModel.uiState.collectAsState()
+    
+    androidx.compose.runtime.LaunchedEffect(examId, testType) {
+        viewModel.fetchTests(examId, testType)
+    }
+
+    val tests = if (uiState is com.rajasthanexams.ui.viewmodels.ExamDetailUiState.Success) {
+        (uiState as com.rajasthanexams.ui.viewmodels.ExamDetailUiState.Success).tests
     } else {
-        MockData.popularTests
+        emptyList()
     }
     Scaffold(
         topBar = {
@@ -80,7 +90,9 @@ fun ExamDetailScreen(
             Column(modifier = Modifier.padding(16.dp)) {
                 AppButton(
                     text = "Start Practice",
-                    onClick = onStartPractice
+                    onClick = { 
+                        if (tests.isNotEmpty()) onStartPractice(tests[0].id) 
+                    }
                 )
             }
         }
@@ -102,10 +114,10 @@ fun ExamDetailScreen(
                 if (tests.isEmpty()) {
                      Text("No tests available depending on your selection.", color = Color.Gray)
                 } else {
-                    tests.forEach { test ->
-                         DetailTestCard(test = test, onClick = onStartPractice) 
-                         Spacer(modifier = Modifier.height(16.dp))
-                    }
+                     tests.forEach { test ->
+                          DetailTestCard(test = test, onClick = { onStartPractice(test.id) }) 
+                          Spacer(modifier = Modifier.height(16.dp))
+                     }
                 }
             }
         }
