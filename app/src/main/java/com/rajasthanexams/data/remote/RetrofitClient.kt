@@ -8,7 +8,6 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 object RetrofitClient {
 
-    // Use BuildConfig.API_BASE_URL if available, otherwise default to localhost (emulator)
     private const val BASE_URL = "http://13.126.216.84:8080/api/"
 
     private val logging = HttpLoggingInterceptor().apply {
@@ -21,6 +20,14 @@ object RetrofitClient {
         sessionManager = com.rajasthanexams.data.local.SessionManager(context)
     }
 
+    // Event for session expiry
+    private val _logoutEvent = kotlinx.coroutines.flow.MutableSharedFlow<Unit>(
+        replay = 0,
+        extraBufferCapacity = 1,
+        onBufferOverflow = kotlinx.coroutines.channels.BufferOverflow.DROP_OLDEST
+    )
+    val logoutEvent: kotlinx.coroutines.flow.SharedFlow<Unit> = _logoutEvent
+
     private val authInterceptor = okhttp3.Interceptor { chain ->
         val original = chain.request()
         val token = sessionManager?.getAuthToken()
@@ -31,13 +38,24 @@ object RetrofitClient {
         } else {
             original
         }
-        chain.proceed(request)
+        
+        val response = chain.proceed(request)
+        
+        if (response.code == 401 || response.code == 403) {
+            // Token expired or invalid
+            sessionManager?.clearSession()
+            _logoutEvent.tryEmit(Unit)
+        }
+        
+        response
     }
 
     private val httpClient = OkHttpClient.Builder()
         .addInterceptor(logging)
         .addInterceptor(authInterceptor)
         .build()
+
+    fun getHttpClient(): OkHttpClient = httpClient
 
     val api: ApiService by lazy {
         Retrofit.Builder()

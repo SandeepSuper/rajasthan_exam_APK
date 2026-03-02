@@ -14,37 +14,63 @@ sealed class LeaderboardUiState {
     data class Error(val message: String) : LeaderboardUiState()
 }
 
-class LeaderboardViewModel : ViewModel() {
+class LeaderboardViewModel(application: android.app.Application) : androidx.lifecycle.AndroidViewModel(application) {
     private val api = RetrofitClient.getService()
+    private val sessionManager = com.rajasthanexams.data.local.SessionManager(application)
 
     private val _uiState = MutableStateFlow<LeaderboardUiState>(LeaderboardUiState.Loading)
     val uiState: StateFlow<LeaderboardUiState> = _uiState
 
-    fun fetchLeaderboard(examId: String = "249d6387-f822-4414-b44c-9799298bc79d") {
+    fun fetchLeaderboard(testId: String?) {
         viewModelScope.launch {
             _uiState.value = LeaderboardUiState.Loading
+
+            val token = sessionManager.getAuthToken()
+            if (token == null) {
+                _uiState.value = LeaderboardUiState.Error("Please login to view leaderboard")
+                return@launch
+            }
+
+            // Sync local coins to server first (for global leaderboard)
+            if (testId.isNullOrEmpty()) {
+                syncCoinsToServer(token)
+            }
+
             try {
-                // Using Retrofit for generic call or ContentRepository if strictly layered
-                // For simplicity/speed in this phase, calling API directly or via repo wrapper
-                val response = api.getLeaderboard(examId)
+                val safeTestId = if (testId.isNullOrEmpty()) null else testId
+                val response = api.getLeaderboard("Bearer $token", safeTestId)
                 if (response.isSuccessful && response.body() != null) {
                     val entries = response.body()!!
-                    val uiRankers = entries.mapIndexed { index, entry ->
+                    val uiRankers = entries.map { entry ->
                         Ranker(
+                            userId = entry.userId,
                             name = entry.name,
-                            score = 1000 - (index * 50), // Mock score logic as API only returns names currently ordered
-                            exam = "Patwari", // Mock exam name
-                            coins = 500 - (index * 10),
-                            avatarUrl = ""
+                            score = entry.score.toInt(),
+                            totalMarks = entry.totalMarks.toInt(),
+                            exam = entry.exam ?: "Rank #${entry.rank}",
+                            coins = entry.coins,
+                            avatarUrl = entry.avatarUrl ?: "",
+                            rank = entry.rank
                         )
                     }
                     _uiState.value = LeaderboardUiState.Success(uiRankers)
                 } else {
-                    _uiState.value = LeaderboardUiState.Error("Failed to load leaderboard")
+                    _uiState.value = LeaderboardUiState.Error("Failed to load leaderboard (${response.code()})")
                 }
             } catch (e: Exception) {
-                 _uiState.value = LeaderboardUiState.Error(e.message ?: "Unknown error")
+                _uiState.value = LeaderboardUiState.Error(e.message ?: "Unknown error")
             }
+        }
+    }
+
+    private suspend fun syncCoinsToServer(token: String) {
+        try {
+            val localCoins = sessionManager.getCoins()
+            if (localCoins > 0) {
+                api.syncCoins(mapOf("coins" to localCoins))
+            }
+        } catch (e: Exception) {
+            println("Coin sync failed: ${e.message}")
         }
     }
 }

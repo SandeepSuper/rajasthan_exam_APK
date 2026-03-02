@@ -28,9 +28,9 @@ fun BookmarkScreen(
     // Local language state, defaults to the passed global setting
     var localIsHindi by remember(isHindi) { mutableStateOf(isHindi) }
 
-    // Filter bookmarked questions (unchanged)
+    // Filter bookmarked questions from Offline Manager
     val bookmarkedQuestions = remember {
-        MockData.sampleQuestions.filter { MockData.bookmarkedQuestionIds.contains(it.id) }
+        com.rajasthanexams.data.OfflineManager.getBookmarkedQuestions()
     }
 
     HeritagePatternBackground {
@@ -108,6 +108,7 @@ fun BookmarkScreen(
 @Composable
 fun SavedQuestionItem(question: Question, isHindi: Boolean) {
     Card(
+        modifier = Modifier.fillMaxWidth(),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
     ) {

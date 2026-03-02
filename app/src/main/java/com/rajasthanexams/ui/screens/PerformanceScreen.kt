@@ -1,43 +1,67 @@
 ﻿package com.rajasthanexams.ui.screens
 
+import androidx.compose.animation.core.*
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Assignment
-import androidx.compose.material.icons.filled.ShowChart
-import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material.icons.filled.Cancel
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.*
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.rajasthanexams.data.remote.dto.PerformanceResponse
 import com.rajasthanexams.ui.components.HeritagePatternBackground
 import com.rajasthanexams.ui.theme.RoyalBlue
+import com.rajasthanexams.ui.viewmodels.PerformanceUiState
+import com.rajasthanexams.ui.viewmodels.PerformanceViewModel
+
+private val GreenOk    = Color(0xFF2ECC71)
+private val PurpleAcc  = Color(0xFF9B59B6)
+private val BlueInfo   = Color(0xFF3498DB)
+private val RedWeak    = Color(0xFFE74C3C)
+private val OrangeWarn = Color(0xFFF39C12)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PerformanceScreen(
     isHindi: Boolean,
-    onBackClick: () -> Unit
+    onBackClick: () -> Unit,
+    vm: PerformanceViewModel = viewModel()
 ) {
+    val uiState by vm.uiState.collectAsState()
+
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(if(isHindi) "प्रदर्शन विश्लेषण" else "Performance Analytics", fontWeight = FontWeight.Bold) },
+                title = {
+                    Text(
+                        if (isHindi) "प्रदर्शन विश्लेषण" else "Performance Analytics",
+                        fontWeight = FontWeight.Bold
+                    )
+                },
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {
                         Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                    }
+                },
+                actions = {
+                    IconButton(onClick = { vm.load() }) {
+                        Icon(Icons.Default.Refresh, contentDescription = "Refresh")
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
@@ -48,161 +72,316 @@ fun PerformanceScreen(
         }
     ) { paddingValues ->
         HeritagePatternBackground(modifier = Modifier.padding(paddingValues)) {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .verticalScroll(rememberScrollState())
-                    .padding(16.dp)
-            ) {
-                // Expanded Analytics Content
-                Card(
-                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-                    elevation = CardDefaults.cardElevation(2.dp),
-                    shape = RoundedCornerShape(16.dp),
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Column(modifier = Modifier.padding(16.dp)) {
-                        Text(
-                            if(isHindi) "समग्र प्रदर्शन" else "Overall Performance",
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.primary
+            when (uiState) {
+                is PerformanceUiState.Loading -> {
+                    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        CircularProgressIndicator()
+                    }
+                }
+
+                is PerformanceUiState.Error -> {
+                    val msg = (uiState as PerformanceUiState.Error).message
+                    Column(
+                        Modifier.fillMaxSize().padding(32.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        Icon(
+                            Icons.Default.Warning, contentDescription = null,
+                            tint = RedWeak, modifier = Modifier.size(48.dp)
                         )
-                        Spacer(modifier = Modifier.height(16.dp))
-
-                        // 1. Accuracy Circle & Stats Row
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            // Circular Accuracy Chart
-                            Box(contentAlignment = Alignment.Center, modifier = Modifier.size(120.dp)) {
-                                CircularProgress(percentage = 0.78f, color = Color(0xFF2ECC71))
-                                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                    Text("78%", style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
-                                    Text(if(isHindi) "सटीकता" else "Accuracy", style = MaterialTheme.typography.labelSmall, color = Color.Gray)
-                                }
-                            }
-                            
-                            Spacer(modifier = Modifier.width(24.dp))
-                            
-                            // Key Stats
-                            Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-                                StatRow(if(isHindi) "टेस्ट दिए" else "Tests Taken", "42", Icons.Default.Assignment, Color(0xFF3498DB))
-                                StatRow(if(isHindi) "रैंक" else "Rank", "Top 5%", Icons.Default.ShowChart, Color(0xFF9B59B6))
-                            }
-                        }
-
-                        Spacer(modifier = Modifier.height(32.dp))
-                        Divider(color = Color.LightGray.copy(alpha=0.3f))
-                        Spacer(modifier = Modifier.height(24.dp))
-
-                        // 2. Comparison Graph
+                        Spacer(Modifier.height(12.dp))
                         Text(
-                            if(isHindi) "साप्ताहिक प्रगति (बनाम औसत)" else "Weekly Progress (vs Avg)",
-                            style = MaterialTheme.typography.labelLarge,
-                            fontWeight = FontWeight.Bold,
-                            color = Color.Gray
+                            if (isHindi) "डेटा लोड नहीं हो सका" else "Could not load performance data",
+                            fontWeight = FontWeight.Bold, textAlign = TextAlign.Center
                         )
-                        Spacer(modifier = Modifier.height(16.dp))
-                        ComparisonGraph(modifier = Modifier.fillMaxWidth().height(200.dp))
-                        
-                        Spacer(modifier = Modifier.height(32.dp))
-
-                        // 3. Weak Topics
-                        Text(
-                            if(isHindi) "कमजोर विषय (सुधार करें)" else "Weak Topics (Improve Now)",
-                            style = MaterialTheme.typography.labelLarge,
-                            fontWeight = FontWeight.Bold,
-                            color = Color(0xFFE74C3C)
-                        )
-                        Spacer(modifier = Modifier.height(12.dp))
-                        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                            WeakTopicChip(if(isHindi) "इतिहास" else "History")
-                            WeakTopicChip(if(isHindi) "कला और संस्कृति" else "Art & Culture")
+                        Spacer(Modifier.height(6.dp))
+                        Text(msg, style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                            textAlign = TextAlign.Center)
+                        Spacer(Modifier.height(20.dp))
+                        Button(onClick = { vm.load() }) {
+                            Icon(Icons.Default.Refresh, null, Modifier.size(18.dp))
+                            Spacer(Modifier.width(6.dp))
+                            Text(if (isHindi) "पुनः प्रयास करें" else "Retry")
                         }
                     }
+                }
+
+                is PerformanceUiState.Success -> {
+                    val data = (uiState as PerformanceUiState.Success).data
+                    PerformanceContent(isHindi = isHindi, data = data)
                 }
             }
         }
     }
 }
 
+@Composable
+private fun PerformanceContent(isHindi: Boolean, data: PerformanceResponse) {
+    val surface    = MaterialTheme.colorScheme.surface
+    val onSurface  = MaterialTheme.colorScheme.onSurface
+    val primary    = MaterialTheme.colorScheme.primary
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
+            .padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+
+        // ── Overall Card ─────────────────────────────────────────────────────
+        Card(
+            colors = CardDefaults.cardColors(containerColor = surface),
+            elevation = CardDefaults.cardElevation(2.dp),
+            shape = RoundedCornerShape(16.dp),
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Column(Modifier.padding(20.dp)) {
+                Text(
+                    if (isHindi) "समग्र प्रदर्शन" else "Overall Performance",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = primary
+                )
+                Spacer(Modifier.height(16.dp))
+
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    // Accuracy donut
+                    val accFraction = (data.avgAccuracy / 100.0).toFloat().coerceIn(0f, 1f)
+                    Box(contentAlignment = Alignment.Center, modifier = Modifier.size(120.dp)) {
+                        CircularProgress(percentage = accFraction, color = GreenOk)
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            Text(
+                                "${data.avgAccuracy.toInt()}%",
+                                style = MaterialTheme.typography.headlineMedium,
+                                fontWeight = FontWeight.Bold
+                            )
+                            Text(
+                                if (isHindi) "सटीकता" else "Accuracy",
+                                style = MaterialTheme.typography.labelSmall,
+                                color = Color.Gray
+                            )
+                        }
+                    }
+
+                    Spacer(Modifier.width(24.dp))
+
+                    Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+                        StatRow(
+                            title = if (isHindi) "टेस्ट दिए" else "Tests Taken",
+                            value = data.totalTests.toString(),
+                            icon = Icons.Default.Assignment,
+                            color = BlueInfo
+                        )
+                        StatRow(
+                            title = if (isHindi) "सर्वश्रेष्ठ स्कोर" else "Best Score",
+                            value = data.bestScore.toInt().toString(),
+                            icon = Icons.Default.Star,
+                            color = OrangeWarn
+                        )
+                        StatRow(
+                            title = if (isHindi) "कुल समय" else "Time Spent",
+                            value = formatTime(data.totalTimeSecs, isHindi),
+                            icon = Icons.Default.Timer,
+                            color = PurpleAcc
+                        )
+                    }
+                }
+            }
+        }
+
+        // ── Weekly Progress Chart ─────────────────────────────────────────────
+        if (data.weeklyScores.isNotEmpty()) {
+            Card(
+                colors = CardDefaults.cardColors(containerColor = surface),
+                elevation = CardDefaults.cardElevation(2.dp),
+                shape = RoundedCornerShape(16.dp),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Column(Modifier.padding(20.dp)) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(Icons.Default.ShowChart, contentDescription = null,
+                            tint = primary, modifier = Modifier.size(20.dp))
+                        Spacer(Modifier.width(8.dp))
+                        Text(
+                            if (isHindi) "हालिया प्रदर्शन (अंतिम ${data.weeklyScores.size} टेस्ट)"
+                            else "Recent Progress (Last ${data.weeklyScores.size} Tests)",
+                            style = MaterialTheme.typography.labelLarge,
+                            fontWeight = FontWeight.Bold,
+                            color = primary
+                        )
+                    }
+                    Spacer(Modifier.height(4.dp))
+
+                    // Legend
+                    Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+                        LegendDot(color = RoyalBlue, label = if (isHindi) "आपका स्कोर" else "Your Score")
+                        LegendDot(color = Color.Gray.copy(alpha = 0.6f), label = if (isHindi) "औसत" else "Avg")
+                    }
+                    Spacer(Modifier.height(12.dp))
+
+                    DynamicLineChart(
+                        userValues = data.weeklyScores.map { it.toFloat() },
+                        avgValues = data.weeklyAccuracies.map { it.toFloat() },
+                        modifier = Modifier.fillMaxWidth().height(180.dp)
+                    )
+
+                    // Date labels
+                    if (data.weeklyDates.isNotEmpty()) {
+                        Spacer(Modifier.height(4.dp))
+                        Row(
+                            Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            data.weeklyDates.forEach { date ->
+                                Text(
+                                    date.takeLast(5), // MM-DD
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = Color.Gray,
+                                    fontSize = 9.sp
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+        } else {
+            Card(
+                colors = CardDefaults.cardColors(containerColor = surface),
+                elevation = CardDefaults.cardElevation(2.dp),
+                shape = RoundedCornerShape(16.dp),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Box(
+                    Modifier.fillMaxWidth().padding(32.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Icon(Icons.Default.Assignment, contentDescription = null,
+                            tint = Color.LightGray, modifier = Modifier.size(40.dp))
+                        Spacer(Modifier.height(8.dp))
+                        Text(
+                            if (isHindi) "अभी तक कोई टेस्ट नहीं दिया"
+                            else "No tests attempted yet",
+                            color = Color.Gray,
+                            textAlign = TextAlign.Center
+                        )
+                    }
+                }
+            }
+        }
+
+        // ── Weak Topics ───────────────────────────────────────────────────────
+        if (data.weakTopics.isNotEmpty()) {
+            Card(
+                colors = CardDefaults.cardColors(containerColor = surface),
+                elevation = CardDefaults.cardElevation(2.dp),
+                shape = RoundedCornerShape(16.dp),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Column(Modifier.padding(20.dp)) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(Icons.Default.Warning, contentDescription = null,
+                            tint = RedWeak, modifier = Modifier.size(18.dp))
+                        Spacer(Modifier.width(8.dp))
+                        Text(
+                            if (isHindi) "कमजोर विषय — सुधार करें" else "Weak Areas — Needs Improvement",
+                            style = MaterialTheme.typography.labelLarge,
+                            fontWeight = FontWeight.Bold,
+                            color = RedWeak
+                        )
+                    }
+                    Spacer(Modifier.height(12.dp))
+                    androidx.compose.foundation.lazy.LazyRow(
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        items(data.weakTopics.size) { i ->
+                            WeakTopicChip(label = data.weakTopics[i])
+                        }
+                    }
+                }
+            }
+        }
+
+        Spacer(Modifier.height(8.dp))
+    }
+}
+
+// ── Helpers ──────────────────────────────────────────────────────────────────
 
 @Composable
 fun CircularProgress(percentage: Float, color: Color) {
     Canvas(modifier = Modifier.size(120.dp)) {
         val strokeWidth = 10.dp.toPx()
         val radius = size.minDimension / 2 - strokeWidth / 2
-        
-        // Background Circle
         drawCircle(
             color = Color.LightGray.copy(alpha = 0.2f),
             style = Stroke(width = strokeWidth),
             radius = radius
         )
-        
-        // Progress Ark
         drawArc(
             color = color,
             startAngle = -90f,
             sweepAngle = 360 * percentage,
             useCenter = false,
             style = Stroke(width = strokeWidth, cap = StrokeCap.Round),
-            topLeft = androidx.compose.ui.geometry.Offset(strokeWidth/2, strokeWidth/2),
-            size = androidx.compose.ui.geometry.Size(radius * 2, radius * 2)
+            topLeft = Offset(strokeWidth / 2, strokeWidth / 2),
+            size = Size(radius * 2, radius * 2)
         )
     }
 }
 
 @Composable
-fun ComparisonGraph(modifier: Modifier = Modifier) {
+fun DynamicLineChart(
+    userValues: List<Float>,
+    avgValues: List<Float>,
+    modifier: Modifier = Modifier
+) {
+    if (userValues.isEmpty()) return
+
     Canvas(modifier = modifier) {
-        val width = size.width
+        val width  = size.width
         val height = size.height
-        val points = listOf(0.4f, 0.5f, 0.45f, 0.7f, 0.6f, 0.8f, 0.78f) // User Data (0.0 - 1.0)
-        val avgPoints = listOf(0.3f, 0.35f, 0.4f, 0.45f, 0.5f, 0.5f, 0.55f) // Average Data
+        val maxVal = (userValues + avgValues).maxOrNull()?.coerceAtLeast(1f) ?: 1f
+        val stepX  = if (userValues.size > 1) width / (userValues.size - 1) else width
 
-        val stepX = width / (points.size - 1)
-        
-        // Draw Avg Line
-        val avgPath = androidx.compose.ui.graphics.Path().apply {
-            moveTo(0f, height * (1 - avgPoints[0]))
-            avgPoints.forEachIndexed { index, p ->
-                lineTo(index * stepX, height * (1 - p))
-            }
-        }
-        drawPath(avgPath, Color.Gray.copy(alpha = 0.5f), style = Stroke(width = 4f))
+        fun normalize(v: Float) = height * (1f - v / maxVal)
 
-        // Draw User Line
-        val userPath = androidx.compose.ui.graphics.Path().apply {
-            moveTo(0f, height * (1 - points[0]))
-            points.forEachIndexed { index, p ->
-                val x = index * stepX
-                val y = height * (1 - p)
-                lineTo(x, y)
+        // Avg line (gray dashed-style via dots)
+        if (avgValues.size >= 2) {
+            val avgPath = Path().apply {
+                moveTo(0f, normalize(avgValues[0]))
+                avgValues.forEachIndexed { i, v -> lineTo(i * stepX, normalize(v)) }
             }
+            drawPath(avgPath, Color.Gray.copy(alpha = 0.5f), style = Stroke(width = 3f))
         }
-        
-        // Gradient Fill for User Path
-        val fillPath = androidx.compose.ui.graphics.Path().apply {
+
+        // User fill
+        val userPath = Path().apply {
+            moveTo(0f, normalize(userValues[0]))
+            userValues.forEachIndexed { i, v -> lineTo(i * stepX, normalize(v)) }
+        }
+        val fillPath = Path().apply {
             addPath(userPath)
-            lineTo(width, height)
+            lineTo((userValues.size - 1) * stepX, height)
             lineTo(0f, height)
             close()
         }
-        
         drawPath(
-            path = fillPath,
-            brush = androidx.compose.ui.graphics.Brush.verticalGradient(
-                colors = listOf(RoyalBlue.copy(alpha=0.3f), Color.Transparent),
-                startY = 0f,
-                endY = height
+            fillPath,
+            brush = Brush.verticalGradient(
+                colors = listOf(RoyalBlue.copy(alpha = 0.3f), Color.Transparent),
+                startY = 0f, endY = height
             )
         )
+        drawPath(userPath, RoyalBlue, style = Stroke(width = 5f, cap = StrokeCap.Round))
 
-        drawPath(userPath, RoyalBlue, style = Stroke(width = 6f, cap = StrokeCap.Round))
-        
-        // Draw Dots
-        points.forEachIndexed { index, p ->
-             drawCircle(RoyalBlue, radius = 8f, center = androidx.compose.ui.geometry.Offset(index * stepX, height * (1 - p)))
+        // Dots
+        userValues.forEachIndexed { i, v ->
+            drawCircle(RoyalBlue, radius = 7f, center = Offset(i * stepX, normalize(v)))
+            drawCircle(Color.White, radius = 3.5f, center = Offset(i * stepX, normalize(v)))
         }
     }
 }
@@ -210,12 +389,12 @@ fun ComparisonGraph(modifier: Modifier = Modifier) {
 @Composable
 fun StatRow(title: String, value: String, icon: ImageVector, color: Color) {
     Row(verticalAlignment = Alignment.CenterVertically) {
-        Surface(color = color.copy(alpha=0.1f), shape = CircleShape, modifier = Modifier.size(40.dp)) {
+        Surface(color = color.copy(alpha = 0.1f), shape = CircleShape, modifier = Modifier.size(40.dp)) {
             Box(contentAlignment = Alignment.Center) {
                 Icon(icon, contentDescription = null, tint = color, modifier = Modifier.size(20.dp))
             }
         }
-        Spacer(modifier = Modifier.width(16.dp))
+        Spacer(Modifier.width(12.dp))
         Column {
             Text(value, style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
             Text(title, style = MaterialTheme.typography.bodySmall, color = Color.Gray)
@@ -233,9 +412,31 @@ fun WeakTopicChip(label: String) {
         Text(
             text = label,
             modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
-            style = MaterialTheme.typography.bodyMedium,
+            style = MaterialTheme.typography.bodySmall,
             color = Color(0xFFD32F2F),
-            fontWeight = FontWeight.Bold
+            fontWeight = FontWeight.Bold,
+            maxLines = 1
         )
+    }
+}
+
+@Composable
+private fun LegendDot(color: Color, label: String) {
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        Box(
+            Modifier.size(8.dp).background(color, CircleShape)
+        )
+        Spacer(Modifier.width(4.dp))
+        Text(label, style = MaterialTheme.typography.labelSmall, color = Color.Gray)
+    }
+}
+
+private fun formatTime(secs: Int, isHindi: Boolean): String {
+    val h = secs / 3600
+    val m = (secs % 3600) / 60
+    return when {
+        h > 0  -> if (isHindi) "${h}घ ${m}मि" else "${h}h ${m}m"
+        m > 0  -> if (isHindi) "${m} मिनट" else "${m} min"
+        else   -> if (isHindi) "${secs} सेकंड" else "${secs}s"
     }
 }

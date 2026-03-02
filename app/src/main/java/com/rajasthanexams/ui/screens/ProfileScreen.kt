@@ -26,28 +26,35 @@ import androidx.compose.material.icons.filled.Logout
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.ShowChart
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Assignment
 import androidx.compose.material.icons.filled.CardGiftcard
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Cancel
 import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.Download
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.rajasthanexams.ui.components.HeritagePatternBackground
+import com.rajasthanexams.ui.components.CoinIcon
 import com.rajasthanexams.ui.theme.RoyalBlue
 
 @Composable
@@ -60,7 +67,9 @@ fun ProfileScreen(
     onReferralClick: () -> Unit,
     onPerformanceClick: () -> Unit,
     onTestHistoryClick: () -> Unit,
-    onPrivacyClick: () -> Unit
+    onDownloadsClick: () -> Unit,
+    onPrivacyClick: () -> Unit,
+    onEditProfileClick: () -> Unit
 ) {
     HeritagePatternBackground {
         Column(
@@ -96,24 +105,72 @@ fun ProfileScreen(
                 val context = androidx.compose.ui.platform.LocalContext.current
                 val sessionManager = androidx.compose.runtime.remember { com.rajasthanexams.data.local.SessionManager(context) }
                 val userName = sessionManager.getUserName() ?: "Student"
-                val userId = sessionManager.getUserId() ?: "ID: Unknown"
-
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Surface(
-                        shape = CircleShape,
-                        color = Color.White,
-                        modifier = Modifier.size(80.dp),
-                        shadowElevation = 4.dp
-                    ) {
-                        Box(contentAlignment = Alignment.Center) {
-                            Icon(
-                                Icons.Default.Person,
-                                contentDescription = null,
-                                tint = if (isDark) Color(0xFF2C3E50) else RoyalBlue,
-                                modifier = Modifier.size(40.dp)
-                            )
+                val userEmail = sessionManager.getUserEmail() ?: "No Email"
+                val userProfilePic = sessionManager.getProfilePicture()
+                // Force refresh on Resume
+                var userCoins by androidx.compose.runtime.remember { androidx.compose.runtime.mutableIntStateOf(sessionManager.getCoins()) }
+                
+                val lifecycleOwner = androidx.compose.ui.platform.LocalLifecycleOwner.current
+                androidx.compose.runtime.DisposableEffect(lifecycleOwner) {
+                    val observer = androidx.lifecycle.LifecycleEventObserver { _, event ->
+                        if (event == androidx.lifecycle.Lifecycle.Event.ON_RESUME) {
+                            userCoins = sessionManager.getCoins()
                         }
                     }
+                    lifecycleOwner.lifecycle.addObserver(observer)
+                    onDispose {
+                        lifecycleOwner.lifecycle.removeObserver(observer)
+                    }
+                }
+                // val userId = sessionManager.getUserId() ?: "ID: Unknown" // Hidden as per request
+
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Box(contentAlignment = Alignment.BottomEnd) {
+                         Surface(
+                            shape = CircleShape,
+                            color = Color.White,
+                            modifier = Modifier.size(80.dp),
+                            shadowElevation = 4.dp
+                        ) {
+                            Box(contentAlignment = Alignment.Center) {
+                                if (userProfilePic != null) {
+                                    coil.compose.AsyncImage(
+                                        model = userProfilePic,
+                                        contentDescription = "Profile Picture",
+                                        modifier = Modifier.fillMaxSize().clip(CircleShape),
+                                        contentScale = androidx.compose.ui.layout.ContentScale.Crop
+                                    )
+                                } else {
+                                    Icon(
+                                        Icons.Default.Person,
+                                        contentDescription = null,
+                                        tint = if (isDark) Color(0xFF2C3E50) else RoyalBlue,
+                                        modifier = Modifier.size(40.dp)
+                                    )
+                                }
+                            }
+                        }
+                        
+                        // Edit Icon
+                         Surface(
+                            shape = CircleShape,
+                            color = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier
+                                .size(28.dp)
+                                .clickable { onEditProfileClick() }, // New Callback
+                            shadowElevation = 2.dp
+                        ) {
+                            Box(contentAlignment = Alignment.Center) {
+                                Icon(
+                                    Icons.Default.Edit,
+                                    contentDescription = "Edit Profile",
+                                    tint = Color.White,
+                                    modifier = Modifier.size(16.dp)
+                                )
+                            }
+                        }
+                    }
+                   
                     Spacer(modifier = Modifier.height(16.dp))
                     Text(
                         userName,
@@ -122,10 +179,31 @@ fun ProfileScreen(
                         fontWeight = FontWeight.Bold
                     )
                     Text(
-                        "ID: $userId",
+                        userEmail,
                         style = MaterialTheme.typography.bodyMedium,
                         color = Color.White.copy(alpha = 0.8f)
                     )
+                    
+                    Spacer(modifier = Modifier.height(12.dp))
+                    Surface(
+                        shape = RoundedCornerShape(20.dp),
+                        color = Color.White.copy(alpha = 0.2f),
+                        border = androidx.compose.foundation.BorderStroke(1.dp, Color.White.copy(alpha=0.5f))
+                    ) {
+                         Row(
+                             verticalAlignment = Alignment.CenterVertically,
+                             modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp)
+                         ) {
+                             CoinIcon(size = 16.dp)
+                             Spacer(modifier = Modifier.width(8.dp))
+                             Text(
+                                 text = "$userCoins Coins",
+                                 style = MaterialTheme.typography.labelLarge,
+                                 fontWeight = FontWeight.Bold,
+                                 color = Color.White
+                             )
+                         }
+                    }
                 }
             }
 
@@ -260,6 +338,36 @@ fun ProfileScreen(
                         Spacer(modifier = Modifier.width(16.dp))
                         Text(
                             if(isHindi) "टेस्ट इतिहास" else "Test History",
+                            style = MaterialTheme.typography.bodyLarge,
+                            modifier = Modifier.weight(1f),
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                        Icon(Icons.Default.ChevronRight, contentDescription = null, tint = Color.Gray)
+                    }
+                }
+
+                // Downloads (New)
+                Surface(
+                    shape = RoundedCornerShape(12.dp),
+                    color = MaterialTheme.colorScheme.surface,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 4.dp)
+                        .clickable { onDownloadsClick() },
+                    shadowElevation = 1.dp
+                ) {
+                    Row(
+                        modifier = Modifier.padding(16.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            Icons.Default.Download,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                        Spacer(modifier = Modifier.width(16.dp))
+                        Text(
+                            if(isHindi) "डाउनलोड" else "Downloads",
                             style = MaterialTheme.typography.bodyLarge,
                             modifier = Modifier.weight(1f),
                             color = MaterialTheme.colorScheme.onSurface

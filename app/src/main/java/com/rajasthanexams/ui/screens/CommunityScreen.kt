@@ -19,37 +19,48 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.rajasthanexams.ui.components.HeritagePatternBackground
 
-data class DoubtPost(
-    val id: String,
-    val userId: String,
-    val userName: String,
-    val timeAgo: String,
-    val content: String,
-    val subject: String,
-    val category: String, // e.g., "History", "Math"
-    val upvotes: Int,
-    val commentCount: Int,
-    val verifiedAnswer: String? = null // Null if no verified answer
-)
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.rajasthanexams.ui.viewmodels.CommunityViewModel
+import com.rajasthanexams.ui.viewmodels.CommunityUiState
+import com.rajasthanexams.data.remote.dto.CommunityPostResponse
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CommunityScreen() {
+fun CommunityScreen(
+    modifier: Modifier = Modifier,
+    viewModel: CommunityViewModel = viewModel(),
+    onPostClick: (CommunityPostResponse) -> Unit,
+    onLikeClick: (String) -> Unit = { viewModel.toggleLike(it) } // Default implementation using viewModel
+) {
     var selectedFilter by remember { mutableStateOf("All") }
     val filters = listOf("All", "History", "Geography", "Art & Culture", "Polity")
 
-    val posts = remember {
-        listOf(
-            DoubtPost("1", "u1", "Rahul Sharma", "2h ago", "महाराणा प्रताप के घोड़े 'चेतक' की समाधि कहां स्थित है?", "History", "Culture", 45, 12, "बलीचा गांव, राजसमंद में स्थित है।"),
-            DoubtPost("2", "u2", "Priya Verma", "5h ago", "What is the correct order of Aravalli peaks by height?", "Geography", "Geography", 32, 8, null),
-            DoubtPost("3", "u3", "Amit Singh", "1d ago", "बनी-ठनी चित्रकला किस शैली से सम्बंधित है?", "Art & Culture", "Art", 120, 25, "किशनगढ़ शैली (नागरीदास के समय)।")
+    val uiState by viewModel.uiState.collectAsState()
+
+    var showCreatePostDialog by remember { mutableStateOf(false) }
+
+    if (showCreatePostDialog) {
+        CreatePostDialog(
+            onDismiss = { showCreatePostDialog = false },
+            onSubmit = { content, subject, category ->
+                viewModel.createPost(content, subject, category) { success, message ->
+                     if (success) {
+                         showCreatePostDialog = false
+                     } else {
+                         // Show error (could add a snackbar state here)
+                     }
+                }
+            }
         )
     }
 
+
+
     Scaffold(
+        modifier = modifier,
         floatingActionButton = {
             FloatingActionButton(
-                onClick = { /* TODO: Open Ask Dialog */ },
+                onClick = { showCreatePostDialog = true },
                 containerColor = MaterialTheme.colorScheme.primary,
                 contentColor = Color.White
             ) {
@@ -97,13 +108,27 @@ fun CommunityScreen() {
                 Spacer(modifier = Modifier.height(8.dp))
 
                 // Feed
-                LazyColumn(
-                    contentPadding = PaddingValues(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(16.dp)
-                ) {
-                    items(posts) { post ->
-                        if (selectedFilter == "All" || post.subject == selectedFilter) {
-                            DoubtPostCard(post)
+                when (val state = uiState) {
+                    is CommunityUiState.Loading -> {
+                        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                            CircularProgressIndicator()
+                        }
+                    }
+                    is CommunityUiState.Error -> {
+                        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                            Text(state.message, color = Color.Red)
+                        }
+                    }
+                    is CommunityUiState.Success -> {
+                        LazyColumn(
+                            contentPadding = PaddingValues(16.dp),
+                            verticalArrangement = Arrangement.spacedBy(16.dp)
+                        ) {
+                            items(state.posts) { post ->
+                                if (selectedFilter == "All" || post.subject == selectedFilter) {
+                                    DoubtPostCard(post, onPostClick, onLikeClick)
+                                }
+                            }
                         }
                     }
                 }
@@ -112,16 +137,98 @@ fun CommunityScreen() {
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DoubtPostCard(post: DoubtPost) {
+fun CreatePostDialog(
+    onDismiss: () -> Unit,
+    onSubmit: (String, String, String) -> Unit
+) {
+    var content by remember { mutableStateOf("") }
+    var selectedSubject by remember { mutableStateOf("History") }
+    // Using a simple list for subjects for now
+    val subjects = listOf("History", "Geography", "Art & Culture", "Polity", "Economics", "Other")
+    var expanded by remember { mutableStateOf(false) }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Ask a Doubt") },
+        text = {
+            Column {
+                OutlinedTextField(
+                    value = content,
+                    onValueChange = { content = it },
+                    label = { Text("Your Question") },
+                    modifier = Modifier.fillMaxWidth().height(150.dp),
+                    maxLines = 5
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+                
+                // Subject Dropdown
+                ExposedDropdownMenuBox(
+                    expanded = expanded,
+                    onExpandedChange = { expanded = !expanded }
+                ) {
+                    OutlinedTextField(
+                        readOnly = true,
+                        value = selectedSubject,
+                        onValueChange = { },
+                        label = { Text("Subject") },
+                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
+                        colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors(),
+                        modifier = Modifier.menuAnchor().fillMaxWidth()
+                    )
+                    ExposedDropdownMenu(
+                        expanded = expanded,
+                        onDismissRequest = { expanded = false }
+                    ) {
+                        subjects.forEach { selectionOption ->
+                            DropdownMenuItem(
+                                text = { Text(selectionOption) },
+                                onClick = {
+                                    selectedSubject = selectionOption
+                                    expanded = false
+                                }
+                            )
+                        }
+                    }
+                }
+            }
+        },
+        confirmButton = {
+            Button(
+                onClick = { 
+                    if (content.isNotBlank()) {
+                        onSubmit(content, selectedSubject, "General") // Default category for now
+                    }
+                }
+            ) {
+                Text("Post")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Cancel")
+            }
+        }
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun DoubtPostCard(
+    post: CommunityPostResponse, 
+    onClick: (CommunityPostResponse) -> Unit,
+    onLikeClick: (String) -> Unit
+) {
     Card(
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         elevation = CardDefaults.cardElevation(2.dp),
         shape = RoundedCornerShape(12.dp),
+        onClick = { onClick(post) },
         modifier = Modifier.fillMaxWidth()
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
-            // User Info
+            // User Info (Same as before)
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Box(
                     modifier = Modifier
@@ -134,7 +241,7 @@ fun DoubtPostCard(post: DoubtPost) {
                 Spacer(modifier = Modifier.width(8.dp))
                 Column {
                     Text(post.userName, style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Bold)
-                    Text(post.timeAgo, style = MaterialTheme.typography.labelSmall, color = Color.Gray)
+                    Text("Just now", style = MaterialTheme.typography.labelSmall, color = Color.Gray) // You can format post.createdAt
                 }
                 Spacer(modifier = Modifier.weight(1f))
                 Surface(
@@ -181,15 +288,31 @@ fun DoubtPostCard(post: DoubtPost) {
 
             // Actions
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(Icons.Default.ThumbUp, contentDescription = null, tint = Color.Gray, modifier = Modifier.size(20.dp))
+                // Like Button
+                IconButton(onClick = { onLikeClick(post.id) }, modifier = Modifier.size(24.dp)) {
+                    Icon(
+                        Icons.Default.ThumbUp, 
+                        contentDescription = "Like",
+                        tint = if (post.isLiked) MaterialTheme.colorScheme.primary else Color.Gray,
+                        modifier = Modifier.size(20.dp)
+                    )
+                }
                 Spacer(modifier = Modifier.width(4.dp))
-                Text("${post.upvotes}", color = Color.Gray)
+                Text("${post.upvotes}", color = if (post.isLiked) MaterialTheme.colorScheme.primary else Color.Gray)
                 
                 Spacer(modifier = Modifier.width(24.dp))
                 
+                // Comment Count
                 Icon(Icons.Default.Comment, contentDescription = null, tint = Color.Gray, modifier = Modifier.size(20.dp))
                 Spacer(modifier = Modifier.width(4.dp))
                 Text("${post.commentCount}", color = Color.Gray)
+
+                Spacer(modifier = Modifier.width(24.dp))
+
+                // View Count
+                Icon(Icons.Default.Visibility, contentDescription = null, tint = Color.Gray, modifier = Modifier.size(20.dp))
+                Spacer(modifier = Modifier.width(4.dp))
+                Text("${post.viewCount}", color = Color.Gray)
             }
         }
     }

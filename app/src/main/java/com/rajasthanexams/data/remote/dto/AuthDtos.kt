@@ -8,7 +8,8 @@ data class OtpRequest(
 )
 
 data class OtpResponse(
-    val message: String
+    val message: String,
+    val otp: String? = null
 )
 
 data class VerifyOtpRequest(
@@ -22,5 +23,21 @@ data class AuthResponse(
     val token: String,
     val isNewUser: Boolean,
     val userId: String? = null,
-    val name: String? = null
+    val name: String? = null,
+    val email: String? = null,
+    val profilePicture: String? = null, // Added
+    val isPremium: Boolean = false,
+    val coins: Int = 0 // Added
+)
+
+data class UpdateProfileRequest(
+    val userId: String,
+    val name: String,
+    val email: String,
+    val profilePicture: String? = null // Added
+)
+
+data class ApiResponse(
+    val message: String,
+    val success: Boolean = true
 )

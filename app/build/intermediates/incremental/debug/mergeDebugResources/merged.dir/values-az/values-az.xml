@@ -14,6 +14,24 @@
     <string msgid="406453423630273620" name="close_drawer">"Naviqasiya menyusunu bağlayın"</string>
     <string msgid="7573152094250666567" name="close_sheet">"Səhifəni bağlayın"</string>
     <string msgid="5389587048670450460" name="collapsed">"Yığcamlaşdırılıb"</string>
+    <string msgid="8585111718777012708" name="common_google_play_services_enable_button">"Aktiv edin"</string>
+    <string msgid="7045129128108380659" name="common_google_play_services_enable_text">"<ns1:g id="APP_NAME">%1$s</ns1:g> Google Play xidmətlərini aktiv edənə kimi işləməyəcək."</string>
+    <string msgid="3147157405986503375" name="common_google_play_services_enable_title">"Google Play xidmətlərini aktiv edin"</string>
+    <string msgid="9115728400623041681" name="common_google_play_services_install_button">"Quraşdırın"</string>
+    <string msgid="8179894293032530091" name="common_google_play_services_install_text">"<ns1:g id="APP_NAME">%1$s</ns1:g> cihazınızda mövcud olmayan Google Play xidmətləri olmadan çalışmayacaq."</string>
+    <string msgid="7442193194585196676" name="common_google_play_services_install_title">"Google Play xidmətlərini əldə edin"</string>
+    <string msgid="4293541511340436975" name="common_google_play_services_notification_channel_name">"Google Play xidmətlərinin əlçatanlığı"</string>
+    <string msgid="180394615667698242" name="common_google_play_services_notification_ticker">"Google Play xidmətləri xətası"</string>
+    <string msgid="2518680582564677258" name="common_google_play_services_unknown_issue">"<ns1:g id="APP_NAME">%1$s</ns1:g> tətbiqi ilə Google Play xidmətləri arasında problem var. Daha sonra yenidən cəhd edin."</string>
+    <string msgid="5501187292256987189" name="common_google_play_services_unsupported_text">"Cihazınız tərəfindən dəstəklənməyən Google Play xidmətləri olmadan <ns1:g id="APP_NAME">%1$s</ns1:g> tətbiqi işləməyəcək."</string>
+    <string msgid="8172070149091615356" name="common_google_play_services_update_button">"Güncəlləyin"</string>
+    <string msgid="7773943415006962566" name="common_google_play_services_update_text">"<ns1:g id="APP_NAME">%1$s</ns1:g> Google Play xidmətləri yeniləmə halda çalışmaz."</string>
+    <string msgid="8706675115216073244" name="common_google_play_services_update_title">"Google Play xidmətlərini güncəlləşdirin"</string>
+    <string msgid="7894275749778928941" name="common_google_play_services_updating_text">"<ns1:g id="APP_NAME">%1$s</ns1:g> hal-hazırda güncəllənən Google Play xidmətləri olmadan çalışmayacaq."</string>
+    <string msgid="2804989272736383918" name="common_google_play_services_wear_update_text">"Google Play xidmətlərinin yeni versiyası lazımdır. Qısa müddətə özünü yeniləyəcək."</string>
+    <string msgid="5201977337835724196" name="common_open_on_phone">"Telefonda açın"</string>
+    <string msgid="3441753203274453993" name="common_signin_button_text">"Daxil olun"</string>
+    <string msgid="669893613918351210" name="common_signin_button_text_long">"Google ilə daxil olun"</string>
     <string msgid="3499643850558715142" name="date_input_headline">"Daxil edilmiş tarix"</string>
     <string msgid="8562356184193964298" name="date_input_headline_description">"Daxil edilmiş tarix: %1$s"</string>
     <string msgid="5281836720766682161" name="date_input_invalid_for_pattern">"Tarix gözlənilən modelə uyğun gəlmir: %1$s"</string>
@@ -83,4 +101,5 @@
     <string msgid="3124740595719787496" name="tooltip_label">"alət izahını göstərin"</string>
     <string msgid="2732804537909054941" name="tooltip_long_press_label">"İpucu göstərin"</string>
     <string msgid="8191239805703103845" name="tooltip_pane_description">"Alət izahı"</string>
+    <string name="wallet_buy_button_place_holder">Google ilə alın</string>
 </resources>

@@ -1,0 +1,69 @@
+> Task :app:checkKotlinGradlePluginConfigurationErrors
+> Task :app:preBuild UP-TO-DATE
+> Task :app:preDebugBuild UP-TO-DATE
+> Task :app:generateDebugBuildConfig UP-TO-DATE
+> Task :app:checkDebugAarMetadata UP-TO-DATE
+> Task :app:generateDebugResValues UP-TO-DATE
+> Task :app:mapDebugSourceSetPaths UP-TO-DATE
+> Task :app:generateDebugResources UP-TO-DATE
+> Task :app:mergeDebugResources UP-TO-DATE
+> Task :app:packageDebugResources UP-TO-DATE
+> Task :app:parseDebugLocalResources UP-TO-DATE
+> Task :app:createDebugCompatibleScreenManifests UP-TO-DATE
+> Task :app:extractDeepLinksDebug UP-TO-DATE
+> Task :app:processDebugMainManifest UP-TO-DATE
+> Task :app:processDebugManifest UP-TO-DATE
+> Task :app:processDebugManifestForPackage UP-TO-DATE
+> Task :app:processDebugResources UP-TO-DATE
+
+> Task :app:compileDebugKotlin FAILED
+e: file:///C:/Users/pc/.gemini/antigravity/scratch/rajasthan_exam/app/src/main/java/com/rajasthanexams/ui/screens/PracticeScreen.kt:523:13 Expecting an element
+e: file:///C:/Users/pc/.gemini/antigravity/scratch/rajasthan_exam/app/src/main/java/com/rajasthanexams/ui/screens/PracticeScreen.kt:928:2 Expecting ','
+e: file:///C:/Users/pc/.gemini/antigravity/scratch/rajasthan_exam/app/src/main/java/com/rajasthanexams/ui/screens/PracticeScreen.kt:961:2 Expecting ')'
+e: file:///C:/Users/pc/.gemini/antigravity/scratch/rajasthan_exam/app/src/main/java/com/rajasthanexams/ui/screens/PracticeScreen.kt:439:17 Unresolved reference: actions
+e: file:///C:/Users/pc/.gemini/antigravity/scratch/rajasthan_exam/app/src/main/java/com/rajasthanexams/ui/screens/PracticeScreen.kt:441:45 @Composable invocations can only happen from the context of a @Composable function
+e: file:///C:/Users/pc/.gemini/antigravity/scratch/rajasthan_exam/app/src/main/java/com/rajasthanexams/ui/screens/PracticeScreen.kt:444:25 @Composable invocations can only happen from the context of a @Composable function
+e: file:///C:/Users/pc/.gemini/antigravity/scratch/rajasthan_exam/app/src/main/java/com/rajasthanexams/ui/screens/PracticeScreen.kt:460:21 @Composable invocations can only happen from the context of a @Composable function
+e: file:///C:/Users/pc/.gemini/antigravity/scratch/rajasthan_exam/app/src/main/java/com/rajasthanexams/ui/screens/PracticeScreen.kt:469:21 @Composable invocations can only happen from the context of a @Composable function
+e: file:///C:/Users/pc/.gemini/antigravity/scratch/rajasthan_exam/app/src/main/java/com/rajasthanexams/ui/screens/PracticeScreen.kt:475:21 @Composable invocations can only happen from the context of a @Composable function
+e: file:///C:/Users/pc/.gemini/antigravity/scratch/rajasthan_exam/app/src/main/java/com/rajasthanexams/ui/screens/PracticeScreen.kt:513:25 @Composable invocations can only happen from the context of a @Composable function
+e: file:///C:/Users/pc/.gemini/antigravity/scratch/rajasthan_exam/app/src/main/java/com/rajasthanexams/ui/screens/PracticeScreen.kt:516:59 @Composable invocations can only happen from the context of a @Composable function
+e: file:///C:/Users/pc/.gemini/antigravity/scratch/rajasthan_exam/app/src/main/java/com/rajasthanexams/ui/screens/PracticeScreen.kt:525:9 Cannot find a parameter with this name: bottomBar
+e: file:///C:/Users/pc/.gemini/antigravity/scratch/rajasthan_exam/app/src/main/java/com/rajasthanexams/ui/screens/PracticeScreen.kt:526:13 @Composable invocations can only happen from the context of a @Composable function
+e: file:///C:/Users/pc/.gemini/antigravity/scratch/rajasthan_exam/app/src/main/java/com/rajasthanexams/ui/screens/PracticeScreen.kt:625:7 Type mismatch: inferred type is ([Error type: Cannot infer a lambda parameter type]) -> Unit but TopAppBarScrollBehavior? was expected
+e: file:///C:/Users/pc/.gemini/antigravity/scratch/rajasthan_exam/app/src/main/java/com/rajasthanexams/ui/screens/PracticeScreen.kt:625:9 Cannot infer a type for this parameter. Please specify it explicitly.
+e: file:///C:/Users/pc/.gemini/antigravity/scratch/rajasthan_exam/app/src/main/java/com/rajasthanexams/ui/screens/PracticeScreen.kt:626:9 @Composable invocations can only happen from the context of a @Composable function
+e: file:///C:/Users/pc/.gemini/antigravity/scratch/rajasthan_exam/app/src/main/java/com/rajasthanexams/ui/screens/PracticeScreen.kt:626:55 Overload resolution ambiguity: 
+public fun Modifier.padding(paddingValues: PaddingValues): Modifier defined in androidx.compose.foundation.layout
+public fun Modifier.padding(all: Dp): Modifier defined in androidx.compose.foundation.layout
+public fun Modifier.padding(horizontal: Dp = ..., vertical: Dp = ...): Modifier defined in androidx.compose.foundation.layout
+public fun Modifier.padding(start: Dp = ..., top: Dp = ..., end: Dp = ..., bottom: Dp = ...): Modifier defined in androidx.compose.foundation.layout
+e: file:///C:/Users/pc/.gemini/antigravity/scratch/rajasthan_exam/app/src/main/java/com/rajasthanexams/ui/screens/PracticeScreen.kt:869:45 Unresolved reference: OptionItem
+e: file:///C:/Users/pc/.gemini/antigravity/scratch/rajasthan_exam/app/src/main/java/com/rajasthanexams/ui/screens/PracticeScreen.kt:930:1 Mixing named and positioned arguments is not allowed
+e: file:///C:/Users/pc/.gemini/antigravity/scratch/rajasthan_exam/app/src/main/java/com/rajasthanexams/ui/screens/PracticeScreen.kt:931:5 Anonymous functions with names are prohibited
+e: file:///C:/Users/pc/.gemini/antigravity/scratch/rajasthan_exam/app/src/main/java/com/rajasthanexams/ui/screens/PracticeScreen.kt:934:30 An anonymous function is not allowed to specify default values for its parameters
+e: file:///C:/Users/pc/.gemini/antigravity/scratch/rajasthan_exam/app/src/main/java/com/rajasthanexams/ui/screens/PracticeScreen.kt:935:26 An anonymous function is not allowed to specify default values for its parameters
+
+[Incubating] Problems report is available at: file:///C:/Users/pc/.gemini/antigravity/scratch/rajasthan_exam/build/reports/problems/problems-report.html
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':app:compileDebugKotlin'.
+> A failure occurred while executing org.jetbrains.kotlin.compilerRunner.GradleCompilerRunnerWithWorkers$GradleKotlinCompilerWorkAction
+   > Compilation error. See log for more details
+
+* Try:
+> Run with --stacktrace option to get the stack trace.
+> Run with --info or --debug option to get more log output.
+> Run with --scan to get full insights.
+> Get more help at https://help.gradle.org.
+
+Deprecated Gradle features were used in this build, making it incompatible with Gradle 10.0.
+
+You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.
+
+For more on this, please refer to https://docs.gradle.org/9.0-milestone-1/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.
+
+BUILD FAILED in 14s
+15 actionable tasks: 2 executed, 13 up-to-date

@@ -1,0 +1,95 @@
+> Task :app:checkKotlinGradlePluginConfigurationErrors
+> Task :app:preBuild UP-TO-DATE
+> Task :app:preDebugBuild UP-TO-DATE
+> Task :app:generateDebugBuildConfig UP-TO-DATE
+> Task :app:checkDebugAarMetadata UP-TO-DATE
+> Task :app:generateDebugResValues UP-TO-DATE
+> Task :app:mapDebugSourceSetPaths UP-TO-DATE
+> Task :app:generateDebugResources UP-TO-DATE
+> Task :app:mergeDebugResources UP-TO-DATE
+> Task :app:packageDebugResources UP-TO-DATE
+> Task :app:parseDebugLocalResources UP-TO-DATE
+> Task :app:createDebugCompatibleScreenManifests UP-TO-DATE
+> Task :app:extractDeepLinksDebug UP-TO-DATE
+> Task :app:processDebugMainManifest UP-TO-DATE
+> Task :app:processDebugManifest UP-TO-DATE
+> Task :app:processDebugManifestForPackage UP-TO-DATE
+> Task :app:processDebugResources UP-TO-DATE
+> Task :app:compileDebugKotlin
+w: file:///C:/Users/pc/.gemini/antigravity/scratch/rajasthan_exam/app/src/main/java/com/rajasthanexams/MainActivity.kt:85:5 Parameter 'activity' is never used
+w: file:///C:/Users/pc/.gemini/antigravity/scratch/rajasthan_exam/app/src/main/java/com/rajasthanexams/MainActivity.kt:251:13 'when' is exhaustive so 'else' is redundant here
+w: file:///C:/Users/pc/.gemini/antigravity/scratch/rajasthan_exam/app/src/main/java/com/rajasthanexams/ui/components/LiveTestCard.kt:121:36 'HelpOutline: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Filled.HelpOutline
+w: file:///C:/Users/pc/.gemini/antigravity/scratch/rajasthan_exam/app/src/main/java/com/rajasthanexams/ui/components/LiveTestCard.kt:133:66 Elvis operator (?:) always returns the left operand of non-nullable type Double
+w: file:///C:/Users/pc/.gemini/antigravity/scratch/rajasthan_exam/app/src/main/java/com/rajasthanexams/ui/components/LiveTestCard.kt:162:21 Variable 'buttonColor' is never used
+w: file:///C:/Users/pc/.gemini/antigravity/scratch/rajasthan_exam/app/src/main/java/com/rajasthanexams/ui/screens/BookmarkScreen.kt:43:48 'ArrowBack: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Filled.ArrowBack
+w: file:///C:/Users/pc/.gemini/antigravity/scratch/rajasthan_exam/app/src/main/java/com/rajasthanexams/ui/screens/CommunityScreen.kt:46:77 Parameter 'message' is never used, could be renamed to _
+w: file:///C:/Users/pc/.gemini/antigravity/scratch/rajasthan_exam/app/src/main/java/com/rajasthanexams/ui/screens/CommunityScreen.kt:306:36 'Comment: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Filled.Comment
+w: file:///C:/Users/pc/.gemini/antigravity/scratch/rajasthan_exam/app/src/main/java/com/rajasthanexams/ui/screens/CurrentAffairsScreen.kt:49:44 'ArrowBack: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Filled.ArrowBack
+w: file:///C:/Users/pc/.gemini/antigravity/scratch/rajasthan_exam/app/src/main/java/com/rajasthanexams/ui/screens/DownloadsScreen.kt:44:44 'ArrowBack: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Filled.ArrowBack
+w: file:///C:/Users/pc/.gemini/antigravity/scratch/rajasthan_exam/app/src/main/java/com/rajasthanexams/ui/screens/DownloadsScreen.kt:108:84 'HelpOutline: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Filled.HelpOutline
+w: file:///C:/Users/pc/.gemini/antigravity/scratch/rajasthan_exam/app/src/main/java/com/rajasthanexams/ui/screens/ExamDetailScreen.kt:171:37 'HelpOutline: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Filled.HelpOutline
+w: file:///C:/Users/pc/.gemini/antigravity/scratch/rajasthan_exam/app/src/main/java/com/rajasthanexams/ui/screens/HomeScreen.kt:58:5 Parameter 'onTestTypeClick' is never used
+w: file:///C:/Users/pc/.gemini/antigravity/scratch/rajasthan_exam/app/src/main/java/com/rajasthanexams/ui/screens/HomeScreen.kt:62:5 Parameter 'showPurchasedExams' is never used
+w: file:///C:/Users/pc/.gemini/antigravity/scratch/rajasthan_exam/app/src/main/java/com/rajasthanexams/ui/screens/HomeScreen.kt:70:9 Variable 'registeredTests' is never used
+w: file:///C:/Users/pc/.gemini/antigravity/scratch/rajasthan_exam/app/src/main/java/com/rajasthanexams/ui/screens/HomeScreen.kt:390:37 'HelpOutline: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Filled.HelpOutline
+w: file:///C:/Users/pc/.gemini/antigravity/scratch/rajasthan_exam/app/src/main/java/com/rajasthanexams/ui/screens/HomeScreen.kt:421:9 Variable 'coroutineScope' is never used
+w: file:///C:/Users/pc/.gemini/antigravity/scratch/rajasthan_exam/app/src/main/java/com/rajasthanexams/ui/screens/HomeScreen.kt:589:36 'MenuBook: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Filled.MenuBook
+w: file:///C:/Users/pc/.gemini/antigravity/scratch/rajasthan_exam/app/src/main/java/com/rajasthanexams/ui/screens/InstructionScreen.kt:34:9 Variable 'context' is never used
+w: file:///C:/Users/pc/.gemini/antigravity/scratch/rajasthan_exam/app/src/main/java/com/rajasthanexams/ui/screens/InstructionScreen.kt:46:44 'ArrowBack: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Filled.ArrowBack
+w: file:///C:/Users/pc/.gemini/antigravity/scratch/rajasthan_exam/app/src/main/java/com/rajasthanexams/ui/screens/LoginScreen.kt:105:21 Name shadowed: context
+w: file:///C:/Users/pc/.gemini/antigravity/scratch/rajasthan_exam/app/src/main/java/com/rajasthanexams/ui/screens/NotificationScreen.kt:40:44 'ArrowBack: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Filled.ArrowBack
+w: file:///C:/Users/pc/.gemini/antigravity/scratch/rajasthan_exam/app/src/main/java/com/rajasthanexams/ui/screens/NotificationScreen.kt:116:42 Elvis operator (?:) always returns the left operand of non-nullable type String
+w: file:///C:/Users/pc/.gemini/antigravity/scratch/rajasthan_exam/app/src/main/java/com/rajasthanexams/ui/screens/PerformanceScreen.kt:59:44 'ArrowBack: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Filled.ArrowBack
+w: file:///C:/Users/pc/.gemini/antigravity/scratch/rajasthan_exam/app/src/main/java/com/rajasthanexams/ui/screens/PerformanceScreen.kt:123:9 Variable 'onSurface' is never used
+w: file:///C:/Users/pc/.gemini/antigravity/scratch/rajasthan_exam/app/src/main/java/com/rajasthanexams/ui/screens/PerformanceScreen.kt:175:50 'Assignment: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Filled.Assignment
+w: file:///C:/Users/pc/.gemini/antigravity/scratch/rajasthan_exam/app/src/main/java/com/rajasthanexams/ui/screens/PerformanceScreen.kt:205:44 'ShowChart: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Filled.ShowChart
+w: file:///C:/Users/pc/.gemini/antigravity/scratch/rajasthan_exam/app/src/main/java/com/rajasthanexams/ui/screens/PerformanceScreen.kt:262:44 'Assignment: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Filled.Assignment
+w: file:///C:/Users/pc/.gemini/antigravity/scratch/rajasthan_exam/app/src/main/java/com/rajasthanexams/ui/screens/PostDetailScreen.kt:60:44 'ArrowBack: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Filled.ArrowBack
+w: file:///C:/Users/pc/.gemini/antigravity/scratch/rajasthan_exam/app/src/main/java/com/rajasthanexams/ui/screens/PostDetailScreen.kt:304:36 'Send: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Filled.Send
+w: file:///C:/Users/pc/.gemini/antigravity/scratch/rajasthan_exam/app/src/main/java/com/rajasthanexams/ui/screens/PracticeScreen.kt:204:65 Unnecessary safe call on a non-null receiver of type Test?
+w: file:///C:/Users/pc/.gemini/antigravity/scratch/rajasthan_exam/app/src/main/java/com/rajasthanexams/ui/screens/PracticeScreen.kt:261:9 Variable 'currentQuestion' is never used
+w: file:///C:/Users/pc/.gemini/antigravity/scratch/rajasthan_exam/app/src/main/java/com/rajasthanexams/ui/screens/PracticeScreen.kt:927:21 Name shadowed: currentQuestion
+w: file:///C:/Users/pc/.gemini/antigravity/scratch/rajasthan_exam/app/src/main/java/com/rajasthanexams/ui/screens/PrivacyPolicyScreen.kt:30:48 'ArrowBack: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Filled.ArrowBack
+w: file:///C:/Users/pc/.gemini/antigravity/scratch/rajasthan_exam/app/src/main/java/com/rajasthanexams/ui/screens/ProfileScreen.kt:113:67 'LocalLifecycleOwner: ProvidableCompositionLocal<LifecycleOwner>' is deprecated. Moved to lifecycle-runtime-compose library in androidx.lifecycle.compose package.
+w: file:///C:/Users/pc/.gemini/antigravity/scratch/rajasthan_exam/app/src/main/java/com/rajasthanexams/ui/screens/ProfileScreen.kt:304:43 'ShowChart: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Filled.ShowChart
+w: file:///C:/Users/pc/.gemini/antigravity/scratch/rajasthan_exam/app/src/main/java/com/rajasthanexams/ui/screens/ProfileScreen.kt:475:42 'Logout: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Filled.Logout
+w: file:///C:/Users/pc/.gemini/antigravity/scratch/rajasthan_exam/app/src/main/java/com/rajasthanexams/ui/screens/RankersScreen.kt:126:101 'ArrowBack: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Filled.ArrowBack
+w: file:///C:/Users/pc/.gemini/antigravity/scratch/rajasthan_exam/app/src/main/java/com/rajasthanexams/ui/screens/RankersScreen.kt:230:25 Variable 'displayScore' is never used
+w: file:///C:/Users/pc/.gemini/antigravity/scratch/rajasthan_exam/app/src/main/java/com/rajasthanexams/ui/screens/RankersScreen.kt:231:25 Variable 'displayCoins' is never used
+w: file:///C:/Users/pc/.gemini/antigravity/scratch/rajasthan_exam/app/src/main/java/com/rajasthanexams/ui/screens/RankersScreen.kt:271:80 'LocalLifecycleOwner: ProvidableCompositionLocal<LifecycleOwner>' is deprecated. Moved to lifecycle-runtime-compose library in androidx.lifecycle.compose package.
+w: file:///C:/Users/pc/.gemini/antigravity/scratch/rajasthan_exam/app/src/main/java/com/rajasthanexams/ui/screens/ReferralScreen.kt:42:44 'ArrowBack: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Filled.ArrowBack
+w: file:///C:/Users/pc/.gemini/antigravity/scratch/rajasthan_exam/app/src/main/java/com/rajasthanexams/ui/screens/ResultScreen.kt:62:5 Parameter 'onLeaderboardClick' is never used
+w: file:///C:/Users/pc/.gemini/antigravity/scratch/rajasthan_exam/app/src/main/java/com/rajasthanexams/ui/screens/ResultScreen.kt:180:29 Variable 'isCorrect' is never used
+w: file:///C:/Users/pc/.gemini/antigravity/scratch/rajasthan_exam/app/src/main/java/com/rajasthanexams/ui/screens/ResultScreen.kt:181:29 Variable 'isSkipped' is never used
+w: file:///C:/Users/pc/.gemini/antigravity/scratch/rajasthan_exam/app/src/main/java/com/rajasthanexams/ui/screens/TestHistoryScreen.kt:32:44 'ArrowBack: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Filled.ArrowBack
+w: file:///C:/Users/pc/.gemini/antigravity/scratch/rajasthan_exam/app/src/main/java/com/rajasthanexams/ui/screens/TestTypeScreen.kt:40:48 'ArrowBack: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Filled.ArrowBack
+w: file:///C:/Users/pc/.gemini/antigravity/scratch/rajasthan_exam/app/src/main/java/com/rajasthanexams/ui/screens/TestTypeScreen.kt:69:42 'Assignment: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Filled.Assignment
+w: file:///C:/Users/pc/.gemini/antigravity/scratch/rajasthan_exam/app/src/main/java/com/rajasthanexams/ui/screens/TestTypeScreen.kt:89:42 'ListAlt: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Filled.ListAlt
+w: file:///C:/Users/pc/.gemini/antigravity/scratch/rajasthan_exam/app/src/main/java/com/rajasthanexams/ui/screens/UserInfoScreen.kt:48:9 Variable 'uiState' is never used
+w: file:///C:/Users/pc/.gemini/antigravity/scratch/rajasthan_exam/app/src/main/java/com/rajasthanexams/ui/screens/UserInfoScreen.kt:81:85 'ArrowBack: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Filled.ArrowBack
+w: file:///C:/Users/pc/.gemini/antigravity/scratch/rajasthan_exam/app/src/main/java/com/rajasthanexams/ui/theme/Theme.kt:53:5 Parameter 'dynamicColor' is never used
+w: file:///C:/Users/pc/.gemini/antigravity/scratch/rajasthan_exam/app/src/main/java/com/rajasthanexams/ui/viewmodels/HomeViewModel.kt:159:76 Parameter 'price' is never used
+w: file:///C:/Users/pc/.gemini/antigravity/scratch/rajasthan_exam/app/src/main/java/com/rajasthanexams/ui/viewmodels/LeaderboardViewModel.kt:66:43 Parameter 'token' is never used
+w: file:///C:/Users/pc/.gemini/antigravity/scratch/rajasthan_exam/app/src/main/java/com/rajasthanexams/ui/viewmodels/LoginViewModel.kt:146:21 Variable 'start' is never used
+w: file:///C:/Users/pc/.gemini/antigravity/scratch/rajasthan_exam/app/src/main/java/com/rajasthanexams/ui/viewmodels/LoginViewModel.kt:147:55 'create(MediaType?, File): RequestBody' is deprecated. Moved to extension function. Put the 'file' argument first to fix Java
+w: file:///C:/Users/pc/.gemini/antigravity/scratch/rajasthan_exam/app/src/main/java/com/rajasthanexams/ui/viewmodels/TestViewModel.kt:52:52 Elvis operator (?:) always returns the left operand of non-nullable type Boolean
+w: file:///C:/Users/pc/.gemini/antigravity/scratch/rajasthan_exam/app/src/main/java/com/rajasthanexams/ui/viewmodels/TestViewModel.kt:87:40 Unnecessary non-null assertion (!!) on a non-null receiver of type Test
+w: file:///C:/Users/pc/.gemini/antigravity/scratch/rajasthan_exam/app/src/main/java/com/rajasthanexams/ui/viewmodels/TestViewModel.kt:88:53 Unnecessary non-null assertion (!!) on a non-null receiver of type Test
+w: file:///C:/Users/pc/.gemini/antigravity/scratch/rajasthan_exam/app/src/main/java/com/rajasthanexams/ui/viewmodels/TestViewModel.kt:105:49 Unnecessary non-null assertion (!!) on a non-null receiver of type Test
+w: file:///C:/Users/pc/.gemini/antigravity/scratch/rajasthan_exam/app/src/main/java/com/rajasthanexams/ui/viewmodels/TestViewModel.kt:107:49 Unnecessary non-null assertion (!!) on a non-null receiver of type Test
+w: file:///C:/Users/pc/.gemini/antigravity/scratch/rajasthan_exam/app/src/main/java/com/rajasthanexams/ui/viewmodels/TestViewModel.kt:156:49 Elvis operator (?:) always returns the left operand of non-nullable type Boolean
+w: file:///C:/Users/pc/.gemini/antigravity/scratch/rajasthan_exam/app/src/main/java/com/rajasthanexams/ui/viewmodels/TestsByTypeViewModel.kt:94:77 'List: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Filled.List
+w: file:///C:/Users/pc/.gemini/antigravity/scratch/rajasthan_exam/app/src/main/java/com/rajasthanexams/ui/viewmodels/TestsByTypeViewModel.kt:145:59 Elvis operator (?:) always returns the left operand of non-nullable type Boolean
+w: file:///C:/Users/pc/.gemini/antigravity/scratch/rajasthan_exam/app/src/main/java/com/rajasthanexams/ui/viewmodels/TestsByTypeViewModel.kt:221:30 Parameter 'category' is never used
+w: file:///C:/Users/pc/.gemini/antigravity/scratch/rajasthan_exam/app/src/main/java/com/rajasthanexams/ui/viewmodels/TestsByTypeViewModel.kt:221:50 Parameter 'testType' is never used
+
+[Incubating] Problems report is available at: file:///C:/Users/pc/.gemini/antigravity/scratch/rajasthan_exam/build/reports/problems/problems-report.html
+
+Deprecated Gradle features were used in this build, making it incompatible with Gradle 10.0.
+
+You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.
+
+For more on this, please refer to https://docs.gradle.org/9.0-milestone-1/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.
+
+BUILD SUCCESSFUL in 2m 12s
+15 actionable tasks: 2 executed, 13 up-to-date

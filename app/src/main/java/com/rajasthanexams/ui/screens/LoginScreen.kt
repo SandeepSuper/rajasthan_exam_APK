@@ -29,8 +29,8 @@ import com.rajasthanexams.ui.viewmodels.LoginUiState
 
 @Composable
 fun LoginScreen(
-    onLoginSuccess: () -> Unit,
-    viewModel: LoginViewModel = viewModel()
+    viewModel: LoginViewModel,
+    onLoginSuccess: () -> Unit
 ) {
     // No more local state "phoneNumber" needed
     
@@ -49,6 +49,13 @@ fun LoginScreen(
                 if (uiState is LoginUiState.LoggedIn) {
                     onLoginSuccess()
                 }
+            }
+            
+            val context = androidx.compose.ui.platform.LocalContext.current
+            LaunchedEffect(Unit) {
+               viewModel.otpReceived.collect { otpMsg ->
+                   android.widget.Toast.makeText(context, otpMsg, android.widget.Toast.LENGTH_LONG).show()
+               }
             }
 
             Text(

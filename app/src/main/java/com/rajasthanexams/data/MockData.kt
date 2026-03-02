@@ -12,14 +12,19 @@ import androidx.compose.material.icons.filled.Security
 import androidx.compose.ui.graphics.vector.ImageVector
 
 enum class TestType {
-    MOCK, TOPIC, FULL, PYQ
+    MOCK, TOPIC, FULL, PYQ, LIVE, DAILY_QUIZ
 }
 
 data class Category(
     val id: String,
     val title: String,
     val icon: ImageVector,
-    val testsAvailable: Int
+    val iconUrl: String? = null,
+    val testsAvailable: Int,
+    val isPremium: Boolean = false,
+    val price: Double = 0.0,
+    val isPurchased: Boolean = false,
+    val discountPercent: Int = 0        // ← from backend admin discount setting
 )
 
 data class Test(
@@ -31,7 +36,22 @@ data class Test(
     val attempts: String,
     val rating: Double,
     val isLive: Boolean,
-    val type: TestType = TestType.MOCK
+    val startsAt: String? = null,
+    val endsAt: String? = null,
+    val allowPrevious: Boolean = true,
+    val allowSolution: Boolean = true,
+    val sectionLock: Boolean = false,
+    val showResultImmediately: Boolean = true,
+    val type: TestType = TestType.MOCK,
+    val negativeMarks: Double = 0.0,
+    val marksPerQuestion: Double = 1.0,
+    val totalMarks: Double? = null,
+    val isPremium: Boolean = false, 
+    val price: Double = 0.0,
+    val isPurchased: Boolean = false,
+    val isAttempted: Boolean = false,
+    val isDownloaded: Boolean = false,
+    val examId: String = "" // Added for purchase linking
 )
 
     data class Question(
@@ -42,7 +62,10 @@ data class Test(
         val optionsHi: List<String>,
         val correctOptionIndex: Int, // 0-3
         val solutionEn: String,
-        val solutionHi: String
+        val solutionHi: String,
+        val marksPerQuestion: Double? = null, // Override
+        val negativeMarks: Double? = null,    // Override
+        val subject: String? = null
     )
 
     data class Promotion(
@@ -100,20 +123,38 @@ data class Test(
         )
 
         val categories = listOf(
-            Category("1", "Rajasthan Patwari", Icons.Default.Description, 25),
-            Category("2", "Rajasthan SI", Icons.Default.Security, 18),
-            Category("3", "CET (Graduate)", Icons.Default.School, 12),
-            Category("4", "RAS Prelims", Icons.Default.AccountBalance, 10),
-            Category("5", "REET", Icons.Default.Edit, 30)
+            Category("1", "Rajasthan Patwari", Icons.Default.Description, null, 25),
+            Category("2", "Rajasthan SI", Icons.Default.Security, null, 18),
+            Category("3", "CET (Graduate)", Icons.Default.School, null, 12),
+            Category("4", "RAS Prelims", Icons.Default.AccountBalance, null, 10),
+            Category("5", "REET", Icons.Default.Edit, null, 30)
         )
 
         val popularTests = listOf(
-            Test("101", "Patwari Full Mock Test 1", "Patwari", 150, 180, "15k+", 4.8, true, TestType.FULL),
-            Test("102", "RAS General Knowledge Daily", "RAS", 20, 15, "8.5k+", 4.5, false, TestType.TOPIC),
-            Test("103", "REET Child Development", "REET", 30, 30, "22k+", 4.9, false, TestType.TOPIC),
-            Test("104", "Rajasthan SI Hindi Special", "SI", 100, 120, "10k+", 4.7, true, TestType.MOCK),
-            Test("105", "CET General Science", "CET", 50, 45, "5k+", 4.6, false, TestType.TOPIC),
-            Test("106", "Patwari 2021 Paper (Shift 1)", "Patwari", 150, 180, "25k+", 4.9, false, TestType.PYQ)
+            Test(id="101", title="Patwari Full Mock Test 1", category="Patwari", questions=150, time=180, attempts="15k+", rating=4.8, isLive=true, type=TestType.FULL, marksPerQuestion = 2.0, negativeMarks = 0.66),
+            Test(id="102", title="RAS General Knowledge Daily", category="RAS", questions=20, time=15, attempts="8.5k+", rating=4.5, isLive=false, type=TestType.TOPIC),
+            Test(id="103", title="REET Child Development", category="REET", questions=30, time=30, attempts="22k+", rating=4.9, isLive=false, type=TestType.TOPIC),
+            Test(id="104", title="Rajasthan SI Hindi Special", category="SI", questions=100, time=120, attempts="10k+", rating=4.7, isLive=true, type=TestType.MOCK),
+            Test(id="105", title="CET General Science", category="CET", questions=50, time=45, attempts="5k+", rating=4.6, isLive=false, type=TestType.TOPIC),
+            Test(id="106", title="Patwari 2021 Paper (Shift 1)", category="Patwari", questions=150, time=180, attempts="25k+", rating=4.9, isLive=false, type=TestType.PYQ)
+        )
+        
+        val demoLiveTests = listOf(
+            Test(
+                id = "live_demo_1",
+                title = "LDC High Court Live Test",
+                category = "LDC",
+                questions = 100,
+                time = 120,
+                attempts = "2k+",
+                rating = 4.8,
+                isLive = true,
+                startsAt = java.time.LocalDateTime.now().plusHours(1).toString(), // Starts in 1 hour
+                endsAt = java.time.LocalDateTime.now().plusHours(3).toString(),
+                type = TestType.MOCK,
+                marksPerQuestion = 2.0,
+                negativeMarks = 0.66
+            )
         )
         
         val sampleQuestions = listOf(
@@ -135,7 +176,9 @@ data class Test(
                 listOf("मोहन लाल सुखाड़िया", "हीरा लाल शास्त्री", "जय नारायण व्यास", "वसुंधरा राजे"),
                 1, // Heera Lal Shastri
                 "Heera Lal Shastri was the first Chief Minister of Rajasthan. He took office on April 7, 1949.",
-                "हीरा लाल शास्त्री राजस्थान के पहले मुख्यमंत्री थे। उन्होंने 7 अप्रैल, 1949 को पदभार ग्रहण किया।"
+                "हीरा लाल शास्त्री राजस्थान के पहले मुख्यमंत्री थे। उन्होंने 7 अप्रैल, 1949 को पदभार ग्रहण किया。",
+                marksPerQuestion = 2.0, // Override Example
+                negativeMarks = 0.66
             ),
             Question(
                 "q3", 

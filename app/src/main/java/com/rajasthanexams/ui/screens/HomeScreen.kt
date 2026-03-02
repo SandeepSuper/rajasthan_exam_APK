@@ -18,6 +18,11 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.CardGiftcard
 import androidx.compose.material.icons.filled.MenuBook
+import androidx.compose.material.icons.filled.Assignment
+import androidx.compose.material.icons.filled.LibraryBooks
+import androidx.compose.material.icons.filled.History
+import androidx.compose.material.icons.filled.Bolt
+import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.*
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.lazy.items
@@ -55,25 +60,38 @@ fun HomeScreen(
     isDarkTheme: Boolean = false,
     onExamClick: (Test) -> Unit,
     onCategoryClick: (Category) -> Unit,
+    onTestTypeClick: (com.rajasthanexams.data.TestType) -> Unit,
     onNotificationClick: () -> Unit,
     onReferralClick: () -> Unit,
     onCurrentAffairsClick: () -> Unit,
-    unreadNotifications: Int = 0,
-    viewModel: com.rajasthanexams.ui.viewmodels.HomeViewModel = androidx.lifecycle.viewmodel.compose.viewModel()
+    showPurchasedExams: Boolean = false, // New parameter to control visibility
+    viewModel: com.rajasthanexams.ui.viewmodels.HomeViewModel = androidx.lifecycle.viewmodel.compose.viewModel(),
+    notificationsViewModel: com.rajasthanexams.ui.viewmodels.NotificationsViewModel = androidx.lifecycle.viewmodel.compose.viewModel()
 ) {
     var searchQuery by remember { mutableStateOf("") }
     
     // Live Data Observation
     val uiState by viewModel.uiState.collectAsState()
+    val registeredTests by viewModel.registeredState.collectAsState()
+    val notificationState by notificationsViewModel.uiState.collectAsState()
+    
+    val unreadNotifications = remember(notificationState) {
+        if (notificationState is com.rajasthanexams.ui.viewmodels.NotificationsUiState.Success) {
+            (notificationState as com.rajasthanexams.ui.viewmodels.NotificationsUiState.Success).notifications.count { !it.isRead }
+        } else 0
+    }
     
     // Filter logic works on the *State* list now
-    val filteredTests = remember(searchQuery, uiState) {
-        val tests = if (uiState is com.rajasthanexams.ui.viewmodels.HomeUiState.Success) {
+    val filteredTests = remember(searchQuery, uiState, showPurchasedExams) {
+        val allTests = if (uiState is com.rajasthanexams.ui.viewmodels.HomeUiState.Success) {
             (uiState as com.rajasthanexams.ui.viewmodels.HomeUiState.Success).tests
         } else {
             emptyList()
         }
-    
+
+        // On the Tests tab, exclude purchased tests from "Recommended" — they show in "My Purchases"
+        val tests = if (showPurchasedExams) allTests.filter { !it.isPurchased } else allTests
+
         if (searchQuery.isBlank()) {
             tests
         } else {
@@ -260,6 +278,148 @@ fun HomeScreen(
                 }
             }
 
+            // Test Type Quick Navigation Section
+            item {
+                Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
+                    Text(
+                        "Select Test Type",
+                        style = MaterialTheme.typography.titleLarge,
+                        color = MaterialTheme.colorScheme.primary,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.padding(bottom = 12.dp)
+                    )
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .horizontalScroll(rememberScrollState()),
+                        horizontalArrangement = Arrangement.spacedBy(16.dp)
+                    ) {
+                        data class TestTypeInfo(
+                            val label: String,
+                            val type: com.rajasthanexams.data.TestType,
+                            val color: Color,
+                            val icon: androidx.compose.ui.graphics.vector.ImageVector
+                        )
+                        val types = listOf(
+                            TestTypeInfo("Mock\nTests", com.rajasthanexams.data.TestType.MOCK, Color(0xFFE67E22), Icons.Default.Assignment),
+                            TestTypeInfo("Topic\nTests", com.rajasthanexams.data.TestType.TOPIC, Color(0xFF27AE60), Icons.Default.MenuBook),
+                            TestTypeInfo("Full\nTests", com.rajasthanexams.data.TestType.FULL, Color(0xFF2980B9), Icons.Default.LibraryBooks),
+                            TestTypeInfo("PYQ\nPapers", com.rajasthanexams.data.TestType.PYQ, Color(0xFF8E44AD), Icons.Default.History),
+                            TestTypeInfo("Daily\nQuiz", com.rajasthanexams.data.TestType.DAILY_QUIZ, Color(0xFF009688), Icons.Default.Bolt),
+                            TestTypeInfo("Live\nTests", com.rajasthanexams.data.TestType.LIVE, Color(0xFFEB5757), Icons.Default.PlayArrow)
+                        )
+                        types.forEach { info ->
+                            Column(
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                modifier = Modifier
+                                    .width(64.dp)
+                                    .clickable { onTestTypeClick(info.type) }
+                            ) {
+                                Surface(
+                                    shape = androidx.compose.foundation.shape.CircleShape,
+                                    color = info.color.copy(alpha = 0.12f),
+                                    border = androidx.compose.foundation.BorderStroke(1.5.dp, info.color.copy(alpha = 0.35f)),
+                                    modifier = Modifier.size(56.dp)
+                                ) {
+                                    Box(contentAlignment = Alignment.Center) {
+                                        Icon(
+                                            imageVector = info.icon,
+                                            contentDescription = info.label,
+                                            tint = info.color,
+                                            modifier = Modifier.size(26.dp)
+                                        )
+                                    }
+                                }
+                                Spacer(modifier = Modifier.height(6.dp))
+                                Text(
+                                    info.label,
+                                    style = MaterialTheme.typography.labelMedium,
+                                    fontWeight = FontWeight.SemiBold,
+                                    textAlign = TextAlign.Center,
+                                    color = MaterialTheme.colorScheme.onSurface
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+
+            // My Purchases Section (only shown on Tests tab)
+            if (showPurchasedExams) {
+                val purchasedTests = if (uiState is com.rajasthanexams.ui.viewmodels.HomeUiState.Success) {
+                    (uiState as com.rajasthanexams.ui.viewmodels.HomeUiState.Success).tests.filter { it.isPurchased }
+                } else emptyList()
+
+                if (purchasedTests.isNotEmpty()) {
+                    item {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp, vertical = 8.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                "My Purchases",
+                                style = MaterialTheme.typography.titleLarge,
+                                color = MaterialTheme.colorScheme.primary,
+                                fontWeight = FontWeight.Bold
+                            )
+                            androidx.compose.material3.Badge(
+                                containerColor = MaterialTheme.colorScheme.primary
+                            ) {
+                                Text(
+                                    "${purchasedTests.size}",
+                                    color = Color.White,
+                                    style = MaterialTheme.typography.labelSmall
+                                )
+                            }
+                        }
+                    }
+                    items(purchasedTests) { test ->
+                        Box(modifier = Modifier.padding(horizontal = 16.dp, vertical = 6.dp)) {
+                            TestCard(test = test, onClick = { onExamClick(test) })
+                        }
+                    }
+                } else if (uiState is com.rajasthanexams.ui.viewmodels.HomeUiState.Success) {
+                    item {
+                        androidx.compose.material3.Card(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp, vertical = 8.dp),
+                            shape = androidx.compose.foundation.shape.RoundedCornerShape(12.dp),
+                            colors = androidx.compose.material3.CardDefaults.cardColors(
+                                containerColor = MaterialTheme.colorScheme.surface
+                            ),
+                            elevation = androidx.compose.material3.CardDefaults.cardElevation(2.dp)
+                        ) {
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(24.dp),
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                Text("🎓", style = MaterialTheme.typography.displaySmall)
+                                Spacer(modifier = Modifier.height(8.dp))
+                                Text(
+                                    "No Purchased Exams Yet",
+                                    style = MaterialTheme.typography.titleMedium,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.onSurface
+                                )
+                                Spacer(modifier = Modifier.height(4.dp))
+                                Text(
+                                    "Browse categories below to unlock premium tests",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = Color.Gray,
+                                    textAlign = TextAlign.Center
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+
             // Popular Tests Section Header
             item {
                 Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
@@ -316,12 +476,21 @@ fun CategoryItem(category: Category, onClick: () -> Unit) {
             modifier = Modifier.size(60.dp)
         ) {
             Box(contentAlignment = Alignment.Center, modifier = Modifier.padding(12.dp)) {
-                Icon(
-                    imageVector = category.icon,
-                    contentDescription = category.title,
-                    modifier = Modifier.fillMaxSize(),
-                    tint = MaterialTheme.colorScheme.primary
-                )
+                if (!category.iconUrl.isNullOrEmpty()) {
+                    AsyncImage(
+                        model = category.iconUrl,
+                        contentDescription = category.title,
+                        modifier = Modifier.fillMaxSize(),
+                        contentScale = androidx.compose.ui.layout.ContentScale.Fit
+                    )
+                } else {
+                    Icon(
+                        imageVector = category.icon,
+                        contentDescription = category.title,
+                        modifier = Modifier.fillMaxSize(),
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+                }
             }
         }
         Spacer(modifier = Modifier.height(8.dp))
@@ -391,10 +560,15 @@ fun TestCard(test: Test, onClick: () -> Unit) {
             
             Row(horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                 Text("${test.attempts} attempted", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.tertiary)
+                val (buttonLabel, buttonColor) = when {
+                    test.isPremium && !test.isPurchased -> "Unlock Premium" to MaterialTheme.colorScheme.error
+                    test.isAttempted -> "View Result" to MaterialTheme.colorScheme.tertiary
+                    else -> "Start Now" to MaterialTheme.colorScheme.secondary
+                }
                 Text(
-                    if (test.isLive) "Start Now" else "Unlock Premium",
+                    buttonLabel,
                     style = MaterialTheme.typography.labelLarge,
-                    color = if (test.isLive) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.error,
+                    color = buttonColor,
                     fontWeight = FontWeight.Bold
                 )
             }

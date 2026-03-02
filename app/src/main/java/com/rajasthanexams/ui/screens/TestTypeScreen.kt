@@ -11,6 +11,7 @@ import androidx.compose.material.icons.filled.Assignment
 import androidx.compose.material.icons.filled.Book
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.ListAlt
+import androidx.compose.material.icons.filled.Event
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -98,6 +99,16 @@ fun TestTypeScreen(
                     icon = Icons.Default.History,
                     color = Color(0xFF8E44AD), // Purple
                     onClick = { onTypeSelect(TestType.PYQ) }
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                TestTypeCard(
+                    title = "Daily Quiz",
+                    subtitle = "Short daily practice tests",
+                    icon = Icons.Default.Event,
+                    color = Color(0xFF009688), // Teal
+                    onClick = { onTypeSelect(TestType.DAILY_QUIZ) }
                 )
             }
         }

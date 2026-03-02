@@ -20,6 +20,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.CloudUpload
+import androidx.compose.material.icons.filled.EmojiEvents
+import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -40,24 +42,51 @@ import androidx.compose.ui.unit.sp
 import com.rajasthanexams.data.Question
 import com.rajasthanexams.ui.components.AppButton
 import com.rajasthanexams.ui.components.HeritagePatternBackground
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
+
+import androidx.compose.material.icons.filled.Star // Added import
 
 @Composable
 fun ResultScreen(
-    score: Int,
+    score: Double,
     totalQuestions: Int,
     questions: List<Question>,
     userAnswers: Map<Int, Int>, // qIndex -> optionIndex
+    timeTaken: Long = 0,
+    timePerQuestion: Map<Int, Long> = emptyMap(),
+    coinsEarned: Int = 0, // Added coinsEarned
     isUiHindi: Boolean,
     onHomeClick: () -> Unit,
-    onRetakeClick: () -> Unit
+    onRetakeClick: () -> Unit,
+    onLeaderboardClick: () -> Unit = {},
+    testId: String = ""
 ) {
-    var showReview by remember { mutableStateOf(false) }
+    // ... no changes until title
+    // Determine which view to show
+    var activeView by remember { mutableStateOf(ResultView.SUMMARY) }
+    var reviewFilter by remember { mutableStateOf(ReviewFilter.ALL) }
     var isContentHindi by remember { mutableStateOf(true) }
 
+    // Intercept back gesture when in sub-views (Leaderboard, Review)
+    androidx.activity.compose.BackHandler(enabled = activeView != ResultView.SUMMARY) {
+        activeView = ResultView.SUMMARY
+    }
+
+    // If Leaderboard view is active
+    if (activeView == ResultView.LEADERBOARD) {
+        RankersScreen(
+            testId = testId,
+            userTestCoins = coinsEarned,
+            onBack = { activeView = ResultView.SUMMARY }
+        )
+        return // Early return to show full screen leaderboard
+    }
+
     HeritagePatternBackground {
-        if (showReview) {
-            // REVIEW UI
-            Column(
+        if (activeView == ResultView.REVIEW) {
+            // ... (Content hidden for brevity, no changes here)
+             Column(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(16.dp)
@@ -68,25 +97,84 @@ fun ResultScreen(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
+                    val filterTitle = when(reviewFilter) {
+                        ReviewFilter.ALL -> if (isUiHindi) "कोन समीक्षा" else "All Questions"
+                        ReviewFilter.CORRECT -> if (isUiHindi) "सही उत्तर" else "Correct Answers" 
+                        ReviewFilter.WRONG -> if (isUiHindi) "गलत उत्तर" else "Wrong Answers"
+                        ReviewFilter.SKIPPED -> if (isUiHindi) "छोड़े गए प्रश्न" else "Skipped Questions"
+                    }
                     Text(
-                        if (isUiHindi) "उत्तर समीक्षा" else "Review Answers",
+                        text = if (reviewFilter == ReviewFilter.ALL) (if (isUiHindi) "उत्तर समीक्षा" else "Review Answers") else filterTitle,
                         style = MaterialTheme.typography.headlineSmall,
                         color = MaterialTheme.colorScheme.primary,
                         fontWeight = FontWeight.Bold
                     )
 
                     androidx.compose.material3.IconButton(onClick = { isContentHindi = !isContentHindi }) {
-                        Text(
-                            text = if (isContentHindi) "HI" else "EN",
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.primary
-                        )
+                        // Custom Icon: Mixed English (E) and Hindi (अ)
+                        androidx.compose.foundation.layout.Box(
+                            modifier = Modifier
+                                .size(28.dp)
+                                .border(1.5.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(6.dp)),
+                            contentAlignment = Alignment.Center
+                        ) {
+                             Row(
+                                 verticalAlignment = Alignment.CenterVertically, 
+                                 horizontalArrangement = Arrangement.Center,
+                                 modifier = Modifier.padding(2.dp)
+                             ) {
+                                 Text(
+                                     text = "E", 
+                                     style = MaterialTheme.typography.labelSmall, 
+                                     fontSize = 10.sp, 
+                                     fontWeight = FontWeight.Black, 
+                                     color = MaterialTheme.colorScheme.primary
+                                 )
+                                 Text(
+                                     text = "/", 
+                                     style = MaterialTheme.typography.labelSmall, 
+                                     fontSize = 10.sp, 
+                                     color = MaterialTheme.colorScheme.primary
+                                 )
+                                 Text(
+                                     text = "अ", 
+                                     style = MaterialTheme.typography.labelSmall, 
+                                     fontSize = 10.sp, 
+                                     fontWeight = FontWeight.Black, 
+                                     color = MaterialTheme.colorScheme.primary
+                                 )
+                             }
+                        }
                     }
                 }
 
                 LazyColumn(modifier = Modifier.weight(1f)) {
-                    itemsIndexed(questions) { index, question ->
+                    val filteredQuestions = questions.mapIndexed { index, question -> index to question }
+                        .filter { (originalIndex, question) ->
+                            val userAnswerIndex = userAnswers[originalIndex]
+                            val correctOptionIndex = question.correctOptionIndex
+                            when (reviewFilter) {
+                                ReviewFilter.ALL -> true
+                                ReviewFilter.CORRECT -> userAnswerIndex != null && userAnswerIndex == correctOptionIndex
+                                ReviewFilter.WRONG -> userAnswerIndex != null && userAnswerIndex != correctOptionIndex
+                                ReviewFilter.SKIPPED -> userAnswerIndex == null
+                            }
+                        }
+
+                    if (filteredQuestions.isEmpty()) {
+                        item {
+                            Box(modifier = Modifier.fillMaxWidth().padding(32.dp), contentAlignment = Alignment.Center) {
+                                Text(
+                                    text = if(isUiHindi) "कोई प्रश्न नहीं मिला" else "No questions found for this filter",
+                                    style = MaterialTheme.typography.bodyLarge,
+                                    color = Color.Gray
+                                )
+                            }
+                        }
+                    }
+
+                    itemsIndexed(filteredQuestions) { _, (originalIndex, question) ->
+                        val index = originalIndex
                         val userAnswerIndex = userAnswers[index]
                         val correctOptionIndex = question.correctOptionIndex
                         val isCorrect = userAnswerIndex != null && userAnswerIndex == correctOptionIndex
@@ -112,6 +200,31 @@ fun ResultScreen(
                                         if (isContentHindi) question.questionHi else question.questionEn,
                                         style = MaterialTheme.typography.bodyLarge,
                                         fontWeight = FontWeight.Medium
+                                    )
+                                }
+                                
+                                // Time Spent Display
+                                val timeSpent = timePerQuestion[index] ?: 0L
+                                val timeSec = timeSpent / 1000
+                                val timeMin = timeSec / 60
+                                val timeSecRem = timeSec % 60
+                                val timeStr = String.format("%02d:%02d", timeMin, timeSecRem)
+                                
+                                Row(
+                                    modifier = Modifier.padding(top = 8.dp),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Icon(
+                                        imageVector = androidx.compose.material.icons.Icons.Default.Schedule, // Make sure to import or use explicit
+                                        contentDescription = "Time",
+                                        tint = Color.Gray,
+                                        modifier = Modifier.size(16.dp)
+                                    )
+                                    Spacer(modifier = Modifier.width(4.dp))
+                                    Text(
+                                        text = timeStr,
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = Color.Gray
                                     )
                                 }
                                 Spacer(modifier = Modifier.height(12.dp))
@@ -162,7 +275,7 @@ fun ResultScreen(
                                         .fillMaxWidth()
                                         .background(Color(0xFFFFF3E0), RoundedCornerShape(8.dp))
                                         .padding(12.dp)
-                                ) {
+                                    ) {
                                     Text(
                                         text = if(isUiHindi) "व्याख्या:" else "Solution:",
                                         style = MaterialTheme.typography.labelLarge,
@@ -181,10 +294,16 @@ fun ResultScreen(
                 }
                 
                 Spacer(modifier = Modifier.height(16.dp))
-                AppButton(text = if(isUiHindi) "बंद करें" else "Close Review", onClick = { showReview = false })
+                AppButton(
+                    text = if(isUiHindi) "बंद करें" else "Close Review", 
+                    onClick = { 
+                        activeView = ResultView.SUMMARY 
+                        reviewFilter = ReviewFilter.ALL // Reset filter on close
+                    }
+                )
             }
         } else {
-            // SCORE UI
+            // SCORE UI (activeView == ResultView.SUMMARY)
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -198,6 +317,26 @@ fun ResultScreen(
                     color = MaterialTheme.colorScheme.primary
                 )
                 
+                // Add Coins Display here
+                if (coinsEarned > 0) {
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier
+                            .background(Color(0xFFFFD700).copy(alpha = 0.2f), RoundedCornerShape(16.dp))
+                            .padding(horizontal = 16.dp, vertical = 8.dp)
+                    ) {
+                         Icon(Icons.Default.Star, contentDescription = null, tint = Color(0xFFF57F17)) 
+                         Spacer(modifier = Modifier.width(8.dp))
+                         Text(
+                             text = "+$coinsEarned Coins",
+                             style = MaterialTheme.typography.titleMedium,
+                             color = Color(0xFFF57F17),
+                             fontWeight = FontWeight.Bold
+                         )
+                    }
+                }
+                
                 Spacer(modifier = Modifier.height(32.dp))
                 
                 // Score Display
@@ -210,10 +349,100 @@ fun ResultScreen(
                         color = Color.Gray
                     )
                     Text(
-                        text = "$score/$totalQuestions",
+                        text = String.format("%.2f/%d", score, totalQuestions),
                         style = MaterialTheme.typography.displayMedium,
                         fontWeight = FontWeight.Bold,
                     )
+                    
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    // Correct / Wrong Counts
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        val correctCount = userAnswers.count { (qIndex, ansIndex) -> 
+                            questions.getOrNull(qIndex)?.correctOptionIndex == ansIndex 
+                        }
+                        val incorrectCount = userAnswers.count { (qIndex, ansIndex) -> 
+                            questions.getOrNull(qIndex)?.correctOptionIndex != ansIndex 
+                        }
+                        
+                        // Correct
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            modifier = Modifier
+                                .clickable { 
+                                    reviewFilter = ReviewFilter.CORRECT
+                                    activeView = ResultView.REVIEW
+                                }
+                                .padding(8.dp)
+                        ) {
+                            Text(
+                                text = "$correctCount",
+                                style = MaterialTheme.typography.titleLarge,
+                                color = Color(0xFF2E7D32), // Green
+                                fontWeight = FontWeight.Bold
+                            )
+                            Text(
+                                text = if(isUiHindi) "सही" else "Correct",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = Color(0xFF2E7D32)
+                            )
+                        }
+                        
+                        Spacer(modifier = Modifier.width(32.dp))
+                        
+                        // Wrong
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            modifier = Modifier
+                                .clickable { 
+                                    reviewFilter = ReviewFilter.WRONG
+                                    activeView = ResultView.REVIEW
+                                }
+                                .padding(8.dp)
+                        ) {
+                            Text(
+                                text = "$incorrectCount",
+                                style = MaterialTheme.typography.titleLarge,
+                                color = Color(0xFFC62828), // Red
+                                fontWeight = FontWeight.Bold
+                            )
+                            Text(
+                                text = if(isUiHindi) "गलत" else "Wrong",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = Color(0xFFC62828)
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.width(32.dp))
+
+                        // Not Attempted
+                        // Not Attempted
+                        val notAttemptedCount = totalQuestions - userAnswers.size
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            modifier = Modifier
+                                .clickable { 
+                                    reviewFilter = ReviewFilter.SKIPPED
+                                    activeView = ResultView.REVIEW
+                                }
+                                .padding(8.dp)
+                        ) {
+                            Text(
+                                text = "$notAttemptedCount",
+                                style = MaterialTheme.typography.titleLarge,
+                                color = Color.Gray,
+                                fontWeight = FontWeight.Bold
+                            )
+                            Text(
+                                text = if(isUiHindi) "छोड़े गए" else "Skipped", // or Not Attempted
+                                style = MaterialTheme.typography.bodySmall,
+                                color = Color.Gray
+                            )
+                        }
+                    }
                 }
 
                 Spacer(modifier = Modifier.height(16.dp))
@@ -237,19 +466,44 @@ fun ResultScreen(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
-                    val accuracy = if (totalQuestions > 0) (score * 100 / totalQuestions) else 0
-                    StatItem(if(isUiHindi) "सटीकता" else "Accuracy", "$accuracy%")
+                    val accuracy = if (totalQuestions > 0) (score * 100 / totalQuestions) else 0.0
+                    
+                    val formattedTime = remember(timeTaken) {
+                         val safeTime = if (timeTaken < 0) 0L else timeTaken
+                         val minutes = safeTime / 60
+                         val seconds = safeTime % 60
+                         String.format("%02dm %02ds", minutes, seconds)
+                    }
+                    
+                    StatItem(if(isUiHindi) "सटीकता" else "Accuracy", "%.2f%%".format(accuracy))
                     StatItem(if(isUiHindi) "प्रयास किए" else "Attempted", "${userAnswers.size}/$totalQuestions")
-                    StatItem(if(isUiHindi) "समय" else "Time", "10m") // Mocked for now, strictly could be passed too
+                    StatItem(if(isUiHindi) "समय" else "Time", formattedTime)
                 }
                 
                 Spacer(modifier = Modifier.height(48.dp))
                 
                 AppButton(
                     text = if(isUiHindi) "उत्तर समीक्षा" else "Review Answers",
-                    onClick = { showReview = true }
+                    onClick = { 
+                        reviewFilter = ReviewFilter.ALL
+                        activeView = ResultView.REVIEW 
+                    }
                 )
                 
+                Spacer(modifier = Modifier.height(16.dp))
+                
+                OutlinedButton(
+                    onClick = { activeView = ResultView.LEADERBOARD },
+                    modifier = Modifier.fillMaxWidth().height(50.dp),
+                    shape = RoundedCornerShape(12.dp),
+                    border = BorderStroke(2.dp, MaterialTheme.colorScheme.primary)
+                ) {
+                    // Trophy Icon
+                    Icon(Icons.Default.EmojiEvents, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(if(isUiHindi) "लीडरबोर्ड देखें" else "View Leaderboard", fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                }
+
                 Spacer(modifier = Modifier.height(16.dp))
                 
                 OutlinedButton(
@@ -273,6 +527,14 @@ fun ResultScreen(
             }
         }
     }
+}
+
+enum class ResultView {
+    SUMMARY, REVIEW, LEADERBOARD
+}
+
+enum class ReviewFilter {
+    ALL, CORRECT, WRONG, SKIPPED
 }
 
 @Composable

@@ -83,4 +83,5 @@
     <string msgid="3124740595719787496" name="tooltip_label">"show tooltip"</string>
     <string msgid="2732804537909054941" name="tooltip_long_press_label">"Show tooltip"</string>
     <string msgid="8191239805703103845" name="tooltip_pane_description">"Tooltip"</string>
+    <string name="wallet_buy_button_place_holder">Buy with Google</string>
 </resources>
