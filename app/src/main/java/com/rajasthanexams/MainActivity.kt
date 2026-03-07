@@ -334,6 +334,7 @@ fun AppNavigation(
             Screen.HOME -> {
                 HomeScreen(
                     isDarkTheme = isDarkTheme,
+                    profileImageUrl = sessionManagerNav.getProfilePicture(),
                     viewModel = homeViewModel,
                     notificationsViewModel = notificationsViewModel,
                     onExamClick = { test ->

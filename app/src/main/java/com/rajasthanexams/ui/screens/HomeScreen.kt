@@ -58,13 +58,14 @@ import com.rajasthanexams.ui.theme.RoyalBlue
 @Composable
 fun HomeScreen(
     isDarkTheme: Boolean = false,
+    profileImageUrl: String? = null,
     onExamClick: (Test) -> Unit,
     onCategoryClick: (Category) -> Unit,
     onTestTypeClick: (com.rajasthanexams.data.TestType) -> Unit,
     onNotificationClick: () -> Unit,
     onReferralClick: () -> Unit,
     onCurrentAffairsClick: () -> Unit,
-    showPurchasedExams: Boolean = false, // New parameter to control visibility
+    showPurchasedExams: Boolean = false,
     viewModel: com.rajasthanexams.ui.viewmodels.HomeViewModel = androidx.lifecycle.viewmodel.compose.viewModel(),
     notificationsViewModel: com.rajasthanexams.ui.viewmodels.NotificationsViewModel = androidx.lifecycle.viewmodel.compose.viewModel()
 ) {
@@ -185,12 +186,49 @@ fun HomeScreen(
                                     }
                                 }
                                 Spacer(modifier = Modifier.width(8.dp))
-                                Icon(
-                                    Icons.Default.AccountCircle,
-                                    contentDescription = "Profile",
-                                    tint = Color.White,
-                                    modifier = Modifier.size(48.dp)
-                                )
+                                Box(
+                                    modifier = Modifier
+                                        .size(42.dp)
+                                        .clip(CircleShape)
+                                        .background(Color.White.copy(alpha = 0.2f))
+                                ) {
+                                    val avatarRes = com.rajasthanexams.ui.components.AvatarHelper.getDrawableRes(profileImageUrl)
+                                    when {
+                                        avatarRes != null -> {
+                                            // Local avatar drawable
+                                            androidx.compose.foundation.Image(
+                                                painter = androidx.compose.ui.res.painterResource(id = avatarRes),
+                                                contentDescription = "Profile",
+                                                contentScale = ContentScale.Crop,
+                                                modifier = Modifier
+                                                    .fillMaxSize()
+                                                    .clip(CircleShape)
+                                            )
+                                        }
+                                        !profileImageUrl.isNullOrBlank() -> {
+                                            // Remote URL
+                                            AsyncImage(
+                                                model = profileImageUrl,
+                                                contentDescription = "Profile",
+                                                contentScale = ContentScale.Crop,
+                                                modifier = Modifier
+                                                    .fillMaxSize()
+                                                    .clip(CircleShape)
+                                            )
+                                        }
+                                        else -> {
+                                            // Fallback
+                                            Icon(
+                                                Icons.Default.AccountCircle,
+                                                contentDescription = "Profile",
+                                                tint = Color.White,
+                                                modifier = Modifier
+                                                    .fillMaxSize()
+                                                    .padding(2.dp)
+                                            )
+                                        }
+                                    }
+                                }
                             }
                         }
 
