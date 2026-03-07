@@ -410,6 +410,14 @@ fun AppNavigation(
                         sessionManagerNav.saveUnreadNotificationCount(0)
                         currentScreen = Screen.NOTIFICATIONS
                     },
+                    onPromotionClick = { category ->
+                        purchaseExamId = category.id
+                        purchaseTitle = category.title
+                        purchasePrice = category.price
+                        purchaseDiscount = category.discountPercent
+                        previousScreen = Screen.HOME
+                        currentScreen = Screen.EXAM_PURCHASE
+                    },
                     onReferralClick = {
                         currentScreen = Screen.REFERRAL
                     },

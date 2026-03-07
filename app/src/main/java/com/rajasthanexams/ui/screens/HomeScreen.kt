@@ -65,6 +65,7 @@ fun HomeScreen(
     onNotificationClick: () -> Unit,
     onReferralClick: () -> Unit,
     onCurrentAffairsClick: () -> Unit,
+    onPromotionClick: (Category) -> Unit = {},
     showPurchasedExams: Boolean = false,
     viewModel: com.rajasthanexams.ui.viewmodels.HomeViewModel = androidx.lifecycle.viewmodel.compose.viewModel(),
     notificationsViewModel: com.rajasthanexams.ui.viewmodels.NotificationsViewModel = androidx.lifecycle.viewmodel.compose.viewModel()
@@ -270,7 +271,15 @@ fun HomeScreen(
 
             // Promotional Carousel
             item {
-               PromotionCarousel()
+                val promoCategories = if (uiState is com.rajasthanexams.ui.viewmodels.HomeUiState.Success) {
+                    (uiState as com.rajasthanexams.ui.viewmodels.HomeUiState.Success)
+                        .categories
+                        .filter { it.isPremium && !it.isPurchased && it.price > 0 }
+                } else emptyList()
+                PromotionCarousel(
+                    categories = promoCategories,
+                    onItemClick = onPromotionClick
+                )
             }
 
             // Daily Current Affairs (News)
@@ -617,16 +626,35 @@ fun TestCard(test: Test, onClick: () -> Unit) {
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun PromotionCarousel() {
-    val promotions = MockData.promotions
-    val pagerState = rememberPagerState(pageCount = { promotions.size })
-    val coroutineScope = rememberCoroutineScope()
+fun PromotionCarousel(
+    categories: List<Category> = emptyList(),
+    onItemClick: (Category) -> Unit = {}
+) {
+    // Gradient palette — cycles through if more exams than colors
+    val gradients = listOf(
+        Pair(Color(0xFF6A11CB), Color(0xFF2575FC)),
+        Pair(Color(0xFFFF512F), Color(0xFFDD2476)),
+        Pair(Color(0xFF11998e), Color(0xFF38ef7d)),
+        Pair(Color(0xFFf7971e), Color(0xFFffd200)),
+        Pair(Color(0xFF1A1A2E), Color(0xFF16213E))
+    )
+
+    // Use live data if available, otherwise fall back to mock
+    val items: List<Pair<String, Any>> = if (categories.isNotEmpty()) {
+        categories.map { it.title to (it as Any) }
+    } else {
+        MockData.promotions.map { it.title to (it as Any) }
+    }
+
+    if (items.isEmpty()) return
+
+    val pagerState = rememberPagerState(pageCount = { items.size })
 
     // Auto-scroll
     LaunchedEffect(pagerState) {
         while (true) {
             delay(3000)
-            val nextPage = (pagerState.currentPage + 1) % promotions.size
+            val nextPage = (pagerState.currentPage + 1) % items.size
             pagerState.animateScrollToPage(nextPage)
         }
     }
@@ -638,17 +666,42 @@ fun PromotionCarousel() {
             pageSpacing = 16.dp,
             modifier = Modifier.fillMaxWidth().height(180.dp)
         ) { page ->
-            PromotionCard(promotion = promotions[page])
+            val gradient = gradients[page % gradients.size]
+            val item = items[page].second
+            if (item is Category) {
+                val discountedAmt = if (item.discountPercent > 0)
+                    kotlin.math.round(item.price * (1.0 - item.discountPercent / 100.0)).toDouble()
+                else null
+                PromotionCard(
+                    title = item.title,
+                    subtitle = if (item.discountPercent == 0) "₹${item.price.toInt()} · Unlock Now" else "",
+                    badge = if (item.discountPercent > 0) "${item.discountPercent}% OFF" else "PREMIUM",
+                    mrp = if (item.discountPercent > 0) item.price else null,
+                    discountedPrice = discountedAmt,
+                    colorStart = gradient.first,
+                    colorEnd = gradient.second,
+                    onClick = { onItemClick(item) }
+                )
+            } else {
+                val promo = item as com.rajasthanexams.data.Promotion
+                PromotionCard(
+                    title = promo.title,
+                    subtitle = promo.subtitle,
+                    badge = promo.discount,
+                    colorStart = promo.colorStart,
+                    colorEnd = promo.colorEnd
+                )
+            }
         }
-        
+
         Spacer(modifier = Modifier.height(8.dp))
-        
+
         // Indicators
         Row(
             Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.Center
         ) {
-            repeat(promotions.size) { iteration ->
+            repeat(items.size) { iteration ->
                 val color = if (pagerState.currentPage == iteration) MaterialTheme.colorScheme.primary else Color.LightGray
                 Box(
                     modifier = Modifier
@@ -663,65 +716,193 @@ fun PromotionCarousel() {
 }
 
 @Composable
-fun PromotionCard(promotion: com.rajasthanexams.data.Promotion) {
+fun PromotionCard(
+    title: String,
+    subtitle: String,
+    badge: String,
+    colorStart: Color,
+    colorEnd: Color,
+    mrp: Double? = null,
+    discountedPrice: Double? = null,
+    onClick: () -> Unit = {}
+) {
+    val hasDiscount = mrp != null && discountedPrice != null
+
     Card(
-        shape = RoundedCornerShape(16.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
+        shape = RoundedCornerShape(20.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 10.dp),
         modifier = Modifier
             .fillMaxWidth()
-            .height(160.dp)
+            .height(175.dp)
+            .clickable { onClick() }
     ) {
         Box(
             modifier = Modifier
                 .fillMaxSize()
                 .background(
                     brush = androidx.compose.ui.graphics.Brush.linearGradient(
-                        colors = listOf(promotion.colorStart, promotion.colorEnd)
+                        colors = listOf(colorStart, colorEnd),
+                        start = androidx.compose.ui.geometry.Offset(0f, 0f),
+                        end = androidx.compose.ui.geometry.Offset(
+                            Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY
+                        )
                     )
                 )
-                .padding(20.dp)
         ) {
-            Column(modifier = Modifier.fillMaxWidth()) {
-                // Discount Badge
-                Surface(
-                    color = Color.White.copy(alpha = 0.2f),
-                    shape = RoundedCornerShape(8.dp)
+            // Decorative blurred circles
+            Box(
+                modifier = Modifier
+                    .size(150.dp)
+                    .offset(x = (-40).dp, y = (-40).dp)
+                    .background(Color.White.copy(alpha = 0.07f), CircleShape)
+            )
+            Box(
+                modifier = Modifier
+                    .size(90.dp)
+                    .align(Alignment.BottomEnd)
+                    .offset(x = 25.dp, y = 25.dp)
+                    .background(Color.White.copy(alpha = 0.09f), CircleShape)
+            )
+
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 16.dp, vertical = 12.dp),
+                verticalArrangement = Arrangement.SpaceBetween
+            ) {
+
+                // ── TOP: Title + Badge ──
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        promotion.discount,
+                        title,
+                        style = MaterialTheme.typography.titleMedium,
                         color = Color.White,
-                        style = MaterialTheme.typography.labelMedium,
                         fontWeight = FontWeight.Bold,
-                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                        maxLines = 1,
+                        overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
+                        modifier = Modifier.weight(1f).padding(end = 8.dp)
+                    )
+                    Surface(
+                        color = Color.White.copy(alpha = 0.22f),
+                        shape = RoundedCornerShape(50.dp)
+                    ) {
+                        Text(
+                            badge,
+                            color = Color.White,
+                            style = MaterialTheme.typography.labelSmall,
+                            fontWeight = FontWeight.ExtraBold,
+                            modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp)
+                        )
+                    }
+                }
+
+                // ── MIDDLE: Price Chip (the focal point) ──
+                if (hasDiscount) {
+                    Surface(
+                        color = Color.White.copy(alpha = 0.15f),
+                        shape = RoundedCornerShape(14.dp),
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Row(
+                            modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            // MRP crossed out
+                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                Text(
+                                    "MRP",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = Color.White.copy(alpha = 0.55f)
+                                )
+                                Text(
+                                    "\u20b9${mrp!!.toInt()}",
+                                    style = MaterialTheme.typography.bodyLarge.copy(
+                                        textDecoration = androidx.compose.ui.text.style.TextDecoration.LineThrough
+                                    ),
+                                    color = Color.White.copy(alpha = 0.5f),
+                                    fontWeight = FontWeight.Medium
+                                )
+                            }
+
+                            // Divider
+                            Spacer(modifier = Modifier.width(10.dp))
+                            Box(
+                                modifier = Modifier
+                                    .width(1.dp)
+                                    .height(34.dp)
+                                    .background(Color.White.copy(alpha = 0.3f))
+                            )
+                            Spacer(modifier = Modifier.width(10.dp))
+
+                            // Discounted price (large, bold)
+                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                Text(
+                                    "You Pay",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = Color.White.copy(alpha = 0.75f)
+                                )
+                                Text(
+                                    "\u20b9${discountedPrice!!.toInt()}",
+                                    style = MaterialTheme.typography.headlineSmall,
+                                    color = Color.White,
+                                    fontWeight = FontWeight.ExtraBold
+                                )
+                            }
+
+                            Spacer(modifier = Modifier.weight(1f))
+
+                            // Savings green pill
+                            Surface(
+                                color = Color(0xFF00C853),
+                                shape = RoundedCornerShape(8.dp)
+                            ) {
+                                Text(
+                                    "Save \u20b9${(mrp!! - discountedPrice!!).toInt()}",
+                                    color = Color.White,
+                                    style = MaterialTheme.typography.labelMedium,
+                                    fontWeight = FontWeight.Bold,
+                                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 5.dp)
+                                )
+                            }
+                        }
+                    }
+                } else if (subtitle.isNotEmpty()) {
+                    Text(
+                        subtitle,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = Color.White.copy(alpha = 0.85f)
                     )
                 }
-                
-                Spacer(modifier = Modifier.weight(1f))
-                
-                Text(
-                    promotion.title,
-                    style = MaterialTheme.typography.titleLarge,
-                    color = Color.White,
-                    fontWeight = FontWeight.Bold
-                )
-                Spacer(modifier = Modifier.height(4.dp))
-                Text(
-                    promotion.subtitle,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = Color.White.copy(alpha = 0.9f)
-                )
+
+                // ── BOTTOM: Label + CTA ──
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        "\u2726 Full Course Included",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = Color.White.copy(alpha = 0.6f)
+                    )
+                    Surface(
+                        color = Color.White.copy(alpha = 0.2f),
+                        shape = RoundedCornerShape(50.dp)
+                    ) {
+                        Text(
+                            "Unlock Now \u2192",
+                            color = Color.White,
+                            style = MaterialTheme.typography.labelMedium,
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier.padding(horizontal = 12.dp, vertical = 5.dp)
+                        )
+                    }
+                }
             }
-            
-            // Decorative Icon/Shape behind text
-            Icon(
-                Icons.Default.Star, // Placeholder for variety
-                contentDescription = null,
-                tint = Color.White.copy(alpha = 0.1f),
-                modifier = Modifier
-                    .size(100.dp)
-                    .align(Alignment.BottomEnd)
-                    .offset(x = 20.dp, y = 20.dp)
-            )
         }
     }
 }
