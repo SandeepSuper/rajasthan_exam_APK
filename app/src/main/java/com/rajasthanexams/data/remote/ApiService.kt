@@ -9,6 +9,25 @@ import retrofit2.http.Header
 import retrofit2.http.POST
 import retrofit2.http.Query
 
+data class ReferralInfoResponse(
+    val referCode: String,
+    val referredCount: Int,
+    val coinsEarned: Int
+)
+
+data class TopReferrerResponse(
+    val name: String,
+    val referredCount: Int,
+    val avatarId: String?
+)
+
+data class AppConfigResponse(
+    val playStoreUrl: String,
+    val referrerCoinReward: Int = 50,
+    val refereeCoinReward: Int = 20,
+    val shareMessage: String
+)
+
 interface ApiService {
 
     @POST("auth/send-otp")
@@ -68,7 +87,7 @@ interface ApiService {
     @POST("payment/create-order")
     suspend fun createOrder(
         @Header("Authorization") token: String,
-        @Body request: Map<String, String>
+        @Body request: com.rajasthanexams.data.remote.dto.CreateOrderRequest
     ): retrofit2.Response<CreateOrderResponse>
 
     @POST("payment/verify")
@@ -84,13 +103,19 @@ interface ApiService {
     ): Response<List<LeaderboardEntry>>
 
     @POST("/api/leaderboard/sync-coins")
-    suspend fun syncCoins(@Body request: Map<String, Int>): Response<Map<String, Any>>
+    suspend fun syncCoins(
+        @Header("Authorization") token: String,
+        @Body request: Map<String, Int>
+    ): Response<Map<String, Any>>
 
     @GET("/api/news")
     suspend fun getNews(): Response<List<com.rajasthanexams.data.remote.dto.NewsItemResponse>>
 
     @GET("/api/notifications")
     suspend fun getNotifications(): Response<List<com.rajasthanexams.data.remote.dto.NotificationResponse>>
+
+    @retrofit2.http.PUT("/api/notifications/mark-all-read")
+    suspend fun markAllNotificationsRead(): Response<Unit>
 
 
     // Community APIs
@@ -117,4 +142,17 @@ interface ApiService {
         @retrofit2.http.Path("postId") postId: String,
         @retrofit2.http.Query("userId") userId: String
     ): Response<Boolean>
+
+    // Referral
+    @GET("/api/users/referral")
+    suspend fun getMyReferralInfo(
+        @Header("Authorization") token: String
+    ): Response<ReferralInfoResponse>
+
+    @GET("/api/users/top-referrers")
+    suspend fun getTopReferrers(): Response<List<TopReferrerResponse>>
+
+    // App Config (Play Store URL, coin rewards, etc.)
+    @GET("/api/config")
+    suspend fun getAppConfig(): Response<AppConfigResponse>
 }

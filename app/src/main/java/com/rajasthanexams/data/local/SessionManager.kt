@@ -13,6 +13,9 @@ class SessionManager(context: Context) {
         const val KEY_USER_EMAIL = "user_email"
         const val KEY_USER_PROFILE_PIC = "user_profile_pic"
         const val KEY_USER_COINS = "user_coins"
+        const val KEY_REFER_CODE = "refer_code"
+        const val KEY_DARK_MODE = "dark_mode"
+        const val KEY_UI_HINDI = "ui_hindi"
     }
 
     fun saveAuthToken(token: String) {
@@ -47,6 +50,15 @@ class SessionManager(context: Context) {
         prefs.edit().putInt(KEY_USER_COINS, coins).apply()
     }
 
+    fun isDarkMode(): Boolean = prefs.getBoolean(KEY_DARK_MODE, false)
+    fun setDarkMode(enabled: Boolean) { prefs.edit().putBoolean(KEY_DARK_MODE, enabled).apply() }
+
+    fun isUiHindi(): Boolean = prefs.getBoolean(KEY_UI_HINDI, false)
+    fun setUiHindi(enabled: Boolean) { prefs.edit().putBoolean(KEY_UI_HINDI, enabled).apply() }
+
+    fun getUnreadNotificationCount(): Int = prefs.getInt("unread_notifications", 0)
+    fun saveUnreadNotificationCount(count: Int) { prefs.edit().putInt("unread_notifications", count).apply() }
+
     fun clearSession() {
         prefs.edit().clear().apply()
     }
@@ -61,5 +73,13 @@ class SessionManager(context: Context) {
 
     fun getUserEmail(): String? {
         return prefs.getString(KEY_USER_EMAIL, null)
+    }
+
+    fun saveReferCode(code: String) {
+        prefs.edit().putString(KEY_REFER_CODE, code).apply()
+    }
+
+    fun getReferCode(): String? {
+        return prefs.getString(KEY_REFER_CODE, null)
     }
 }

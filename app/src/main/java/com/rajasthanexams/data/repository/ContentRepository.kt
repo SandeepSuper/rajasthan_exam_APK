@@ -74,14 +74,14 @@ class ContentRepository {
         }
     }
     
-    suspend fun createOrder(examId: String): Result<com.rajasthanexams.data.remote.dto.CreateOrderResponse> {
+    suspend fun createOrder(examId: String, useCoins: Boolean = false): Result<com.rajasthanexams.data.remote.dto.CreateOrderResponse> {
         return try {
             val token = com.rajasthanexams.data.local.SessionManager(com.rajasthanexams.MainApplication.instance).getAuthToken() 
                 ?: return Result.failure(Exception("Not logged in"))
-            
-            val request = mapOf("examId" to examId)
+
+            val request = com.rajasthanexams.data.remote.dto.CreateOrderRequest(examId, useCoins)
             val response = api.createOrder("Bearer $token", request)
-            
+
             if (response.isSuccessful && response.body() != null) {
                 Result.success(response.body()!!)
             } else {

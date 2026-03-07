@@ -44,12 +44,26 @@ private val GreenSuccess   = Color(0xFF00C853)
 fun ExamPurchaseScreen(
     examTitle: String,
     examPrice: Double,
-    discountPercent: Int = 30,
+    discountPercent: Int = 0,
+    userCoins: Int = 0,
     onBackClick: () -> Unit,
-    onBuyClick: () -> Unit
+    onBuyClick: (useCoins: Boolean) -> Unit
 ) {
-    val discountedPrice = (examPrice * (1.0 - discountPercent / 100.0)).roundToInt().toDouble()
-    val savings         = (examPrice - discountedPrice).roundToInt()
+    val discountedPrice = if (discountPercent > 0)
+        (examPrice * (1.0 - discountPercent / 100.0)).roundToInt().toDouble()
+    else examPrice
+    val savings = (examPrice - discountedPrice).roundToInt()
+
+    // Coin discount logic (max 10% of discountedPrice)
+    val coinValueRs = 0.10  // 1 coin = ₹0.10
+    val maxCoinDiscountPercent = 10
+    val maxCoinDiscountAmount = (discountedPrice * maxCoinDiscountPercent / 100.0)
+    val maxUsableCoins = minOf(userCoins, (maxCoinDiscountAmount / coinValueRs).toInt())
+    val coinDiscountAmount = (maxUsableCoins * coinValueRs * 100).toLong() / 100.0
+
+    var useCoins by remember { mutableStateOf(false) }
+    val finalPrice = if (useCoins) maxOf(0.0, discountedPrice - coinDiscountAmount) else discountedPrice
+    val isFreeWithCoins = useCoins && finalPrice == 0.0
 
     // Theme-aware colours
     val surface     = MaterialTheme.colorScheme.surface
@@ -218,12 +232,12 @@ fun ExamPurchaseScreen(
                         Spacer(modifier = Modifier.height(4.dp))
                     }
 
-                    // Price (discounted if applicable, else full price)
+                    // Price (discounted / coin-reduced)
                     Text(
-                        text = "₹${discountedPrice.toInt()}",
+                        text = "₹${finalPrice.toInt()}",
                         fontSize = 52.sp,
                         fontWeight = FontWeight.ExtraBold,
-                        color = primary
+                        color = if (isFreeWithCoins) GreenSuccess else primary
                     )
 
                     // Savings callout — only when discount is active
@@ -253,7 +267,52 @@ fun ExamPurchaseScreen(
                 }
             }
 
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // ── Coin Discount Toggle ──────────────────────────────────────────────
+            if (userCoins > 0 && maxUsableCoins > 0) {
+                Card(
+                    modifier = Modifier.padding(horizontal = 20.dp).fillMaxWidth(),
+                    shape = RoundedCornerShape(16.dp),
+                    elevation = CardDefaults.cardElevation(4.dp),
+                    colors = CardDefaults.cardColors(
+                        containerColor = if (useCoins) Color(0xFFFFF8E1) else surface
+                    ),
+                    border = if (useCoins) androidx.compose.foundation.BorderStroke(1.5.dp, Color(0xFFFFD700)) else null
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth().padding(16.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text("🪙", fontSize = 28.sp)
+                        Spacer(Modifier.width(12.dp))
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(
+                                "Use $maxUsableCoins Coins",
+                                fontWeight = FontWeight.Bold,
+                                color = Color(0xFF795548)
+                            )
+                            Text(
+                                if (useCoins) "Saving ₹${String.format("%.0f", coinDiscountAmount)}  →  Pay ₹${finalPrice.toInt()}"
+                                else "Save ₹${String.format("%.0f", coinDiscountAmount)} on this purchase",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = Color(0xFF8D6E63)
+                            )
+                        }
+                        Switch(
+                            checked = useCoins,
+                            onCheckedChange = { useCoins = it },
+                            colors = SwitchDefaults.colors(
+                                checkedThumbColor = Color(0xFFFFD700),
+                                checkedTrackColor = Color(0xFFFF8F00)
+                            )
+                        )
+                    }
+                }
+                Spacer(modifier = Modifier.height(8.dp))
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
 
             // ── Feature Cards ────────────────────────────────────────────────────
             Column(
@@ -335,26 +394,35 @@ fun ExamPurchaseScreen(
                     )
             ) {
                 Button(
-                    onClick = onBuyClick,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(58.dp),
+                    onClick = { onBuyClick(useCoins) },
+                    modifier = Modifier.fillMaxWidth().height(58.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = Color.Transparent,
-                        contentColor   = Color.White
+                        containerColor = if (isFreeWithCoins) Color.Transparent else Color.Transparent,
+                        contentColor = Color.White
                     ),
                     elevation = ButtonDefaults.buttonElevation(0.dp),
                     shape = RoundedCornerShape(16.dp)
                 ) {
-                    Icon(Icons.Default.Lock, contentDescription = null, modifier = Modifier.size(20.dp))
+                    Icon(
+                        if (isFreeWithCoins) Icons.Default.Star else Icons.Default.Lock,
+                        contentDescription = null, modifier = Modifier.size(20.dp)
+                    )
                     Spacer(modifier = Modifier.width(8.dp))
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Text(
-                            text = "Buy Now  ₹${discountedPrice.toInt()}",
+                            text = if (isFreeWithCoins) "🎉 Unlock Free with Coins!"
+                                   else if (useCoins) "Pay ₹${finalPrice.toInt()} + $maxUsableCoins Coins"
+                                   else "Buy Now  ₹${discountedPrice.toInt()}",
                             fontWeight = FontWeight.ExtraBold,
                             fontSize = 17.sp
                         )
-                        if (discountPercent > 0) {
+                        if (useCoins && !isFreeWithCoins) {
+                            Text(
+                                text = "${maxUsableCoins} coins save you ₹${String.format("%.0f", coinDiscountAmount)}",
+                                fontSize = 11.sp,
+                                color = Color.White.copy(alpha = 0.8f)
+                            )
+                        } else if (discountPercent > 0 && !useCoins) {
                             Text(
                                 text = "Was ₹${examPrice.toInt()} · Save ₹$savings",
                                 fontSize = 11.sp,

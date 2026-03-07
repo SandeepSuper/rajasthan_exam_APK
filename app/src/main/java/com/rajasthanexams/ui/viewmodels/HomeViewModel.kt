@@ -156,21 +156,24 @@ class HomeViewModel : ViewModel() {
         }
     }
 
-    fun initiatePurchase(context: android.content.Context, examId: String, price: Double) {
+    fun initiatePurchase(context: android.content.Context, examId: String, price: Double, useCoins: Boolean = false) {
         viewModelScope.launch {
-            // Check if user is logged in
             val sessionManager = com.rajasthanexams.data.local.SessionManager(context)
             if (sessionManager.getAuthToken() == null) {
-                 // Trigger login navigation ideally, or toast
-                 android.widget.Toast.makeText(context, "Please login to purchase", android.widget.Toast.LENGTH_SHORT).show()
-                 return@launch
+                android.widget.Toast.makeText(context, "Please login to purchase", android.widget.Toast.LENGTH_SHORT).show()
+                return@launch
             }
-            
-            // Create Order
-            val result = repository.createOrder(examId)
+
+            val result = repository.createOrder(examId, useCoins)
             result.onSuccess { orderResponse ->
-                // Start Razorpay
-                com.rajasthanexams.utils.PaymentManager.startPayment(context as android.app.Activity, orderResponse)
+                if (orderResponse.free == true) {
+                    // Paid entirely by coins — no Razorpay needed
+                    android.widget.Toast.makeText(context, "🎉 Exam unlocked with coins!", android.widget.Toast.LENGTH_LONG).show()
+                    fetchTests() // Refresh purchase status
+                    _purchaseSuccess.emit(Unit)
+                } else {
+                    com.rajasthanexams.utils.PaymentManager.startPayment(context as android.app.Activity, orderResponse)
+                }
             }.onFailure {
                 android.widget.Toast.makeText(context, "Failed to create order: ${it.message}", android.widget.Toast.LENGTH_LONG).show()
             }

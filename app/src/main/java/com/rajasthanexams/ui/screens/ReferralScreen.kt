@@ -2,36 +2,49 @@
 
 import android.content.Intent
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.EmojiEvents
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Share
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.rajasthanexams.ui.components.AvatarHelper
+import com.rajasthanexams.ui.components.CoinIcon
 import com.rajasthanexams.ui.components.HeritagePatternBackground
-import androidx.compose.material.icons.filled.ArrowBack
-import com.rajasthanexams.ui.theme.RoyalBlue
+import com.rajasthanexams.ui.viewmodels.ReferralUiState
+import com.rajasthanexams.ui.viewmodels.ReferralViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ReferralScreen(
-    onBackClick: () -> Unit
+    onBackClick: () -> Unit,
+    viewModel: ReferralViewModel = androidx.lifecycle.viewmodel.compose.viewModel(
+        factory = androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.getInstance(
+            LocalContext.current.applicationContext as android.app.Application
+        )
+    )
 ) {
     val context = LocalContext.current
+    val clipboard = LocalClipboardManager.current
+    val uiState by viewModel.uiState.collectAsState()
+    var copied by remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
@@ -48,97 +61,163 @@ fun ReferralScreen(
                 )
             )
         }
-    ) { paddingValues ->
-        HeritagePatternBackground(modifier = Modifier.padding(paddingValues)) {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(16.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                // 1. Hero Card
-                Card(
-                    shape = RoundedCornerShape(16.dp),
-                    elevation = CardDefaults.cardElevation(8.dp),
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .background(
-                                Brush.horizontalGradient(
-                                    colors = listOf(Color(0xFF6A11CB), Color(0xFF2575FC))
-                                )
-                            )
-                            .padding(24.dp)
-                    ) {
+    ) { padding ->
+        HeritagePatternBackground(modifier = Modifier.padding(padding)) {
+            when (val state = uiState) {
+                is ReferralUiState.Loading -> {
+                    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
+                    }
+                }
+                is ReferralUiState.Error -> {
+                    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                            Icon(
-                                Icons.Default.EmojiEvents,
-                                contentDescription = null,
-                                tint = Color.Yellow,
-                                modifier = Modifier.size(64.dp)
-                            )
-                            Spacer(modifier = Modifier.height(16.dp))
-                            Text(
-                                "Invite Friends, Get Free Tests!",
-                                style = MaterialTheme.typography.headlineSmall,
-                                color = Color.White,
-                                fontWeight = FontWeight.Bold,
-                                textAlign = TextAlign.Center
-                            )
-                            Spacer(modifier = Modifier.height(8.dp))
-                            Text(
-                                "For every friend who joins, you get 1 Premium Test Access completely FREE.",
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = Color.White.copy(alpha = 0.9f),
-                                textAlign = TextAlign.Center
-                            )
-                            Spacer(modifier = Modifier.height(24.dp))
-                            
-                            Button(
-                                onClick = {
-                                    val sendIntent: Intent = Intent().apply {
-                                        action = Intent.ACTION_SEND
-                                        putExtra(Intent.EXTRA_TEXT, "Join Rajasthan Exam Prep and ace your exams! ðŸš€\nUse my code: RAJ123 for a free mock test.\nDownload now: https://play.google.com/store/apps/details?id=com.rajasthanexams")
-                                        type = "text/plain"
-                                    }
-                                    val shareIntent = Intent.createChooser(sendIntent, "Share via")
-                                    context.startActivity(shareIntent)
-                                },
-                                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF25D366)), // WhatsApp Green-ish
-                                shape = RoundedCornerShape(50)
-                            ) {
-                                Icon(Icons.Default.Share, contentDescription = null, tint = Color.White)
-                                Spacer(modifier = Modifier.width(8.dp))
-                                Text("Share via WhatsApp", color = Color.White, fontWeight = FontWeight.Bold)
-                            }
+                            Text(state.message, color = MaterialTheme.colorScheme.error)
+                            Spacer(Modifier.height(12.dp))
+                            TextButton(onClick = { viewModel.loadReferralData() }) { Text("Retry") }
                         }
                     }
                 }
+                is ReferralUiState.Success -> {
+                    LazyColumn(
+                        modifier = Modifier.fillMaxSize().padding(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(16.dp)
+                    ) {
+                        // Hero card
+                        item {
+                            Card(
+                                shape = RoundedCornerShape(20.dp),
+                                elevation = CardDefaults.cardElevation(8.dp),
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                Box(
+                                    modifier = Modifier
+                                        .background(Brush.horizontalGradient(listOf(Color(0xFF6A11CB), Color(0xFF2575FC))))
+                                        .padding(24.dp)
+                                ) {
+                                    Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxWidth()) {
+                                        Icon(Icons.Default.EmojiEvents, contentDescription = null, tint = Color(0xFFFFD700), modifier = Modifier.size(64.dp))
+                                        Spacer(Modifier.height(12.dp))
+                                        Text("Invite Friends, Earn Coins!", style = MaterialTheme.typography.headlineSmall, color = Color.White, fontWeight = FontWeight.Bold, textAlign = TextAlign.Center)
+                                        Spacer(Modifier.height(8.dp))
+                                        Text(
+                                            "You earn 50 coins for every friend who joins using your code. They get 20 coins too!",
+                                            style = MaterialTheme.typography.bodyMedium,
+                                            color = Color.White.copy(alpha = 0.9f),
+                                            textAlign = TextAlign.Center
+                                        )
+                                        Spacer(Modifier.height(20.dp))
 
-                Spacer(modifier = Modifier.height(32.dp))
+                                        // Stats row
+                                        Row(
+                                            modifier = Modifier.fillMaxWidth(),
+                                            horizontalArrangement = Arrangement.SpaceEvenly
+                                        ) {
+                                            ReferralStat(label = "Friends Referred", value = "${state.referredCount}")
+                                            ReferralStat(label = "Coins Earned", value = "${state.coinsEarned}", showCoin = true)
+                                        }
 
-                // 2. Leaderboard Section
-                Text(
-                    "Top Referrers",
-                    style = MaterialTheme.typography.titleLarge,
-                    color = MaterialTheme.colorScheme.primary,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.align(Alignment.Start)
-                )
-                Spacer(modifier = Modifier.height(16.dp))
+                                        Spacer(Modifier.height(20.dp))
 
-                LazyColumn(
-                    verticalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
-                    itemsIndexed(listOf(
-                        "Amit Sharma" to 150,
-                        "Priya Singh" to 120,
-                        "Rahul Verma" to 95,
-                        "Suresh Kumar" to 80,
-                        "Anjali Gupta" to 65
-                    )) { index, (name, referrals) ->
-                        ReferralRankItem(index + 1, name, referrals)
+                                        // Share button
+                                        Button(
+                                            onClick = {
+                                                val intent = Intent().apply {
+                                                    action = Intent.ACTION_SEND
+                                                    putExtra(Intent.EXTRA_TEXT, state.shareMessage)
+                                                    type = "text/plain"
+                                                }
+                                                context.startActivity(Intent.createChooser(intent, "Share via"))
+                                            },
+                                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF25D366)),
+                                            shape = RoundedCornerShape(50),
+                                            modifier = Modifier.fillMaxWidth()
+                                        ) {
+                                            Icon(Icons.Default.Share, contentDescription = null, tint = Color.White)
+                                            Spacer(Modifier.width(8.dp))
+                                            Text("Share Invite Link", color = Color.White, fontWeight = FontWeight.Bold)
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                        // Referral code card
+                        item {
+                            Card(
+                                shape = RoundedCornerShape(16.dp),
+                                elevation = CardDefaults.cardElevation(4.dp),
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                Column(modifier = Modifier.padding(20.dp)) {
+                                    Text("Your Referral Code", style = MaterialTheme.typography.labelLarge, color = Color.Gray)
+                                    Spacer(Modifier.height(12.dp))
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .background(MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f), RoundedCornerShape(12.dp))
+                                            .border(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.4f), RoundedCornerShape(12.dp))
+                                            .padding(16.dp)
+                                    ) {
+                                        Text(
+                                            state.referCode,
+                                            style = MaterialTheme.typography.headlineMedium,
+                                            fontWeight = FontWeight.Bold,
+                                            color = MaterialTheme.colorScheme.primary,
+                                            letterSpacing = 4.sp,
+                                            modifier = Modifier.weight(1f)
+                                        )
+                                        Surface(
+                                            shape = CircleShape,
+                                            color = if (copied) Color(0xFF25D366) else MaterialTheme.colorScheme.primary,
+                                            modifier = Modifier.size(40.dp).clickable {
+                                                clipboard.setText(AnnotatedString(state.referCode))
+                                                copied = true
+                                            }
+                                        ) {
+                                            Box(contentAlignment = Alignment.Center) {
+                                                Icon(
+                                                    if (copied) Icons.Default.Check else Icons.Default.ContentCopy,
+                                                    contentDescription = "Copy",
+                                                    tint = Color.White,
+                                                    modifier = Modifier.size(20.dp)
+                                                )
+                                            }
+                                        }
+                                    }
+                                    Spacer(Modifier.height(8.dp))
+                                    Text(
+                                        "Share this code with friends. They enter it at signup.",
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = Color.Gray
+                                    )
+                                }
+                            }
+                        }
+
+                        // Top referrers heading
+                        item {
+                            Text(
+                                "Top Referrers 🏆",
+                                style = MaterialTheme.typography.titleLarge,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.primary
+                            )
+                        }
+
+                        if (state.topReferrers.isEmpty()) {
+                            item {
+                                Box(Modifier.fillMaxWidth().padding(24.dp), contentAlignment = Alignment.Center) {
+                                    Text("Be the first to refer friends!", color = Color.Gray, textAlign = TextAlign.Center)
+                                }
+                            }
+                        } else {
+                            itemsIndexed(state.topReferrers) { index, referrer ->
+                                ReferrerRow(rank = index + 1, name = referrer.name, referredCount = referrer.referredCount, avatarId = referrer.avatarId)
+                            }
+                        }
+                        item { Spacer(Modifier.height(16.dp)) }
                     }
                 }
             }
@@ -147,48 +226,67 @@ fun ReferralScreen(
 }
 
 @Composable
-fun ReferralRankItem(rank: Int, name: String, referrals: Int) {
+fun ReferralStat(label: String, value: String, showCoin: Boolean = false) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        if (showCoin) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(value, style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold, color = Color(0xFFFFD700))
+                Spacer(Modifier.width(4.dp))
+                CoinIcon(size = 20.dp)
+            }
+        } else {
+            Text(value, style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold, color = Color.White)
+        }
+        Text(label, style = MaterialTheme.typography.bodySmall, color = Color.White.copy(alpha = 0.8f))
+    }
+}
+
+@Composable
+fun ReferrerRow(rank: Int, name: String, referredCount: Int, avatarId: String?) {
     Card(
         shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         elevation = CardDefaults.cardElevation(2.dp),
         modifier = Modifier.fillMaxWidth()
     ) {
-        Row(
-            modifier = Modifier.padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
+        Row(modifier = Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
+            // Rank badge
             Box(
                 contentAlignment = Alignment.Center,
-                modifier = Modifier
-                    .size(32.dp)
-                    .background(
-                        when(rank) {
-                            1 -> Color(0xFFFFD700)
-                            2 -> Color(0xFFC0C0C0)
-                            3 -> Color(0xFFCD7F32)
-                            else -> Color.LightGray.copy(alpha=0.3f)
-                        }, CircleShape
-                    )
+                modifier = Modifier.size(32.dp).background(
+                    when (rank) { 1 -> Color(0xFFFFD700); 2 -> Color(0xFFC0C0C0); 3 -> Color(0xFFCD7F32); else -> Color.LightGray.copy(0.3f) },
+                    CircleShape
+                )
             ) {
-                Text(rank.toString(), fontWeight = FontWeight.Bold, color = if(rank<=3) Color.White else Color.Black)
+                Text(rank.toString(), fontWeight = FontWeight.Bold, color = if (rank <= 3) Color.White else Color.DarkGray, fontSize = 14.sp)
             }
-            
-            Spacer(modifier = Modifier.width(16.dp))
-            
-            Icon(Icons.Default.Person, contentDescription = null, tint = Color.Gray)
-            Spacer(modifier = Modifier.width(12.dp))
-            
-            Column(modifier = Modifier.weight(1f)) {
-                Text(name, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+
+            Spacer(Modifier.width(12.dp))
+
+            // Avatar
+            val avatarRes = AvatarHelper.getDrawableRes(avatarId)
+            if (avatarRes != null) {
+                androidx.compose.foundation.Image(
+                    painter = androidx.compose.ui.res.painterResource(id = avatarRes),
+                    contentDescription = null,
+                    modifier = Modifier.size(36.dp).clip(CircleShape),
+                    contentScale = androidx.compose.ui.layout.ContentScale.Crop
+                )
+            } else {
+                Surface(shape = CircleShape, color = MaterialTheme.colorScheme.primaryContainer, modifier = Modifier.size(36.dp)) {
+                    Box(contentAlignment = Alignment.Center) {
+                        Icon(Icons.Default.Person, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(20.dp))
+                    }
+                }
             }
-            
-            Text(
-                "$referrals Ref", 
-                style = MaterialTheme.typography.labelLarge, 
-                color = MaterialTheme.colorScheme.primary,
-                fontWeight = FontWeight.Bold
-            )
+
+            Spacer(Modifier.width(12.dp))
+
+            Text(name, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, modifier = Modifier.weight(1f))
+
+            Column(horizontalAlignment = Alignment.End) {
+                Text("${referredCount}", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
+                Text("referrals", style = MaterialTheme.typography.labelSmall, color = Color.Gray)
+            }
         }
     }
 }

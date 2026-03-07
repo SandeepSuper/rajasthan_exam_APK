@@ -53,6 +53,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.foundation.Image
+import androidx.compose.ui.res.painterResource
+import com.rajasthanexams.ui.components.AvatarHelper
 import com.rajasthanexams.ui.components.HeritagePatternBackground
 import com.rajasthanexams.ui.components.CoinIcon
 import com.rajasthanexams.ui.theme.RoyalBlue
@@ -133,15 +136,24 @@ fun ProfileScreen(
                             shadowElevation = 4.dp
                         ) {
                             Box(contentAlignment = Alignment.Center) {
-                                if (userProfilePic != null) {
-                                    coil.compose.AsyncImage(
+                                val avatarRes = AvatarHelper.getDrawableRes(userProfilePic)
+                                when {
+                                    // Predefined avatar
+                                    avatarRes != null -> Image(
+                                        painter = painterResource(id = avatarRes),
+                                        contentDescription = "Avatar",
+                                        modifier = Modifier.fillMaxSize().clip(CircleShape),
+                                        contentScale = androidx.compose.ui.layout.ContentScale.Crop
+                                    )
+                                    // Legacy: real image URL
+                                    userProfilePic != null -> coil.compose.AsyncImage(
                                         model = userProfilePic,
                                         contentDescription = "Profile Picture",
                                         modifier = Modifier.fillMaxSize().clip(CircleShape),
                                         contentScale = androidx.compose.ui.layout.ContentScale.Crop
                                     )
-                                } else {
-                                    Icon(
+                                    // Default icon
+                                    else -> Icon(
                                         Icons.Default.Person,
                                         contentDescription = null,
                                         tint = if (isDark) Color(0xFF2C3E50) else RoyalBlue,

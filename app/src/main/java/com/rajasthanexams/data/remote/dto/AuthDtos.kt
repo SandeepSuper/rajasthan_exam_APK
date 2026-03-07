@@ -25,16 +25,18 @@ data class AuthResponse(
     val userId: String? = null,
     val name: String? = null,
     val email: String? = null,
-    val profilePicture: String? = null, // Added
+    val profilePicture: String? = null,
     val isPremium: Boolean = false,
-    val coins: Int = 0 // Added
+    val coins: Int = 0,
+    val referCode: String? = null
 )
 
 data class UpdateProfileRequest(
     val userId: String,
     val name: String,
     val email: String,
-    val profilePicture: String? = null // Added
+    val profilePicture: String? = null,
+    val referredByCode: String? = null
 )
 
 data class ApiResponse(

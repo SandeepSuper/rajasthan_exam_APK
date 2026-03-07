@@ -151,6 +151,16 @@ dimen notification_subtext_size
 dimen notification_top_pad
 dimen notification_top_pad_large_text
 drawable abc_vector_test
+drawable avatar_1
+drawable avatar_10
+drawable avatar_2
+drawable avatar_3
+drawable avatar_4
+drawable avatar_5
+drawable avatar_6
+drawable avatar_7
+drawable avatar_8
+drawable avatar_9
 drawable common_full_open_on_phone
 drawable common_google_signin_btn_icon_dark
 drawable common_google_signin_btn_icon_dark_focused

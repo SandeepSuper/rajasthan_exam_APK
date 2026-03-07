@@ -47,16 +47,23 @@ class MainActivity : ComponentActivity(), PaymentResultWithDataListener {
         com.rajasthanexams.data.remote.RetrofitClient.init(this)
         com.rajasthanexams.data.OfflineManager.init(this)
         setContent {
-            var isDarkTheme by remember { mutableStateOf(false) } // Default to light
-            var isUiHindi by remember { mutableStateOf(false) } // UI Default to English
-            
+            val sessionManager = remember { com.rajasthanexams.data.local.SessionManager(this) }
+            var isDarkTheme by remember { mutableStateOf(sessionManager.isDarkMode()) }
+            var isUiHindi by remember { mutableStateOf(sessionManager.isUiHindi()) }
+
             RajasthanExamsTheme(darkTheme = isDarkTheme) {
                 AppNavigation(
                     isDarkTheme = isDarkTheme,
                     isUiHindi = isUiHindi,
-                    onToggleTheme = { isDarkTheme = !isDarkTheme },
-                    onToggleLanguage = { isUiHindi = !isUiHindi },
-                    activity = this@MainActivity 
+                    onToggleTheme = {
+                        isDarkTheme = !isDarkTheme
+                        sessionManager.setDarkMode(isDarkTheme)
+                    },
+                    onToggleLanguage = {
+                        isUiHindi = !isUiHindi
+                        sessionManager.setUiHindi(isUiHindi)
+                    },
+                    activity = this@MainActivity
                 )
             }
         }
@@ -97,8 +104,10 @@ fun AppNavigation(
     var quizUserAnswers by remember { mutableStateOf<Map<Int, Int>>(emptyMap()) }
     var quizTimePerQuestion by remember { mutableStateOf<Map<Int, Long>>(emptyMap()) }
     var quizCoinsEarned by remember { mutableStateOf(0) } // Added
-    var unreadNotificationCount by remember { mutableStateOf(2) }
-    
+    val context = androidx.compose.ui.platform.LocalContext.current
+    val sessionManagerNav = remember { com.rajasthanexams.data.local.SessionManager(context) }
+    var unreadNotificationCount by remember { mutableStateOf(sessionManagerNav.getUnreadNotificationCount()) }
+
     // ViewModels
     val loginViewModel: com.rajasthanexams.ui.viewmodels.LoginViewModel = androidx.lifecycle.viewmodel.compose.viewModel()
     val homeViewModel: com.rajasthanexams.ui.viewmodels.HomeViewModel = androidx.lifecycle.viewmodel.compose.viewModel()
@@ -128,7 +137,7 @@ fun AppNavigation(
     var purchaseDiscount by remember { mutableStateOf(0) }  // ← from backend discountPercent
     
     val showBottomBar = currentScreen in listOf(Screen.HOME, Screen.TESTS, Screen.RANKERS, Screen.COMMUNITY, Screen.PROFILE)
-    val context = androidx.compose.ui.platform.LocalContext.current
+
     
     // Listen for Purchase Success (Moved here to access previousScreen)
     androidx.compose.runtime.LaunchedEffect(Unit) {
@@ -397,6 +406,7 @@ fun AppNavigation(
                     },
                     onNotificationClick = {
                         unreadNotificationCount = 0
+                        sessionManagerNav.saveUnreadNotificationCount(0)
                         currentScreen = Screen.NOTIFICATIONS
                     },
                     onReferralClick = {
@@ -736,10 +746,12 @@ fun AppNavigation(
                 )
             }
             Screen.EXAM_PURCHASE -> {
+                val sessionManager = remember { com.rajasthanexams.data.local.SessionManager(context) }
                 com.rajasthanexams.ui.screens.ExamPurchaseScreen(
                     examTitle = purchaseTitle,
                     examPrice = purchasePrice,
                     discountPercent = if (purchaseDiscount > 0) purchaseDiscount else 0,
+                    userCoins = sessionManager.getCoins() ?: 0,
                     onBackClick = {
                         if (previousScreen != Screen.EXAM_PURCHASE) {
                             currentScreen = previousScreen
@@ -747,12 +759,12 @@ fun AppNavigation(
                             currentScreen = Screen.HOME
                         }
                     },
-                    onBuyClick = {
+                    onBuyClick = { useCoins ->
                         val finalPrice = if (purchaseDiscount > 0)
                             kotlin.math.round(purchasePrice * (1.0 - purchaseDiscount / 100.0)).toDouble()
                         else
                             purchasePrice
-                        homeViewModel.initiatePurchase(context, purchaseExamId, finalPrice)
+                        homeViewModel.initiatePurchase(context, purchaseExamId, finalPrice, useCoins)
                     }
                 )
             }

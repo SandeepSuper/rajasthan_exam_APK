@@ -29,6 +29,7 @@ import androidx.compose.ui.zIndex
 import com.rajasthanexams.data.local.SessionManager
 import com.rajasthanexams.ui.components.CoinIcon
 import com.rajasthanexams.ui.components.HeritagePatternBackground
+import com.rajasthanexams.ui.components.AvatarHelper
 import coil.compose.rememberAsyncImagePainter
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -424,38 +425,47 @@ fun RankerRow(rank: Int, ranker: Ranker) {
 
 @Composable
 fun OfflineAvatar(name: String, size: Dp, border: Boolean = false, borderColor: Color = Color.White, avatarUrl: String? = null) {
-    // Generate a consistent color based on the name hash
     val colorIndex = kotlin.math.abs(name.hashCode()) % 5
-    val avatarColor = when(colorIndex) {
-        0 -> Color(0xFFE74C3C) // Red
-        1 -> Color(0xFF3498DB) // Blue
-        2 -> Color(0xFF2ECC71) // Green
-        3 -> Color(0xFF9B59B6) // Purple
-        else -> Color(0xFFF1C40F) // Yellow
+    val avatarColor = when (colorIndex) {
+        0 -> Color(0xFFE74C3C)
+        1 -> Color(0xFF3498DB)
+        2 -> Color(0xFF2ECC71)
+        3 -> Color(0xFF9B59B6)
+        else -> Color(0xFFF1C40F)
     }
-    
+
+    val avatarRes = AvatarHelper.getDrawableRes(avatarUrl)
+
     Surface(
         shape = CircleShape,
-        color = avatarColor,
+        color = if (avatarRes != null) Color.White else avatarColor,
         modifier = Modifier.size(size),
         border = if (border) BorderStroke(2.dp, borderColor) else null
     ) {
         Box(contentAlignment = Alignment.Center) {
-             if (!avatarUrl.isNullOrEmpty()) {
-                 coil.compose.AsyncImage(
-                     model = avatarUrl,
-                     contentDescription = null,
-                     modifier = Modifier.fillMaxSize(),
-                     contentScale = androidx.compose.ui.layout.ContentScale.Crop
-                 )
-             } else {
-                 Icon(
-                     imageVector = Icons.Default.Person,
-                     contentDescription = null,
-                     tint = Color.White,
-                     modifier = Modifier.size(size * 0.6f)
-                 )
-             }
+            when {
+                // Predefined avatar drawable
+                avatarRes != null -> Image(
+                    painter = androidx.compose.ui.res.painterResource(id = avatarRes),
+                    contentDescription = null,
+                    modifier = Modifier.fillMaxSize().clip(CircleShape),
+                    contentScale = ContentScale.Crop
+                )
+                // Real image URL (legacy)
+                !avatarUrl.isNullOrEmpty() -> coil.compose.AsyncImage(
+                    model = avatarUrl,
+                    contentDescription = null,
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.Crop
+                )
+                // Default: initial letter or person icon
+                else -> Icon(
+                    imageVector = Icons.Default.Person,
+                    contentDescription = null,
+                    tint = Color.White,
+                    modifier = Modifier.size(size * 0.6f)
+                )
+            }
         }
     }
 }

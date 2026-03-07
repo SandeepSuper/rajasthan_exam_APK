@@ -81,12 +81,22 @@ data class LeaderboardEntry(
     val avatarUrl: String? = null
 )
 
+data class CreateOrderRequest(
+    val examId: String,
+    val useCoins: Boolean = false
+)
+
 data class CreateOrderResponse(
-    val orderId: String,
-    val amount: Int,
-    val key: String,
-    val examName: String,
-    val description: String
+    val orderId: String? = null,
+    val amount: Int? = null,
+    val key: String? = null,
+    val examName: String? = null,
+    val description: String? = null,
+    val free: Boolean? = false,       // true when coins cover 100% — skip Razorpay
+    val coinsUsed: Int? = 0,
+    val coinDiscount: Double? = 0.0,
+    val success: Boolean? = false,
+    val message: String? = null
 )
 
 data class VerifyPaymentRequest(

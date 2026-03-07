@@ -67,7 +67,7 @@ class LeaderboardViewModel(application: android.app.Application) : androidx.life
         try {
             val localCoins = sessionManager.getCoins()
             if (localCoins > 0) {
-                api.syncCoins(mapOf("coins" to localCoins))
+                api.syncCoins("Bearer $token", mapOf("coins" to localCoins))
             }
         } catch (e: Exception) {
             println("Coin sync failed: ${e.message}")

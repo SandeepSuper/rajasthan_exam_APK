@@ -88,13 +88,16 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
                         userId = authResponse.userId ?: "",
                         name = authResponse.name,
                         email = authResponse.email,
-                        profilePicture = authResponse.profilePicture, // Added
-                        coins = authResponse.coins // Added
+                        profilePicture = authResponse.profilePicture,
+                        coins = authResponse.coins
                     )
-                    
+                    // Save referral code locally
+                    if (!authResponse.referCode.isNullOrBlank()) {
+                        sessionManager.saveReferCode(authResponse.referCode)
+                    }
                     if (authResponse.isNewUser) {
                         _isNewUser.value = true
-                        _uiState.value = LoginUiState.LoggedIn // Or a specific state like NeedsProfile
+                        _uiState.value = LoginUiState.LoggedIn
                     } else {
                         _uiState.value = LoginUiState.LoggedIn
                     }
@@ -107,16 +110,18 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    fun updateProfile(name: String, email: String, profilePicture: String? = null, onResult: (Boolean, String?) -> Unit) {
+    fun updateProfile(name: String, email: String, profilePicture: String? = null, referredByCode: String? = null, onResult: (Boolean, String?) -> Unit) {
         viewModelScope.launch {
             try {
                 val userId = sessionManager.getUserId() ?: return@launch onResult(false, "User ID not found")
-                val response = api.updateProfile(com.rajasthanexams.data.remote.dto.UpdateProfileRequest(userId, name, email, profilePicture))
+                val response = api.updateProfile(
+                    com.rajasthanexams.data.remote.dto.UpdateProfileRequest(userId, name, email, profilePicture, referredByCode)
+                )
                 if (response.isSuccessful && response.body() != null) {
                     val apiResponse = response.body()!!
                     if (apiResponse.success) {
                         val currentCoins = sessionManager.getCoins()
-                        sessionManager.saveUser(userId, name, email, profilePicture, currentCoins) // Update local name and email and pic
+                        sessionManager.saveUser(userId, name, email, profilePicture, currentCoins)
                         onResult(true, null)
                     } else {
                         onResult(false, apiResponse.message)
