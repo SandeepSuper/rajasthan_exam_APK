@@ -30,6 +30,7 @@ import androidx.compose.material.icons.filled.Download
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
@@ -113,11 +114,12 @@ fun ExamDetailScreen(
                 } else {
                      tests.forEach { test ->
                           DetailTestCard(
-                              test = test, 
-                              onClick = { onStartPractice(test) },
-                              onDownload = { id, title, cat, neg, marks, qs, mins, callback -> 
-                                  viewModel.downloadTestContent(id, title, cat, neg, marks, qs, mins, callback) 
-                              }
+                               test = test, 
+                               onClick = { onStartPractice(test) },
+                               onDownload = { id, title, cat, neg, marks, qs, mins, callback ->
+                                   viewModel.downloadTestContent(id, title, cat, neg, marks, qs, mins, callback) 
+                               },
+                               onPurchase = { onStartPractice(it) } // reuse existing purchase navigation
                           ) 
                           Spacer(modifier = Modifier.height(16.dp))
                      }
@@ -131,7 +133,8 @@ fun ExamDetailScreen(
 fun DetailTestCard(
     test: Test, 
     onClick: () -> Unit,
-    onDownload: (String, String, String, Double, Double, Int, Int, (Boolean) -> Unit) -> Unit
+    onDownload: (String, String, String, Double, Double, Int, Int, (Boolean) -> Unit) -> Unit,
+    onPurchase: (Test) -> Unit = {}
 ) {
     Surface(
         shape = RoundedCornerShape(15.dp),
@@ -227,27 +230,38 @@ fun DetailTestCard(
                     } else {
                         // Hide download for Live Tests
                         if (!test.isLive) {
-                            IconButton(
-                                onClick = {
-                                    if (!isDownloaded) {
-                                        isDownloading = true
-                                        onDownload(test.id, test.title, test.category, test.negativeMarks, test.marksPerQuestion, test.questions, test.time) { success ->
-                                            isDownloading = false
-                                            if (success) {
-                                                isDownloaded = true
-                                                android.widget.Toast.makeText(context, "${test.title} Downloaded!", android.widget.Toast.LENGTH_SHORT).show()
-                                            } else {
-                                                android.widget.Toast.makeText(context, "Download failed", android.widget.Toast.LENGTH_SHORT).show()
+                            if (test.isPremium && !test.isPurchased) {
+                                // Premium & not purchased → show lock icon, redirect to purchase
+                                IconButton(onClick = { onPurchase(test) }) {
+                                    Icon(
+                                        imageVector = androidx.compose.material.icons.Icons.Default.Lock,
+                                        contentDescription = "Unlock to download",
+                                        tint = Color(0xFFFF6F00)
+                                    )
+                                }
+                            } else {
+                                IconButton(
+                                    onClick = {
+                                        if (!isDownloaded) {
+                                            isDownloading = true
+                                            onDownload(test.id, test.title, test.category, test.negativeMarks, test.marksPerQuestion, test.questions, test.time) { success ->
+                                                isDownloading = false
+                                                if (success) {
+                                                    isDownloaded = true
+                                                    android.widget.Toast.makeText(context, "${test.title} Downloaded!", android.widget.Toast.LENGTH_SHORT).show()
+                                                } else {
+                                                    android.widget.Toast.makeText(context, "Download failed", android.widget.Toast.LENGTH_SHORT).show()
+                                                }
                                             }
                                         }
                                     }
+                                ) {
+                                    Icon(
+                                        imageVector = if (isDownloaded) Icons.Default.CheckCircle else Icons.Default.Download,
+                                        contentDescription = "Download",
+                                        tint = if (isDownloaded) Color(0xFF27AE60) else Color.Gray
+                                    )
                                 }
-                            ) {
-                                Icon(
-                                    imageVector = if (isDownloaded) Icons.Default.CheckCircle else Icons.Default.Download,
-                                    contentDescription = "Download",
-                                    tint = if (isDownloaded) Color(0xFF27AE60) else Color.Gray
-                                )
                             }
                         }
                     }

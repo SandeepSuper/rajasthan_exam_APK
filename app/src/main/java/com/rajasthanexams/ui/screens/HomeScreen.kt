@@ -39,6 +39,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.Download
+import androidx.compose.material.icons.filled.Lock
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -557,7 +560,12 @@ fun CategoryItem(category: Category, onClick: () -> Unit) {
 }
 
 @Composable
-fun TestCard(test: Test, onClick: () -> Unit) {
+fun TestCard(
+    test: Test,
+    onClick: () -> Unit,
+    onDownload: ((Test, (Boolean) -> Unit) -> Unit)? = null,
+    onPurchase: ((Test) -> Unit)? = null
+) {
     Surface(
         shape = RoundedCornerShape(15.dp),
         shadowElevation = 2.dp,
@@ -605,19 +613,99 @@ fun TestCard(test: Test, onClick: () -> Unit) {
             
             Divider(modifier = Modifier.padding(vertical = 12.dp), color = MaterialTheme.colorScheme.outline.copy(alpha=0.5f))
             
-            Row(horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                Text("${test.attempts} attempted", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.tertiary)
-                val (buttonLabel, buttonColor) = when {
-                    test.isPremium && !test.isPurchased -> "Unlock Premium" to MaterialTheme.colorScheme.error
-                    test.isAttempted -> "View Result" to MaterialTheme.colorScheme.tertiary
-                    else -> "Start Now" to MaterialTheme.colorScheme.secondary
-                }
+            Row(
+                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
                 Text(
-                    buttonLabel,
-                    style = MaterialTheme.typography.labelLarge,
-                    color = buttonColor,
-                    fontWeight = FontWeight.Bold
+                    "${test.attempts} attempted",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.tertiary
                 )
+
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    // Download icon — only for non-live tests
+                    if (!test.isLive && (onDownload != null || onPurchase != null)) {
+                        val context = androidx.compose.ui.platform.LocalContext.current
+                        var isDownloaded by remember {
+                            mutableStateOf(com.rajasthanexams.data.OfflineManager.isTestDownloaded(test.id))
+                        }
+                        var isDownloading by remember { mutableStateOf(false) }
+
+                        if (isDownloading) {
+                            androidx.compose.material3.CircularProgressIndicator(
+                                modifier = Modifier.size(20.dp), strokeWidth = 2.dp
+                            )
+                        } else if (test.isPremium && !test.isPurchased) {
+                            // Premium & unpurchased → lock icon
+                            IconButton(
+                                onClick = { onPurchase?.invoke(test) },
+                                modifier = Modifier.size(32.dp)
+                            ) {
+                                Icon(
+                                    imageVector = androidx.compose.material.icons.Icons.Default.Lock,
+                                    contentDescription = "Unlock to download",
+                                    tint = Color(0xFFFF6F00),
+                                    modifier = Modifier.size(18.dp)
+                                )
+                            }
+                        } else {
+                            // Free / purchased → download icon
+                            IconButton(
+                                onClick = {
+                                    if (!isDownloaded) {
+                                        isDownloading = true
+                                        onDownload?.invoke(test) { success ->
+                                            isDownloading = false
+                                            if (success) {
+                                                isDownloaded = true
+                                                android.widget.Toast.makeText(
+                                                    context,
+                                                    "${test.title} Downloaded!",
+                                                    android.widget.Toast.LENGTH_SHORT
+                                                ).show()
+                                            } else {
+                                                android.widget.Toast.makeText(
+                                                    context, "Download failed",
+                                                    android.widget.Toast.LENGTH_SHORT
+                                                ).show()
+                                            }
+                                        }
+                                    }
+                                },
+                                modifier = Modifier.size(32.dp)
+                            ) {
+                                Icon(
+                                    imageVector = if (isDownloaded)
+                                        androidx.compose.material.icons.Icons.Default.CheckCircle
+                                    else
+                                        androidx.compose.material.icons.Icons.Default.Download,
+                                    contentDescription = "Download",
+                                    tint = if (isDownloaded) Color(0xFF27AE60) else Color.Gray,
+                                    modifier = Modifier.size(18.dp)
+                                )
+                            }
+                        }
+                        Spacer(modifier = Modifier.width(4.dp))
+                    }
+
+                    val savedProgress = androidx.compose.runtime.remember(test.id) {
+                        com.rajasthanexams.data.OfflineManager.getTestProgress(test.id)
+                    }
+                    val (buttonLabel, buttonColor) = when {
+                        test.isPremium && !test.isPurchased -> "Unlock Premium" to MaterialTheme.colorScheme.error
+                        savedProgress != null               -> "Resume"         to MaterialTheme.colorScheme.secondary
+                        test.isAttempted                   -> "View Result"    to MaterialTheme.colorScheme.primary
+                        else                               -> "Start Now"      to MaterialTheme.colorScheme.secondary
+                    }
+                    Text(
+                        buttonLabel,
+                        style = MaterialTheme.typography.labelLarge,
+                        color = buttonColor,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
             }
         }
     }

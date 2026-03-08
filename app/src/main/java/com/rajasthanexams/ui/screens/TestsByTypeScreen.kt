@@ -194,8 +194,13 @@ fun TestsByTypeScreen(
                                     } else {
                                         items(categoryTests) { test ->
                                             com.rajasthanexams.ui.screens.TestCard(
-                                                test = test, 
-                                                onClick = { onStartPractice(test) }
+                                                test = test,
+                                                onClick = { onStartPractice(test) },
+                                                onDownload = { t, callback ->
+                                                    viewModel.downloadTest(t)
+                                                    callback(true) // optimistic success UI
+                                                },
+                                                onPurchase = { t -> onStartPractice(t) }
                                             )
                                         }
                                     }

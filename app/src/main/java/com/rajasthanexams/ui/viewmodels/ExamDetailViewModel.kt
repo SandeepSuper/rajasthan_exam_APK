@@ -37,8 +37,13 @@ class ExamDetailViewModel(application: Application) : AndroidViewModel(applicati
             val testsResult = testsDeferred.await()
             
             var isExamPurchased = false
+            var examPrice = 0.0
+            var examDiscount = 0
             examsResult.onSuccess { exams ->
-                isExamPurchased = exams.find { it.id == examId }?.isPurchased == true
+                val exam = exams.find { it.id == examId }
+                isExamPurchased = exam?.isPurchased == true
+                examPrice = exam?.price ?: 0.0
+                examDiscount = exam?.discountPercent ?: 0
             }
             
             testsResult.onSuccess { apiTests ->
@@ -62,7 +67,9 @@ class ExamDetailViewModel(application: Application) : AndroidViewModel(applicati
                         isPremium = apiTest.isPremium,
                         isAttempted = apiTest.isAttempted,
                         examId = examId,
-                        isPurchased = isExamPurchased // Inherit from Exam
+                        isPurchased = isExamPurchased,   // Inherit from Exam
+                        price = examPrice,               // Inherit from Exam
+                        discountPercent = examDiscount   // Inherit from Exam
                     )
                 }
                 

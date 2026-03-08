@@ -48,6 +48,7 @@ data class Test(
     val totalMarks: Double? = null,
     val isPremium: Boolean = false, 
     val price: Double = 0.0,
+    val discountPercent: Int = 0,      // ← inherited from exam/category
     val isPurchased: Boolean = false,
     val isAttempted: Boolean = false,
     val isDownloaded: Boolean = false,

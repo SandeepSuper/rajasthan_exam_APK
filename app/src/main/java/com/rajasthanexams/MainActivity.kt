@@ -399,18 +399,10 @@ fun AppNavigation(
                         }
                     },
                     onCategoryClick = { category ->
-                         if (category.isPremium && !category.isPurchased) {
-                             purchaseExamId = category.id
-                             purchaseTitle = category.title
-                             purchasePrice = category.price
-                             purchaseDiscount = category.discountPercent   // ← read from API
-                             previousScreen = Screen.HOME
-                             currentScreen = Screen.EXAM_PURCHASE
-                         } else {
-                             selectedCategory = category.title 
-                             selectedExamId = category.id
-                             currentScreen = Screen.TEST_TYPES
-                         }
+                         selectedCategory = category.title
+                         selectedExamId = category.id
+                         previousScreen = Screen.HOME
+                         currentScreen = Screen.TEST_TYPES
                     },
                     onNotificationClick = {
                         unreadNotificationCount = 0
@@ -496,6 +488,7 @@ fun AppNavigation(
                              purchaseExamId = idToBuy
                              purchaseTitle = test.title
                              purchasePrice = test.price
+                             purchaseDiscount = test.discountPercent
                              previousScreen = Screen.TESTS_BY_TYPE
                              currentScreen = Screen.EXAM_PURCHASE
                         } else {
@@ -603,6 +596,7 @@ fun AppNavigation(
                              purchaseExamId = idToBuy
                              purchaseTitle = test.title
                              purchasePrice = test.price
+                             purchaseDiscount = test.discountPercent
                              previousScreen = Screen.DETAIL
                              currentScreen = Screen.EXAM_PURCHASE
                          } else {

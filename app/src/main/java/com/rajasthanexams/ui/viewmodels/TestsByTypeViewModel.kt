@@ -156,7 +156,8 @@ class TestsByTypeViewModel : ViewModel() {
                                         isDownloaded = com.rajasthanexams.data.OfflineManager.isTestDownloaded(t.id),
                                         examId = category.id,
                                         isPurchased = category.isPurchased, // Inherit from Exam
-                                        price = category.price // Inherit from Exam
+                                        price = category.price,             // Inherit from Exam
+                                        discountPercent = category.discountPercent // Inherit from Exam
                                      )
                                  }.sortedBy { it.isPremium }
                                  synchronized(cachedTests) {
