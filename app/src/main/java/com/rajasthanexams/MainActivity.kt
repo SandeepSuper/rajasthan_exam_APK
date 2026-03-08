@@ -135,6 +135,7 @@ fun AppNavigation(
     var purchaseTitle by remember { mutableStateOf("") }
     var purchasePrice by remember { mutableStateOf(0.0) }
     var purchaseDiscount by remember { mutableStateOf(0) }  // ← from backend discountPercent
+    var pendingCoinsToDeduct by remember { mutableStateOf(0) } // coins committed for current purchase
     
     val showBottomBar = currentScreen in listOf(Screen.HOME, Screen.TESTS, Screen.RANKERS, Screen.COMMUNITY, Screen.PROFILE)
 
@@ -143,6 +144,12 @@ fun AppNavigation(
     androidx.compose.runtime.LaunchedEffect(Unit) {
          homeViewModel.purchaseSuccess.collect {
               if (currentScreen == Screen.EXAM_PURCHASE) {
+                  // Deduct coins that were used in this purchase
+                  if (pendingCoinsToDeduct > 0) {
+                      val currentCoins = sessionManagerNav.getCoins()
+                      sessionManagerNav.updateCoins(maxOf(0, currentCoins - pendingCoinsToDeduct))
+                      pendingCoinsToDeduct = 0
+                  }
                   testsByTypeViewModel.refreshData()
                   if (previousScreen != Screen.EXAM_PURCHASE && previousScreen != Screen.SPLASH) {
                       currentScreen = previousScreen
@@ -768,7 +775,8 @@ fun AppNavigation(
                             currentScreen = Screen.HOME
                         }
                     },
-                    onBuyClick = { useCoins ->
+                    onBuyClick = { useCoins, coinsToUse ->
+                        pendingCoinsToDeduct = coinsToUse
                         val finalPrice = if (purchaseDiscount > 0)
                             kotlin.math.round(purchasePrice * (1.0 - purchaseDiscount / 100.0)).toDouble()
                         else

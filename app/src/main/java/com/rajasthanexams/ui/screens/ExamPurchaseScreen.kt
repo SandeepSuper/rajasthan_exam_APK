@@ -47,7 +47,7 @@ fun ExamPurchaseScreen(
     discountPercent: Int = 0,
     userCoins: Int = 0,
     onBackClick: () -> Unit,
-    onBuyClick: (useCoins: Boolean) -> Unit
+    onBuyClick: (useCoins: Boolean, coinsToUse: Int) -> Unit
 ) {
     val discountedPrice = if (discountPercent > 0)
         (examPrice * (1.0 - discountPercent / 100.0)).roundToInt().toDouble()
@@ -394,7 +394,7 @@ fun ExamPurchaseScreen(
                     )
             ) {
                 Button(
-                    onClick = { onBuyClick(useCoins) },
+                    onClick = { onBuyClick(useCoins, if (useCoins) maxUsableCoins else 0) },
                     modifier = Modifier.fillMaxWidth().height(58.dp),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = if (isFreeWithCoins) Color.Transparent else Color.Transparent,
