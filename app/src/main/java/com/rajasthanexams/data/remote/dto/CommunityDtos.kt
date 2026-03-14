@@ -8,6 +8,7 @@ data class CommunityPostResponse(
     val content: String,
     val subject: String,
     val category: String,
+    val examId: String?,   // null = general post, non-null = exam-specific
     val upvotes: Int,
     val commentCount: Int,
     val viewCount: Int,
@@ -22,7 +23,8 @@ data class CreatePostRequest(
     val userProfilePicture: String?,
     val content: String,
     val subject: String,
-    val category: String
+    val category: String,
+    val examId: String? = null   // null = general post, non-null = exam-specific
 )
 
 data class CommunityCommentResponse(

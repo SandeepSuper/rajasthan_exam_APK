@@ -29,6 +29,7 @@ import com.rajasthanexams.ui.screens.SplashScreen
 import com.rajasthanexams.ui.screens.UserInfoScreen
 import com.rajasthanexams.data.TestType
 import com.rajasthanexams.ui.theme.RajasthanExamsTheme
+import com.rajasthanexams.ui.viewmodels.HomeUiState
 
 import com.razorpay.PaymentResultWithDataListener
 import com.razorpay.PaymentData
@@ -549,12 +550,24 @@ fun AppNavigation(
                 )
             }
             Screen.COMMUNITY -> {
+                val homeState by homeViewModel.uiState.collectAsState()
+                val examCategories = (homeState as? HomeUiState.Success)?.categories ?: emptyList()
                 com.rajasthanexams.ui.screens.CommunityScreen(
                     modifier = modifier,
                     viewModel = communityViewModel,
+                    exams = examCategories,
                     onPostClick = { post ->
                         communityViewModel.selectPost(post)
                         currentScreen = Screen.POST_DETAIL
+                    },
+                    onPurchaseRequired = { examId, examTitle ->
+                        purchaseExamId = examId
+                        purchaseTitle = examTitle
+                        val exam = examCategories.find { it.id == examId }
+                        purchasePrice = exam?.price ?: 0.0
+                        purchaseDiscount = exam?.discountPercent ?: 0
+                        previousScreen = Screen.COMMUNITY
+                        currentScreen = Screen.EXAM_PURCHASE
                     }
                 )
             }

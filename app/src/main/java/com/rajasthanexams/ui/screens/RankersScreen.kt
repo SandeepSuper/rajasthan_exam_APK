@@ -66,13 +66,9 @@ fun RankersScreen(
                      }
                 }
                 is com.rajasthanexams.ui.viewmodels.LeaderboardUiState.Error -> {
-                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        Text(
-                            text = state.message,
-                            style = MaterialTheme.typography.bodyLarge,
-                            color = MaterialTheme.colorScheme.error
-                        )
-                    }
+                    com.rajasthanexams.ui.components.NetworkErrorComponent(
+                        onRetry = { viewModel.fetchLeaderboard(testId) }
+                    )
                 }
                 is com.rajasthanexams.ui.viewmodels.LeaderboardUiState.Success -> {
                     val rankers = state.rankers

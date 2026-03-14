@@ -103,19 +103,13 @@ fun MyTestsScreen(
 
             // ── Error ───────────────────────────────────────────────
             if (uiState is MyTestsUiState.Error) {
-                item {
-                    Column(
-                        modifier = Modifier.fillMaxWidth().padding(32.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Text(
-                            (uiState as MyTestsUiState.Error).message,
-                            color = MaterialTheme.colorScheme.error
-                        )
-                        Spacer(modifier = Modifier.height(12.dp))
-                        Button(onClick = { viewModel.load() }) { Text("Retry") }
-                    }
-                }
+                 item {
+                     Box(modifier = Modifier.fillMaxWidth().height(400.dp)) {
+                         com.rajasthanexams.ui.components.NetworkErrorComponent(
+                             onRetry = { viewModel.load() }
+                         )
+                     }
+                 }
             }
 
             // ── Empty State ─────────────────────────────────────────

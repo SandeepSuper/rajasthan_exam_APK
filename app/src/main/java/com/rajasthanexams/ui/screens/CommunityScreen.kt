@@ -17,8 +17,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.rajasthanexams.data.Category
 import com.rajasthanexams.ui.components.HeritagePatternBackground
-
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.rajasthanexams.ui.viewmodels.CommunityViewModel
 import com.rajasthanexams.ui.viewmodels.CommunityUiState
@@ -29,32 +29,84 @@ import com.rajasthanexams.data.remote.dto.CommunityPostResponse
 fun CommunityScreen(
     modifier: Modifier = Modifier,
     viewModel: CommunityViewModel = viewModel(),
+    exams: List<Category> = emptyList(),   // available/purchased exams for exam tabs
     onPostClick: (CommunityPostResponse) -> Unit,
-    onLikeClick: (String) -> Unit = { viewModel.toggleLike(it) } // Default implementation using viewModel
+    onLikeClick: (String) -> Unit = { viewModel.toggleLike(it) },
+    onPurchaseRequired: ((examId: String, examTitle: String) -> Unit)? = null
 ) {
     var selectedFilter by remember { mutableStateOf("All") }
-    val filters = listOf("All", "History", "Geography", "Art & Culture", "Polity")
-
+    val subjectFilters = listOf("All", "History", "Geography", "Art & Culture", "Polity")
+    val selectedExamId by viewModel.selectedExamId.collectAsState()
     val uiState by viewModel.uiState.collectAsState()
-
+    val context = androidx.compose.ui.platform.LocalContext.current  // capture here for lambdas
     var showCreatePostDialog by remember { mutableStateOf(false) }
+    // Purchase prompt state
+    var showPurchasePrompt by remember { mutableStateOf(false) }
+    var purchasePromptExamId by remember { mutableStateOf("") }
+    var purchasePromptTitle by remember { mutableStateOf("") }
+
+    // Purchase prompt dialog
+    if (showPurchasePrompt) {
+        AlertDialog(
+            onDismissRequest = { showPurchasePrompt = false },
+            title = {
+                Text("🔒 Purchase Required", fontWeight = FontWeight.Bold)
+            },
+            text = {
+                Text(
+                    "\"${purchasePromptTitle}\" ke doubts poochne ke liye pehle exam purchase karein.\n\nPurchase karne ke baad aap is exam mein unlimited doubts pooch sakte hain!",
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        showPurchasePrompt = false
+                        onPurchaseRequired?.invoke(purchasePromptExamId, purchasePromptTitle)
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
+                ) {
+                    Text("🛒 Purchase Karo")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showPurchasePrompt = false }) {
+                    Text("Cancel")
+                }
+            }
+        )
+    }
 
     if (showCreatePostDialog) {
         CreatePostDialog(
             onDismiss = { showCreatePostDialog = false },
             onSubmit = { content, subject, category ->
                 viewModel.createPost(content, subject, category) { success, message ->
-                     if (success) {
-                         showCreatePostDialog = false
-                     } else {
-                         // Show error (could add a snackbar state here)
-                     }
+                    if (success) {
+                        showCreatePostDialog = false
+                    } else if (message == "PURCHASE_REQUIRED") {
+                        // User hasn't purchased this exam — show prompt
+                        showCreatePostDialog = false
+                        purchasePromptExamId = selectedExamId ?: ""
+                        purchasePromptTitle = exams.find { it.id == selectedExamId }?.title ?: "Exam"
+                        showPurchasePrompt = true
+                    } else {
+                        // Rate limit, network error, etc. — close dialog + show toast
+                        showCreatePostDialog = false
+                        val displayMsg = message
+                            ?.removePrefix("RATE_LIMITED: ")
+                            ?.removePrefix("ERROR: ")
+                            ?: "Post nahi ho saka, dobara try karo"
+                        android.widget.Toast.makeText(
+                            context,
+                            displayMsg,
+                            android.widget.Toast.LENGTH_LONG
+                        ).show()
+                    }
                 }
             }
         )
     }
-
-
 
     Scaffold(
         modifier = modifier,
@@ -83,21 +135,64 @@ fun CommunityScreen(
                     modifier = Modifier.padding(16.dp)
                 )
 
-                // Filter Chips
+                // ── Exam Tabs (All + each purchased exam) ──────────────────────
+                if (exams.isNotEmpty()) {
+                    ScrollableTabRow(
+                        selectedTabIndex = if (selectedExamId == null) 0
+                            else (exams.indexOfFirst { it.id == selectedExamId } + 1).coerceAtLeast(0),
+                        edgePadding = 16.dp,
+                        containerColor = Color.Transparent,
+                        indicator = {},
+                        divider = {}
+                    ) {
+                        // "All" tab
+                        SuggestionChip(
+                            onClick = { viewModel.selectExam(null) },
+                            label = { Text("🌐 All") },
+                            colors = SuggestionChipDefaults.suggestionChipColors(
+                                containerColor = if (selectedExamId == null) MaterialTheme.colorScheme.primary
+                                    else MaterialTheme.colorScheme.surface,
+                                labelColor = if (selectedExamId == null) Color.White
+                                    else MaterialTheme.colorScheme.onSurface
+                            ),
+                            border = null,
+                            modifier = Modifier.padding(end = 8.dp)
+                        )
+                        // One tab per exam
+                        exams.forEach { exam ->
+                            SuggestionChip(
+                                onClick = { viewModel.selectExam(exam.id) },
+                                label = { Text(exam.title) },
+                                colors = SuggestionChipDefaults.suggestionChipColors(
+                                    containerColor = if (selectedExamId == exam.id) MaterialTheme.colorScheme.primary
+                                        else MaterialTheme.colorScheme.surface,
+                                    labelColor = if (selectedExamId == exam.id) Color.White
+                                        else MaterialTheme.colorScheme.onSurface
+                                ),
+                                border = null,
+                                modifier = Modifier.padding(end = 8.dp)
+                            )
+                        }
+                    }
+                }
+
+                // ── Subject filter chips ────────────────────────────────────────
                 ScrollableTabRow(
-                    selectedTabIndex = filters.indexOf(selectedFilter),
+                    selectedTabIndex = subjectFilters.indexOf(selectedFilter),
                     edgePadding = 16.dp,
                     containerColor = Color.Transparent,
                     indicator = {},
                     divider = {}
                 ) {
-                    filters.forEach { filter ->
+                    subjectFilters.forEach { filter ->
                         SuggestionChip(
                             onClick = { selectedFilter = filter },
                             label = { Text(filter) },
                             colors = SuggestionChipDefaults.suggestionChipColors(
-                                containerColor = if (selectedFilter == filter) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surface,
-                                labelColor = if (selectedFilter == filter) Color.White else MaterialTheme.colorScheme.onSurface
+                                containerColor = if (selectedFilter == filter) MaterialTheme.colorScheme.secondary
+                                    else MaterialTheme.colorScheme.surface,
+                                labelColor = if (selectedFilter == filter) Color.White
+                                    else MaterialTheme.colorScheme.onSurface
                             ),
                             border = null,
                             modifier = Modifier.padding(end = 8.dp)
@@ -115,19 +210,17 @@ fun CommunityScreen(
                         }
                     }
                     is CommunityUiState.Error -> {
-                        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                            Text(state.message, color = Color.Red)
-                        }
+                        com.rajasthanexams.ui.components.NetworkErrorComponent(
+                            onRetry = { viewModel.fetchPosts() }
+                        )
                     }
                     is CommunityUiState.Success -> {
                         LazyColumn(
                             contentPadding = PaddingValues(16.dp),
                             verticalArrangement = Arrangement.spacedBy(16.dp)
                         ) {
-                            items(state.posts) { post ->
-                                if (selectedFilter == "All" || post.subject == selectedFilter) {
-                                    DoubtPostCard(post, onPostClick, onLikeClick)
-                                }
+                            items(state.posts.filter { selectedFilter == "All" || it.subject == selectedFilter }) { post ->
+                                DoubtPostCard(post, onPostClick, onLikeClick)
                             }
                         }
                     }

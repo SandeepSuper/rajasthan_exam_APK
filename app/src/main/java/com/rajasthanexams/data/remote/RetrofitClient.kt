@@ -41,8 +41,9 @@ object RetrofitClient {
         
         val response = chain.proceed(request)
         
-        if (response.code == 401 || response.code == 403) {
-            // Token expired or invalid
+        // 401 = token expired/invalid → force logout
+        // 403 = Forbidden (e.g. exam not purchased, user blocked) → let caller handle it
+        if (response.code == 401) {
             sessionManager?.clearSession()
             _logoutEvent.tryEmit(Unit)
         }

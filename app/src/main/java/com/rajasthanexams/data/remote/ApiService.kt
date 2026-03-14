@@ -120,7 +120,10 @@ interface ApiService {
 
     // Community APIs
     @GET("/api/community/posts")
-    suspend fun getCommunityPosts(@Query("userId") userId: String?): Response<List<CommunityPostResponse>>
+    suspend fun getCommunityPosts(
+        @Query("userId") userId: String?,
+        @Query("examId") examId: String? = null   // null = all posts
+    ): Response<List<CommunityPostResponse>>
 
     @POST("/api/community/posts")
     suspend fun createPost(@Body request: CreatePostRequest): Response<CommunityPostResponse>

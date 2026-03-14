@@ -490,6 +490,14 @@ fun HomeScreen(
                          CircularProgressIndicator()
                      }
                  }
+            } else if (uiState is com.rajasthanexams.ui.viewmodels.HomeUiState.Error) {
+                 item {
+                     Box(modifier = Modifier.fillMaxWidth().height(400.dp)) {
+                         com.rajasthanexams.ui.components.NetworkErrorComponent(
+                             onRetry = { viewModel.fetchTests() }
+                         )
+                     }
+                 }
             } else {
                  items(filteredTests) { test ->
                      Box(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {

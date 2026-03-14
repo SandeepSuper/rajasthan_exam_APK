@@ -28,28 +28,37 @@ class CommunityViewModel(application: Application) : AndroidViewModel(applicatio
     private val _createPostState = MutableStateFlow<Boolean?>(null) // null=idle, true=success, false=fail
     val createPostState: StateFlow<Boolean?> = _createPostState
 
+    // Currently selected exam filter (null = show all posts)
+    private val _selectedExamId = MutableStateFlow<String?>(null)
+    val selectedExamId: StateFlow<String?> = _selectedExamId
+
     init {
         fetchPosts()
     }
 
-    fun fetchPosts() {
+    fun selectExam(examId: String?) {
+        _selectedExamId.value = examId
+        fetchPosts(examId)
+    }
+
+    fun fetchPosts(examId: String? = _selectedExamId.value) {
         viewModelScope.launch {
             _uiState.value = CommunityUiState.Loading
             val userId = sessionManager.getUserId()
             try {
-                val response = api.getCommunityPosts(userId)
+                val response = api.getCommunityPosts(userId, examId)
                 if (response.isSuccessful && response.body() != null) {
                     _uiState.value = CommunityUiState.Success(response.body()!!)
                 } else {
                     _uiState.value = CommunityUiState.Error("Failed to fetch posts: ${response.message()}")
                 }
             } catch (e: Exception) {
-                _uiState.value = CommunityUiState.Error("Error: ${e.message}")
+                _uiState.value = CommunityUiState.Error(friendlyNetworkError(e))
             }
         }
     }
 
-    fun createPost(content: String, subject: String, category: String, onResult: (Boolean, String?) -> Unit) {
+    fun createPost(content: String, subject: String, category: String, examId: String? = _selectedExamId.value, onResult: (Boolean, String?) -> Unit) {
         viewModelScope.launch {
             val userId = sessionManager.getUserId()
             val userName = sessionManager.getUserName() ?: "Unknown User"
@@ -67,17 +76,37 @@ class CommunityViewModel(application: Application) : AndroidViewModel(applicatio
                     userProfilePicture = userProfilePic,
                     content = content,
                     subject = subject,
-                    category = category
+                    category = category,
+                    examId = examId
                 )
                 val response = api.createPost(request)
                 if (response.isSuccessful) {
-                    fetchPosts() // Refresh list
+                    fetchPosts()
                     onResult(true, null)
                 } else {
-                    onResult(false, "Failed: ${response.message()}")
+                    // Read actual backend error message from errorBody
+                    val backendMsg = try {
+                        val body = response.errorBody()?.string() ?: ""
+                        // Spring's ResponseStatusException wraps message in JSON: {"message":"..."}
+                        // Try to extract it, fallback to raw body
+                        if (body.contains("\"message\"")) {
+                            org.json.JSONObject(body).optString("message", body)
+                        } else {
+                            body.ifBlank { response.message() }
+                        }
+                    } catch (e: Exception) {
+                        response.message()
+                    }
+
+                    val errorMsg = when (response.code()) {
+                        403  -> "PURCHASE_REQUIRED"
+                        429  -> "RATE_LIMITED: $backendMsg"
+                        else -> "ERROR: $backendMsg"
+                    }
+                    onResult(false, errorMsg)
                 }
             } catch (e: Exception) {
-                onResult(false, "Error: ${e.message}")
+                onResult(false, friendlyNetworkError(e))
             }
         }
     }
@@ -154,39 +183,43 @@ class CommunityViewModel(application: Application) : AndroidViewModel(applicatio
             try {
                 val response = api.toggleLike(postId, userId)
                 if (response.isSuccessful) {
-                    // Update local state to reflect change immediately for better UX
                     val currentPosts = (_uiState.value as? CommunityUiState.Success)?.posts ?: return@launch
                     val updatedPosts = currentPosts.map { post ->
                         if (post.id == postId) {
                             val isLiked = response.body() ?: false
-                            // If liked (true), increment upvotes, else decrement
-                            // But backend returns isLiked state.
-                            // We need to adjust count based on previous state or just response?
-                            // Response is boolean isLiked.
-                            // If isLiked is true, count = count + 1 (if it was false)
-                            // Ideally backend returns new count, but we can approximate
                             val oldIsLiked = post.isLiked
                             val newIsLiked = isLiked
                             var newCount = post.upvotes
                             if (!oldIsLiked && newIsLiked) newCount++
                             if (oldIsLiked && !newIsLiked) newCount = (newCount - 1).coerceAtLeast(0)
-                            
                             post.copy(isLiked = newIsLiked, upvotes = newCount)
                         } else {
                             post
                         }
                     }
                     _uiState.value = CommunityUiState.Success(updatedPosts)
-                    
-                    // Also update selected post if it matches
                     if (_selectedPost.value?.id == postId) {
                        _selectedPost.value = updatedPosts.find { it.id == postId }
                     }
                 }
             } catch (e: Exception) {
-                // Handle error
+                // Ignore
             }
         }
+    }
+
+    private fun friendlyNetworkError(e: Exception): String {
+        val msg = e.message ?: e.localizedMessage ?: ""
+        if (e is java.net.UnknownHostException || msg.contains("UnknownHost", ignoreCase = true) || msg.contains("Unable to resolve host", ignoreCase = true)) {
+            return "Internet connection check karein. Server se connect nahi ho pa raha."
+        }
+        if (e is java.net.SocketTimeoutException || msg.contains("timeout", ignoreCase = true)) {
+            return "Server response time out ho gaya. Thodi der baad try karein."
+        }
+        if (e is java.net.ConnectException || msg.contains("failed to connect", ignoreCase = true)) {
+            return "Internet connection check karein. Server available nahi hai."
+        }
+        return "Network issue: ${e.localizedMessage ?: "Unknown error"}"
     }
 }
 
