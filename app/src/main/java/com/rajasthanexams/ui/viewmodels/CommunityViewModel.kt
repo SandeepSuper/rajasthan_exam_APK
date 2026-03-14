@@ -84,12 +84,11 @@ class CommunityViewModel(application: Application) : AndroidViewModel(applicatio
                     fetchPosts()
                     onResult(true, null)
                 } else {
-                    // Read actual backend error message from errorBody
+                    // Inside the typical generic Spring Boot error JSON, there usually exists:
+                    // {"timestamp":"...","status":429,"error":"Too Many Requests","message":"You have exceeded your daily limit.","path":"/api/community/posts"}
                     val backendMsg = try {
                         val body = response.errorBody()?.string() ?: ""
-                        // Spring's ResponseStatusException wraps message in JSON: {"message":"..."}
-                        // Try to extract it, fallback to raw body
-                        if (body.contains("\"message\"")) {
+                        if (body.startsWith("{") && body.contains("\"message\"")) {
                             org.json.JSONObject(body).optString("message", body)
                         } else {
                             body.ifBlank { response.message() }
@@ -99,9 +98,9 @@ class CommunityViewModel(application: Application) : AndroidViewModel(applicatio
                     }
 
                     val errorMsg = when (response.code()) {
-                        403  -> "PURCHASE_REQUIRED"
-                        429  -> "RATE_LIMITED: $backendMsg"
-                        else -> "ERROR: $backendMsg"
+                        403  -> "Purchase Required to Ask Doubt"
+                        429  -> backendMsg // The backend already sends a friendly rate limit message
+                        else -> "Failed: $backendMsg"
                     }
                     onResult(false, errorMsg)
                 }
