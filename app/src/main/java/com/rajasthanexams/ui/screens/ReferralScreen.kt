@@ -1,4 +1,4 @@
-﻿package com.rajasthanexams.ui.screens
+package com.rajasthanexams.ui.screens
 
 import android.content.Intent
 import androidx.compose.foundation.background
@@ -217,7 +217,8 @@ fun ReferralScreen(
                                 ReferredUserRow(
                                     name = user.name,
                                     joinedAt = user.joinedAt,
-                                    avatarId = user.avatarId
+                                    avatarId = user.avatarId,
+                                    coinsEarned = user.coinsEarned
                                 )
                             }
                         }
@@ -246,7 +247,7 @@ fun ReferralStat(label: String, value: String, showCoin: Boolean = false) {
 }
 
 @Composable
-fun ReferredUserRow(name: String, joinedAt: String, avatarId: String?) {
+fun ReferredUserRow(name: String, joinedAt: String, avatarId: String?, coinsEarned: Int) {
     Card(
         shape = RoundedCornerShape(12.dp),
         elevation = CardDefaults.cardElevation(2.dp),
@@ -281,6 +282,12 @@ fun ReferredUserRow(name: String, joinedAt: String, avatarId: String?) {
                     Spacer(Modifier.width(4.dp))
                     Text("Joined: $joinedAt", style = MaterialTheme.typography.labelSmall, color = Color.Gray)
                 }
+            }
+
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text("+$coinsEarned", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, color = Color(0xFF4CAF50))
+                Spacer(Modifier.width(4.dp))
+                CoinIcon(size = 18.dp)
             }
         }
     }

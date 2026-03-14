@@ -24,7 +24,8 @@ data class TopReferrerResponse(
 data class ReferredUserResponse(
     val name: String,
     val joinedAt: String,
-    val avatarId: String?
+    val avatarId: String?,
+    val coinsEarned: Int
 )
 
 data class AppConfigResponse(
