@@ -1,4 +1,4 @@
-﻿package com.rajasthanexams.ui.screens
+package com.rajasthanexams.ui.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -22,6 +22,12 @@ import com.rajasthanexams.ui.viewmodels.NotificationsUiState
 import com.rajasthanexams.ui.viewmodels.NotificationsViewModel
 import java.text.SimpleDateFormat
 import java.util.*
+import androidx.compose.foundation.text.ClickableText
+import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.withStyle
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -218,10 +224,9 @@ fun NotificationItem(notification: NotificationResponse) {
 
                 Spacer(modifier = Modifier.height(4.dp))
 
-                Text(
-                    text = notification.message,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+                ClickableMessageText(
+                    message = notification.message,
+                    modifier = Modifier.fillMaxWidth()
                 )
             }
         }
@@ -249,3 +254,51 @@ fun getNotificationColor(type: String): Color {
         else -> Color(0xFF3F51B5)      // Indigo
     }
 }
+
+@Composable
+fun ClickableMessageText(message: String, modifier: Modifier = Modifier) {
+    val uriHandler = LocalUriHandler.current
+    // Use Android's built-in web URL pattern
+    val matcher = android.util.Patterns.WEB_URL.matcher(message)
+    
+    val annotatedString = buildAnnotatedString {
+        var lastIndex = 0
+        while (matcher.find()) {
+            val start = matcher.start()
+            val end = matcher.end()
+            val url = matcher.group()
+            
+            // Append plain text before the URL
+            append(message.substring(lastIndex, start))
+            
+            // Add URL annotation and styling
+            pushStringAnnotation(tag = "URL", annotation = url)
+            withStyle(style = SpanStyle(
+                color = MaterialTheme.colorScheme.primary,
+                fontWeight = FontWeight.Bold,
+                textDecoration = TextDecoration.Underline
+            )) {
+                append(url)
+            }
+            pop()
+            
+            lastIndex = end
+        }
+        // Append any remaining plain text
+        append(message.substring(lastIndex))
+    }
+    
+    val textColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+    ClickableText(
+        text = annotatedString,
+        modifier = modifier,
+        style = MaterialTheme.typography.bodyMedium.copy(color = textColor),
+        onClick = { offset ->
+            annotatedString.getStringAnnotations(tag = "URL", start = offset, end = offset)
+                .firstOrNull()?.let { annotation ->
+                    uriHandler.openUri(annotation.item)
+                }
+        }
+    )
+}
+
