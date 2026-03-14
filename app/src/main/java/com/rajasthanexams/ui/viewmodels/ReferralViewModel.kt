@@ -18,7 +18,9 @@ sealed class ReferralUiState {
         val coinsEarned: Int,
         val myReferrals: List<ReferredUserResponse>,
         val playStoreUrl: String,
-        val shareMessage: String
+        val shareMessage: String,
+        val referrerCoinReward: Int,
+        val refereeCoinReward: Int
     ) : ReferralUiState()
     data class Error(val message: String) : ReferralUiState()
 }
@@ -48,6 +50,8 @@ class ReferralViewModel(app: Application) : AndroidViewModel(app) {
             var myReferrals = emptyList<ReferredUserResponse>()
             var playStoreUrl = defaultPlayStoreUrl
             var shareMessage = ""
+            var referrerCoinReward = 50
+            var refereeCoinReward = 20
 
             try {
                 val token = "Bearer ${sessionManager.getAuthToken()}"
@@ -73,6 +77,8 @@ class ReferralViewModel(app: Application) : AndroidViewModel(app) {
                 val configRes = api.getAppConfig()
                 if (configRes.isSuccessful && configRes.body() != null) {
                     playStoreUrl = configRes.body()!!.playStoreUrl
+                    referrerCoinReward = configRes.body()!!.referrerCoinReward
+                    refereeCoinReward = configRes.body()!!.refereeCoinReward
                     val template = configRes.body()!!.shareMessage
                     shareMessage = template
                         .replace("{CODE}", referCode ?: "")
@@ -93,7 +99,9 @@ class ReferralViewModel(app: Application) : AndroidViewModel(app) {
                     coinsEarned = coinsEarned,
                     myReferrals = myReferrals,
                     playStoreUrl = playStoreUrl,
-                    shareMessage = shareMessage
+                    shareMessage = shareMessage,
+                    referrerCoinReward = referrerCoinReward,
+                    refereeCoinReward = refereeCoinReward
                 )
             } else {
                 // No code at all — backend not deployed + no cache

@@ -101,7 +101,7 @@ fun ReferralScreen(
                                         Text("Invite Friends, Earn Coins!", style = MaterialTheme.typography.headlineSmall, color = Color.White, fontWeight = FontWeight.Bold, textAlign = TextAlign.Center)
                                         Spacer(Modifier.height(8.dp))
                                         Text(
-                                            "You earn 50 coins for every friend who joins using your code. They get 20 coins too!",
+                                            "You earn ${state.referrerCoinReward} coins for every friend who joins using your code. They get ${state.refereeCoinReward} coins too!",
                                             style = MaterialTheme.typography.bodyMedium,
                                             color = Color.White.copy(alpha = 0.9f),
                                             textAlign = TextAlign.Center
