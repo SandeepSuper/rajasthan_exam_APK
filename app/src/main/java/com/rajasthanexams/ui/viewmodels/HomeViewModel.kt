@@ -38,6 +38,21 @@ class HomeViewModel : ViewModel() {
     fun fetchTests(examId: String? = null) {
         viewModelScope.launch {
             _uiState.value = HomeUiState.Loading
+
+            // Sync user profile coins silently in the background
+            try {
+                val context = com.rajasthanexams.MainApplication.instance
+                val sessionManager = com.rajasthanexams.data.local.SessionManager(context)
+                val token = sessionManager.getAuthToken()
+                if (token != null) {
+                    val profileRes = com.rajasthanexams.data.remote.RetrofitClient.api.getProfile("Bearer $token")
+                    if (profileRes.isSuccessful && profileRes.body() != null) {
+                        sessionManager.updateCoins(profileRes.body()!!.coins)
+                    }
+                }
+            } catch (e: Exception) {
+                android.util.Log.e("HomeViewModel", "Profile sync failed", e)
+            }
             
             // Update currentExamId if provided, otherwise fallback to existing or default
             if (examId != null) {

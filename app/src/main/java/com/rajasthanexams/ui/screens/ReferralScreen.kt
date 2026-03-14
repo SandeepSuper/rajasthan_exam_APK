@@ -196,25 +196,29 @@ fun ReferralScreen(
                             }
                         }
 
-                        // Top referrers heading
+                        // My Referrals heading
                         item {
                             Text(
-                                "Top Referrers 🏆",
+                                "My Referrals 👥",
                                 style = MaterialTheme.typography.titleLarge,
                                 fontWeight = FontWeight.Bold,
                                 color = MaterialTheme.colorScheme.primary
                             )
                         }
 
-                        if (state.topReferrers.isEmpty()) {
+                        if (state.myReferrals.isEmpty()) {
                             item {
                                 Box(Modifier.fillMaxWidth().padding(24.dp), contentAlignment = Alignment.Center) {
-                                    Text("Be the first to refer friends!", color = Color.Gray, textAlign = TextAlign.Center)
+                                    Text("No referrals yet! Share your code with friends.", color = Color.Gray, textAlign = TextAlign.Center)
                                 }
                             }
                         } else {
-                            itemsIndexed(state.topReferrers) { index, referrer ->
-                                ReferrerRow(rank = index + 1, name = referrer.name, referredCount = referrer.referredCount, avatarId = referrer.avatarId)
+                            itemsIndexed(state.myReferrals) { _, user ->
+                                ReferredUserRow(
+                                    name = user.name,
+                                    joinedAt = user.joinedAt,
+                                    avatarId = user.avatarId
+                                )
                             }
                         }
                         item { Spacer(Modifier.height(16.dp)) }
@@ -242,25 +246,13 @@ fun ReferralStat(label: String, value: String, showCoin: Boolean = false) {
 }
 
 @Composable
-fun ReferrerRow(rank: Int, name: String, referredCount: Int, avatarId: String?) {
+fun ReferredUserRow(name: String, joinedAt: String, avatarId: String?) {
     Card(
         shape = RoundedCornerShape(12.dp),
         elevation = CardDefaults.cardElevation(2.dp),
         modifier = Modifier.fillMaxWidth()
     ) {
         Row(modifier = Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
-            // Rank badge
-            Box(
-                contentAlignment = Alignment.Center,
-                modifier = Modifier.size(32.dp).background(
-                    when (rank) { 1 -> Color(0xFFFFD700); 2 -> Color(0xFFC0C0C0); 3 -> Color(0xFFCD7F32); else -> Color.LightGray.copy(0.3f) },
-                    CircleShape
-                )
-            ) {
-                Text(rank.toString(), fontWeight = FontWeight.Bold, color = if (rank <= 3) Color.White else Color.DarkGray, fontSize = 14.sp)
-            }
-
-            Spacer(Modifier.width(12.dp))
 
             // Avatar
             val avatarRes = AvatarHelper.getDrawableRes(avatarId)
@@ -268,24 +260,27 @@ fun ReferrerRow(rank: Int, name: String, referredCount: Int, avatarId: String?) 
                 androidx.compose.foundation.Image(
                     painter = androidx.compose.ui.res.painterResource(id = avatarRes),
                     contentDescription = null,
-                    modifier = Modifier.size(36.dp).clip(CircleShape),
+                    modifier = Modifier.size(40.dp).clip(CircleShape),
                     contentScale = androidx.compose.ui.layout.ContentScale.Crop
                 )
             } else {
-                Surface(shape = CircleShape, color = MaterialTheme.colorScheme.primaryContainer, modifier = Modifier.size(36.dp)) {
+                Surface(shape = CircleShape, color = MaterialTheme.colorScheme.primaryContainer, modifier = Modifier.size(40.dp)) {
                     Box(contentAlignment = Alignment.Center) {
-                        Icon(Icons.Default.Person, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(20.dp))
+                        Icon(Icons.Default.Person, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(24.dp))
                     }
                 }
             }
 
-            Spacer(Modifier.width(12.dp))
+            Spacer(Modifier.width(16.dp))
 
-            Text(name, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, modifier = Modifier.weight(1f))
-
-            Column(horizontalAlignment = Alignment.End) {
-                Text("${referredCount}", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
-                Text("referrals", style = MaterialTheme.typography.labelSmall, color = Color.Gray)
+            Column(modifier = Modifier.weight(1f)) {
+                Text(name, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+                Spacer(Modifier.height(4.dp))
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(Icons.Default.CalendarToday, contentDescription = null, tint = Color.Gray, modifier = Modifier.size(12.dp))
+                    Spacer(Modifier.width(4.dp))
+                    Text("Joined: $joinedAt", style = MaterialTheme.typography.labelSmall, color = Color.Gray)
+                }
             }
         }
     }

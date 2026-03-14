@@ -21,6 +21,12 @@ data class TopReferrerResponse(
     val avatarId: String?
 )
 
+data class ReferredUserResponse(
+    val name: String,
+    val joinedAt: String,
+    val avatarId: String?
+)
+
 data class AppConfigResponse(
     val playStoreUrl: String,
     val referrerCoinReward: Int = 50,
@@ -155,7 +161,18 @@ interface ApiService {
     @GET("/api/users/top-referrers")
     suspend fun getTopReferrers(): Response<List<TopReferrerResponse>>
 
+    @GET("/api/users/my-referrals")
+    suspend fun getMyReferrals(
+        @Header("Authorization") token: String
+    ): Response<List<ReferredUserResponse>>
+
     // App Config (Play Store URL, coin rewards, etc.)
     @GET("/api/config")
     suspend fun getAppConfig(): Response<AppConfigResponse>
+
+    // Profile Sync
+    @GET("/api/users/profile")
+    suspend fun getProfile(
+        @Header("Authorization") token: String
+    ): Response<com.rajasthanexams.data.remote.dto.UserProfileResponse>
 }

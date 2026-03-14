@@ -5,7 +5,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.rajasthanexams.data.local.SessionManager
 import com.rajasthanexams.data.remote.RetrofitClient
-import com.rajasthanexams.data.remote.TopReferrerResponse
+import com.rajasthanexams.data.remote.ReferredUserResponse
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -16,7 +16,7 @@ sealed class ReferralUiState {
         val referCode: String,
         val referredCount: Int,
         val coinsEarned: Int,
-        val topReferrers: List<TopReferrerResponse>,
+        val myReferrals: List<ReferredUserResponse>,
         val playStoreUrl: String,
         val shareMessage: String
     ) : ReferralUiState()
@@ -45,7 +45,7 @@ class ReferralViewModel(app: Application) : AndroidViewModel(app) {
             var referCode = sessionManager.getReferCode()
             var referredCount = 0
             var coinsEarned = 0
-            var topReferrers = emptyList<TopReferrerResponse>()
+            var myReferrals = emptyList<ReferredUserResponse>()
             var playStoreUrl = defaultPlayStoreUrl
             var shareMessage = ""
 
@@ -62,9 +62,10 @@ class ReferralViewModel(app: Application) : AndroidViewModel(app) {
             } catch (_: Exception) { /* Backend not deployed yet or offline — use cached */ }
 
             try {
-                val topRes = api.getTopReferrers()
-                if (topRes.isSuccessful && topRes.body() != null) {
-                    topReferrers = topRes.body()!!
+                val token = "Bearer ${sessionManager.getAuthToken()}"
+                val refsRes = api.getMyReferrals(token)
+                if (refsRes.isSuccessful && refsRes.body() != null) {
+                    myReferrals = refsRes.body()!!
                 }
             } catch (_: Exception) { /* Ignore — show empty list */ }
 
@@ -90,7 +91,7 @@ class ReferralViewModel(app: Application) : AndroidViewModel(app) {
                     referCode = referCode,
                     referredCount = referredCount,
                     coinsEarned = coinsEarned,
-                    topReferrers = topReferrers,
+                    myReferrals = myReferrals,
                     playStoreUrl = playStoreUrl,
                     shareMessage = shareMessage
                 )
