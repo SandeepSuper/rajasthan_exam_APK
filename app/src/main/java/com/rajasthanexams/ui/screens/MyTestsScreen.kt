@@ -34,6 +34,7 @@ import com.rajasthanexams.ui.viewmodels.PurchasedExam
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MyTestsScreen(
+    isDark: Boolean = false,
     onTestClick: (Test) -> Unit,
     onBrowseClick: () -> Unit,
     onExamClick: (PurchasedExam) -> Unit,
@@ -58,15 +59,25 @@ fun MyTestsScreen(
 
             // ── Header ──────────────────────────────────────────────
             item {
+                val headerBrush = if (isDark) {
+                    Brush.verticalGradient(
+                        colors = listOf(Color(0xFF2C3E50), Color(0xFF4CA1AF))
+                    )
+                } else {
+                    Brush.verticalGradient(
+                        colors = listOf(Color(0xFF1A237E), Color(0xFF3949AB))
+                    )
+                }
+
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
                         .background(
-                            Brush.verticalGradient(
-                                colors = listOf(Color(0xFF1A237E), Color(0xFF3949AB))
-                            )
+                            brush = headerBrush,
+                            shape = RoundedCornerShape(bottomStart = 30.dp, bottomEnd = 30.dp)
                         )
                         .padding(horizontal = 20.dp, vertical = 24.dp)
+                        .padding(bottom = 16.dp)
                 ) {
                     Column {
                         Text(
@@ -123,7 +134,7 @@ fun MyTestsScreen(
                     ) {
                         Surface(
                             shape = CircleShape,
-                            color = Color(0xFF1A237E).copy(alpha = 0.08f),
+                            color = (if (isDark) Color(0xFF4CA1AF) else Color(0xFF1A237E)).copy(alpha = 0.08f),
                             modifier = Modifier.size(96.dp)
                         ) {
                             Box(contentAlignment = Alignment.Center) {
@@ -131,7 +142,7 @@ fun MyTestsScreen(
                                     Icons.Default.School,
                                     contentDescription = null,
                                     modifier = Modifier.size(48.dp),
-                                    tint = Color(0xFF1A237E).copy(alpha = 0.5f)
+                                    tint = (if (isDark) Color(0xFF4CA1AF) else Color(0xFF1A237E)).copy(alpha = 0.5f)
                                 )
                             }
                         }
@@ -152,7 +163,9 @@ fun MyTestsScreen(
                         Button(
                             onClick = onBrowseClick,
                             shape = RoundedCornerShape(12.dp),
-                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1A237E))
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = if (isDark) Color(0xFF4CA1AF) else Color(0xFF1A237E)
+                            )
                         ) {
                             Icon(Icons.Default.Explore, contentDescription = null, modifier = Modifier.size(18.dp))
                             Spacer(modifier = Modifier.width(8.dp))

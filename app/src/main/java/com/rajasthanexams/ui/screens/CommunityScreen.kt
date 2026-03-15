@@ -1,4 +1,4 @@
-﻿package com.rajasthanexams.ui.screens
+package com.rajasthanexams.ui.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -215,12 +215,27 @@ fun CommunityScreen(
                         )
                     }
                     is CommunityUiState.Success -> {
-                        LazyColumn(
-                            contentPadding = PaddingValues(16.dp),
-                            verticalArrangement = Arrangement.spacedBy(16.dp)
+                        val isRefreshing by viewModel.isRefreshing.collectAsState()
+                        com.google.accompanist.swiperefresh.SwipeRefresh(
+                            state = com.google.accompanist.swiperefresh.rememberSwipeRefreshState(isRefreshing),
+                            onRefresh = { viewModel.refreshPosts() },
+                            indicator = { state, refreshTrigger ->
+                                com.google.accompanist.swiperefresh.SwipeRefreshIndicator(
+                                    state = state,
+                                    refreshTriggerDistance = refreshTrigger,
+                                    backgroundColor = MaterialTheme.colorScheme.surface,
+                                    contentColor = MaterialTheme.colorScheme.primary
+                                )
+                            }
                         ) {
-                            items(state.posts.filter { selectedFilter == "All" || it.subject == selectedFilter }) { post ->
-                                DoubtPostCard(post, onPostClick, onLikeClick)
+                            LazyColumn(
+                                contentPadding = PaddingValues(16.dp),
+                                verticalArrangement = Arrangement.spacedBy(16.dp),
+                                modifier = Modifier.fillMaxSize()
+                            ) {
+                                items(state.posts.filter { selectedFilter == "All" || it.subject == selectedFilter }) { post ->
+                                    DoubtPostCard(post, onPostClick, onLikeClick)
+                                }
                             }
                         }
                     }

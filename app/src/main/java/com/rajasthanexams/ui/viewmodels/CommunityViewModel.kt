@@ -25,6 +25,9 @@ class CommunityViewModel(application: Application) : AndroidViewModel(applicatio
     private val _uiState = MutableStateFlow<CommunityUiState>(CommunityUiState.Loading)
     val uiState: StateFlow<CommunityUiState> = _uiState
 
+    private val _isRefreshing = MutableStateFlow(false)
+    val isRefreshing: StateFlow<Boolean> = _isRefreshing
+
     private val _createPostState = MutableStateFlow<Boolean?>(null) // null=idle, true=success, false=fail
     val createPostState: StateFlow<Boolean?> = _createPostState
 
@@ -39,6 +42,25 @@ class CommunityViewModel(application: Application) : AndroidViewModel(applicatio
     fun selectExam(examId: String?) {
         _selectedExamId.value = examId
         fetchPosts(examId)
+    }
+
+    fun refreshPosts() {
+        viewModelScope.launch {
+            _isRefreshing.value = true
+            val userId = sessionManager.getUserId()
+            try {
+                val response = api.getCommunityPosts(userId, _selectedExamId.value)
+                if (response.isSuccessful && response.body() != null) {
+                    _uiState.value = CommunityUiState.Success(response.body()!!)
+                } else {
+                    _uiState.value = CommunityUiState.Error("Failed to fetch posts: ${response.message()}")
+                }
+            } catch (e: Exception) {
+                _uiState.value = CommunityUiState.Error(friendlyNetworkError(e))
+            } finally {
+                _isRefreshing.value = false
+            }
+        }
     }
 
     fun fetchPosts(examId: String? = _selectedExamId.value) {
@@ -84,26 +106,20 @@ class CommunityViewModel(application: Application) : AndroidViewModel(applicatio
                     fetchPosts()
                     onResult(true, null)
                 } else {
-                    // Inside the typical generic Spring Boot error JSON, there usually exists:
-                    // {"timestamp":"...","status":429,"error":"Too Many Requests","message":"You have exceeded your daily limit.","path":"/api/community/posts"}
-                    val backendMsg = try {
-                        val body = response.errorBody()?.string() ?: ""
-                        if (body.startsWith("{") && body.contains("\"message\"")) {
-                            org.json.JSONObject(body).optString("message", body)
-                        } else {
-                            body.ifBlank { response.message() }
-                        }
-                    } catch (e: Exception) {
-                        response.message()
-                    }
-
                     val errorMsg = when (response.code()) {
                         403  -> "Purchase Required to Ask Doubt"
-                        429  -> backendMsg // The backend already sends a friendly rate limit message
-                        else -> "Failed: $backendMsg"
+                        429  -> "Daily post limit reached. Please wait before posting again."
+                        else -> "Failed to post. Please try again."
                     }
                     onResult(false, errorMsg)
                 }
+            } catch (e: retrofit2.HttpException) {
+                val errorMsg = when (e.code()) {
+                    403 -> "Purchase Required to Ask Doubt"
+                    429 -> "Daily post limit reached. Please wait before posting again."
+                    else -> "Failed to post. Please try again."
+                }
+                onResult(false, errorMsg)
             } catch (e: Exception) {
                 onResult(false, friendlyNetworkError(e))
             }
@@ -215,10 +231,17 @@ class CommunityViewModel(application: Application) : AndroidViewModel(applicatio
         if (e is java.net.SocketTimeoutException || msg.contains("timeout", ignoreCase = true)) {
             return "Server response time out ho gaya. Thodi der baad try karein."
         }
+        if (e is retrofit2.HttpException) {
+            when (e.code()) {
+                429 -> return "Daily limit reached. Please wait before trying again."
+                403 -> return "Access forbidden. Please purchase the required access."
+                else -> return "Server error occurred. Please try again later."
+            }
+        }
         if (e is java.net.ConnectException || msg.contains("failed to connect", ignoreCase = true)) {
             return "Internet connection check karein. Server available nahi hai."
         }
-        return "Network issue: ${e.localizedMessage ?: "Unknown error"}"
+        return "Network Error. Please try again."
     }
 }
 

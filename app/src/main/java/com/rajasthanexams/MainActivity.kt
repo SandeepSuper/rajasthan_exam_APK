@@ -1,4 +1,4 @@
-﻿package com.rajasthanexams
+package com.rajasthanexams
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -428,6 +428,7 @@ fun AppNavigation(
             }
             Screen.TESTS ->
                 com.rajasthanexams.ui.screens.MyTestsScreen(
+                    isDark = isDarkTheme,
                     onBrowseClick = { currentScreen = Screen.HOME },
                     onExamClick = { exam ->
                         selectedCategory = exam.title

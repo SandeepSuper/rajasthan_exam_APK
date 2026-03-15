@@ -35,7 +35,7 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
     var otp = MutableStateFlow("")
 
     private val coroutineExceptionHandler = CoroutineExceptionHandler { _, throwable ->
-        _uiState.value = LoginUiState.Error("Something went wrong")
+        _uiState.value = LoginUiState.Error(friendlyNetworkError(throwable))
         Log.e("LoginViewModel", "Error", throwable)
     }
 
@@ -61,7 +61,7 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
                     _uiState.value = LoginUiState.Error("Failed to send OTP. Please check your mobile number and try again.")
                 }
             } catch (e: Throwable) {
-                _uiState.value = LoginUiState.Error("Error: ${e.message}")
+                _uiState.value = LoginUiState.Error(friendlyNetworkError(e))
                 e.printStackTrace()
             }
         }
@@ -105,7 +105,7 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
                     _uiState.value = LoginUiState.Error("Invalid OTP")
                 }
             } catch (e: Exception) {
-                _uiState.value = LoginUiState.Error("Connection Error: ${e.message}")
+                _uiState.value = LoginUiState.Error(friendlyNetworkError(e))
             }
         }
     }
@@ -131,7 +131,7 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
-                onResult(false, "Exception: ${e.localizedMessage}")
+                onResult(false, friendlyNetworkError(e))
             }
         }
     }
@@ -166,8 +166,29 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
-                onResult(false, "Exception: ${e.localizedMessage}")
+                onResult(false, friendlyNetworkError(e))
             }
         }
+    }
+
+    private fun friendlyNetworkError(e: Throwable): String {
+        val msg = e.message ?: e.localizedMessage ?: ""
+        if (e is java.net.UnknownHostException || msg.contains("UnknownHost", ignoreCase = true) || msg.contains("Unable to resolve host", ignoreCase = true)) {
+            return "Internet connection check karein. Server se connect nahi ho pa raha."
+        }
+        if (e is java.net.SocketTimeoutException || msg.contains("timeout", ignoreCase = true)) {
+            return "Server response time out ho gaya. Thodi der baad try karein."
+        }
+        if (e is retrofit2.HttpException) {
+            when (e.code()) {
+                429 -> return "Too many requests. Please wait before trying again."
+                403 -> return "Access forbidden."
+                else -> return "Server error occurred. Please try again later."
+            }
+        }
+        if (e is java.net.ConnectException || msg.contains("Failed to connect", ignoreCase = true)) {
+            return "Server down ya internet issue hai. Kripya check karein."
+        }
+        return "An unexpected network error occurred."
     }
 }
