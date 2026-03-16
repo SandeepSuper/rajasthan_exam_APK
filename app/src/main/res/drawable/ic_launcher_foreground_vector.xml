@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    
+    <!-- Final reduction to ensure 100% visibility even on aggressive icon shapes -->
+    <path
+        android:fillColor="@color/brand_yellow"
+        android:pathData="M38,54 L54,42 L70,54 L54,66 Z" /> <!-- Diamond Top (Width 32, Height 24) -->
+        
+    <path
+        android:fillColor="@color/brand_yellow"
+        android:pathData="M45,63 Q54,69 63,63 L63,71 Q54,77 45,71 Z" /> <!-- Cap Base (Height ~10) -->
+
+    <path
+        android:fillColor="@color/brand_yellow"
+        android:pathData="M69,54 V64 H71 V54 Z M67,64 H73 V72 H67 Z" /> <!-- Tassel centered and safe -->
+</vector>

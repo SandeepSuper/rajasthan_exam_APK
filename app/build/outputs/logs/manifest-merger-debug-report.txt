@@ -153,9 +153,9 @@ MERGED from [androidx.startup:startup-runtime:1.1.1] C:\Users\pc\.gradle\caches\
 	android:label
 		ADDED from C:\Users\pc\.gemini\antigravity\scratch\rajasthan_exam\app\src\main\AndroidManifest.xml:10:9-40
 	android:roundIcon
-		ADDED from C:\Users\pc\.gemini\antigravity\scratch\rajasthan_exam\app\src\main\AndroidManifest.xml:11:9-50
+		ADDED from C:\Users\pc\.gemini\antigravity\scratch\rajasthan_exam\app\src\main\AndroidManifest.xml:11:9-48
 	android:icon
-		ADDED from C:\Users\pc\.gemini\antigravity\scratch\rajasthan_exam\app\src\main\AndroidManifest.xml:9:9-45
+		ADDED from C:\Users\pc\.gemini\antigravity\scratch\rajasthan_exam\app\src\main\AndroidManifest.xml:9:9-43
 	android:allowBackup
 		ADDED from C:\Users\pc\.gemini\antigravity\scratch\rajasthan_exam\app\src\main\AndroidManifest.xml:8:9-35
 	android:theme

@@ -100,14 +100,14 @@
 58-->[androidx.core:core:1.13.1] C:\Users\pc\.gradle\caches\9.0-milestone-1\transforms\cef816511ea471ee061a42cbdef31dfc\transformed\core-1.13.1\AndroidManifest.xml:28:18-86
 59        android:debuggable="true"
 60        android:extractNativeLibs="true"
-61        android:icon="@drawable/ic_launcher"
-61-->C:\Users\pc\.gemini\antigravity\scratch\rajasthan_exam\app\src\main\AndroidManifest.xml:9:9-45
+61        android:icon="@mipmap/ic_launcher"
+61-->C:\Users\pc\.gemini\antigravity\scratch\rajasthan_exam\app\src\main\AndroidManifest.xml:9:9-43
 62        android:label="Rajasthan Exams"
 62-->C:\Users\pc\.gemini\antigravity\scratch\rajasthan_exam\app\src\main\AndroidManifest.xml:10:9-40
 63        android:networkSecurityConfig="@xml/network_security_config"
 63-->C:\Users\pc\.gemini\antigravity\scratch\rajasthan_exam\app\src\main\AndroidManifest.xml:14:9-69
-64        android:roundIcon="@drawable/ic_launcher"
-64-->C:\Users\pc\.gemini\antigravity\scratch\rajasthan_exam\app\src\main\AndroidManifest.xml:11:9-50
+64        android:roundIcon="@mipmap/ic_launcher"
+64-->C:\Users\pc\.gemini\antigravity\scratch\rajasthan_exam\app\src\main\AndroidManifest.xml:11:9-48
 65        android:supportsRtl="true"
 65-->C:\Users\pc\.gemini\antigravity\scratch\rajasthan_exam\app\src\main\AndroidManifest.xml:12:9-35
 66        android:testOnly="true"
