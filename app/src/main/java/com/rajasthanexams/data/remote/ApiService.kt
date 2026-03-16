@@ -43,6 +43,9 @@ interface ApiService {
     @POST("auth/verify-otp")
     suspend fun verifyOtp(@Body request: VerifyOtpRequest): Response<AuthResponse>
 
+    @POST("auth/google")
+    suspend fun loginWithGoogle(@Body request: GoogleLoginRequest): Response<AuthResponse>
+
     @POST("auth/update-profile")
     suspend fun updateProfile(@Body request: com.rajasthanexams.data.remote.dto.UpdateProfileRequest): Response<com.rajasthanexams.data.remote.dto.ApiResponse>
 

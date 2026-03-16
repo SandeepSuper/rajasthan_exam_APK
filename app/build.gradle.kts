@@ -103,4 +103,7 @@ dependencies {
     
     // Payment
     implementation("com.razorpay:checkout:1.6.33")
+    
+    // Google Sign-In
+    implementation("com.google.android.gms:play-services-auth:21.0.0")
 }

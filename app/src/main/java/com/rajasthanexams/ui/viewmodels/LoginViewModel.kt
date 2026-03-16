@@ -110,6 +110,40 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+    fun loginWithGoogle(idToken: String, referredByCode: String? = null) {
+        viewModelScope.launch(coroutineExceptionHandler) {
+            _uiState.value = LoginUiState.Loading
+            try {
+                val response = api.loginWithGoogle(com.rajasthanexams.data.remote.dto.GoogleLoginRequest(idToken, referredByCode))
+                if (response.isSuccessful && response.body() != null) {
+                    val authResponse = response.body()!!
+                    sessionManager.saveAuthToken(authResponse.token)
+                    sessionManager.saveUser(
+                        userId = authResponse.userId ?: "",
+                        name = authResponse.name,
+                        email = authResponse.email,
+                        profilePicture = authResponse.profilePicture,
+                        coins = authResponse.coins
+                    )
+                    // Save referral code locally
+                    if (!authResponse.referCode.isNullOrBlank()) {
+                        sessionManager.saveReferCode(authResponse.referCode)
+                    }
+                    if (authResponse.isNewUser) {
+                        _isNewUser.value = true
+                        _uiState.value = LoginUiState.LoggedIn
+                    } else {
+                        _uiState.value = LoginUiState.LoggedIn
+                    }
+                } else {
+                    _uiState.value = LoginUiState.Error("Google Login Failed")
+                }
+            } catch (e: Exception) {
+                _uiState.value = LoginUiState.Error(friendlyNetworkError(e))
+            }
+        }
+    }
+
     fun updateProfile(name: String, email: String, profilePicture: String? = null, referredByCode: String? = null, onResult: (Boolean, String?) -> Unit) {
         viewModelScope.launch {
             try {

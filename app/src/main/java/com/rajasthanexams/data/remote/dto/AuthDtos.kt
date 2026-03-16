@@ -2,6 +2,11 @@ package com.rajasthanexams.data.remote.dto
 
 import com.google.gson.annotations.SerializedName
 
+data class GoogleLoginRequest(
+    @SerializedName("idToken") val idToken: String,
+    @SerializedName("referredByCode") val referredByCode: String? = null
+)
+
 data class OtpRequest(
     @SerializedName("mobile")
     val mobile: String

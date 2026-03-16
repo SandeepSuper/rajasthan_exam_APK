@@ -1,70 +1,58 @@
 [
     {
-        "merged": "C:\\Users\\pc\\.gradle\\daemon\\9.0-milestone-1\\com.rajasthanexams.app-merged_res-4:\\drawable_avatar_7.png.flat",
-        "source": "C:\\Users\\pc\\.gradle\\daemon\\9.0-milestone-1\\com.rajasthanexams.app-main-6:\\drawable\\avatar_7.png"
+        "merged": "com.rajasthanexams.app-merged_res-4:/drawable_avatar_10.png.flat",
+        "source": "com.rajasthanexams.app-main-6:/drawable/avatar_10.png"
     },
     {
-        "merged": "C:\\Users\\pc\\.gradle\\daemon\\9.0-milestone-1\\com.rajasthanexams.app-merged_res-4:\\xml_network_security_config.xml.flat",
-        "source": "C:\\Users\\pc\\.gradle\\daemon\\9.0-milestone-1\\com.rajasthanexams.app-main-6:\\xml\\network_security_config.xml"
+        "merged": "com.rajasthanexams.app-merged_res-4:/drawable_ic_launcher_foreground.png.flat",
+        "source": "com.rajasthanexams.app-main-6:/drawable/ic_launcher_foreground.png"
     },
     {
-        "merged": "C:\\Users\\pc\\.gradle\\daemon\\9.0-milestone-1\\com.rajasthanexams.app-merged_res-4:\\mipmap-anydpi-v26_ic_launcher.xml.flat",
-        "source": "C:\\Users\\pc\\.gradle\\daemon\\9.0-milestone-1\\com.rajasthanexams.app-main-6:\\mipmap-anydpi-v26\\ic_launcher.xml"
+        "merged": "com.rajasthanexams.app-merged_res-4:/xml_network_security_config.xml.flat",
+        "source": "com.rajasthanexams.app-main-6:/xml/network_security_config.xml"
     },
     {
-        "merged": "C:\\Users\\pc\\.gradle\\daemon\\9.0-milestone-1\\com.rajasthanexams.app-merged_res-4:\\drawable_avatar_6.png.flat",
-        "source": "C:\\Users\\pc\\.gradle\\daemon\\9.0-milestone-1\\com.rajasthanexams.app-main-6:\\drawable\\avatar_6.png"
+        "merged": "com.rajasthanexams.app-merged_res-4:/drawable_avatar_5.png.flat",
+        "source": "com.rajasthanexams.app-main-6:/drawable/avatar_5.png"
     },
     {
-        "merged": "C:\\Users\\pc\\.gradle\\daemon\\9.0-milestone-1\\com.rajasthanexams.app-merged_res-4:\\drawable_avatar_8.png.flat",
-        "source": "C:\\Users\\pc\\.gradle\\daemon\\9.0-milestone-1\\com.rajasthanexams.app-main-6:\\drawable\\avatar_8.png"
+        "merged": "com.rajasthanexams.app-merged_res-4:/mipmap-anydpi-v26_ic_launcher.xml.flat",
+        "source": "com.rajasthanexams.app-main-6:/mipmap-anydpi-v26/ic_launcher.xml"
     },
     {
-        "merged": "C:\\Users\\pc\\.gradle\\daemon\\9.0-milestone-1\\com.rajasthanexams.app-merged_res-4:\\drawable_ic_launcher_foreground_vector.xml.flat",
-        "source": "C:\\Users\\pc\\.gradle\\daemon\\9.0-milestone-1\\com.rajasthanexams.app-main-6:\\drawable\\ic_launcher_foreground_vector.xml"
+        "merged": "com.rajasthanexams.app-merged_res-4:/drawable_avatar_7.png.flat",
+        "source": "com.rajasthanexams.app-main-6:/drawable/avatar_7.png"
     },
     {
-        "merged": "C:\\Users\\pc\\.gradle\\daemon\\9.0-milestone-1\\com.rajasthanexams.app-merged_res-4:\\drawable_avatar_2.png.flat",
-        "source": "C:\\Users\\pc\\.gradle\\daemon\\9.0-milestone-1\\com.rajasthanexams.app-main-6:\\drawable\\avatar_2.png"
+        "merged": "com.rajasthanexams.app-merged_res-4:/drawable_avatar_6.png.flat",
+        "source": "com.rajasthanexams.app-main-6:/drawable/avatar_6.png"
     },
     {
-        "merged": "C:\\Users\\pc\\.gradle\\daemon\\9.0-milestone-1\\com.rajasthanexams.app-merged_res-4:\\drawable_avatar_1.png.flat",
-        "source": "C:\\Users\\pc\\.gradle\\daemon\\9.0-milestone-1\\com.rajasthanexams.app-main-6:\\drawable\\avatar_1.png"
+        "merged": "com.rajasthanexams.app-merged_res-4:/drawable_avatar_1.png.flat",
+        "source": "com.rajasthanexams.app-main-6:/drawable/avatar_1.png"
     },
     {
-        "merged": "C:\\Users\\pc\\.gradle\\daemon\\9.0-milestone-1\\com.rajasthanexams.app-merged_res-4:\\drawable_avatar_3.png.flat",
-        "source": "C:\\Users\\pc\\.gradle\\daemon\\9.0-milestone-1\\com.rajasthanexams.app-main-6:\\drawable\\avatar_3.png"
+        "merged": "com.rajasthanexams.app-merged_res-4:/drawable_avatar_2.png.flat",
+        "source": "com.rajasthanexams.app-main-6:/drawable/avatar_2.png"
     },
     {
-        "merged": "C:\\Users\\pc\\.gradle\\daemon\\9.0-milestone-1\\com.rajasthanexams.app-merged_res-4:\\drawable_avatar_10.png.flat",
-        "source": "C:\\Users\\pc\\.gradle\\daemon\\9.0-milestone-1\\com.rajasthanexams.app-main-6:\\drawable\\avatar_10.png"
+        "merged": "com.rajasthanexams.app-merged_res-4:/drawable_avatar_8.png.flat",
+        "source": "com.rajasthanexams.app-main-6:/drawable/avatar_8.png"
     },
     {
-        "merged": "C:\\Users\\pc\\.gradle\\daemon\\9.0-milestone-1\\com.rajasthanexams.app-merged_res-4:\\drawable_avatar_9.png.flat",
-        "source": "C:\\Users\\pc\\.gradle\\daemon\\9.0-milestone-1\\com.rajasthanexams.app-main-6:\\drawable\\avatar_9.png"
+        "merged": "com.rajasthanexams.app-merged_res-4:/drawable_avatar_3.png.flat",
+        "source": "com.rajasthanexams.app-main-6:/drawable/avatar_3.png"
     },
     {
-        "merged": "C:\\Users\\pc\\.gradle\\daemon\\9.0-milestone-1\\com.rajasthanexams.app-merged_res-4:\\drawable_ic_launcher_adaptive.xml.flat",
-        "source": "C:\\Users\\pc\\.gradle\\daemon\\9.0-milestone-1\\com.rajasthanexams.app-main-6:\\drawable\\ic_launcher_adaptive.xml"
-    },
-    {
-        "merged": "C:\\Users\\pc\\.gradle\\daemon\\9.0-milestone-1\\com.rajasthanexams.app-merged_res-4:\\drawable_avatar_4.png.flat",
-        "source": "C:\\Users\\pc\\.gradle\\daemon\\9.0-milestone-1\\com.rajasthanexams.app-main-6:\\drawable\\avatar_4.png"
-    },
-    {
-        "merged": "C:\\Users\\pc\\.gradle\\daemon\\9.0-milestone-1\\com.rajasthanexams.app-merged_res-4:\\drawable_ic_launcher_foreground.png.flat",
-        "source": "C:\\Users\\pc\\.gradle\\daemon\\9.0-milestone-1\\com.rajasthanexams.app-main-6:\\drawable\\ic_launcher_foreground.png"
-    },
-    {
-        "merged": "C:\\Users\\pc\\.gradle\\daemon\\9.0-milestone-1\\com.rajasthanexams.app-merged_res-4:\\drawable_avatar_5.png.flat",
-        "source": "C:\\Users\\pc\\.gradle\\daemon\\9.0-milestone-1\\com.rajasthanexams.app-main-6:\\drawable\\avatar_5.png"
+        "merged": "com.rajasthanexams.app-merged_res-4:/drawable_avatar_4.png.flat",
+        "source": "com.rajasthanexams.app-main-6:/drawable/avatar_4.png"
     },
     {
         "merged": "com.rajasthanexams.app-merged_res-4:/drawable_ic_launcher_foreground_vector.xml.flat",
         "source": "com.rajasthanexams.app-main-6:/drawable/ic_launcher_foreground_vector.xml"
     },
     {
-        "merged": "C:\\Users\\pc\\.gradle\\daemon\\9.0-milestone-1\\com.rajasthanexams.app-merged_res-4:\\drawable_ic_launcher.png.flat",
-        "source": "C:\\Users\\pc\\.gradle\\daemon\\9.0-milestone-1\\com.rajasthanexams.app-main-6:\\drawable\\ic_launcher.png"
+        "merged": "com.rajasthanexams.app-merged_res-4:/drawable_avatar_9.png.flat",
+        "source": "com.rajasthanexams.app-main-6:/drawable/avatar_9.png"
     }
 ]

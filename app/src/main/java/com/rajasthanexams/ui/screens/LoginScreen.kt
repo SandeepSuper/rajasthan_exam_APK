@@ -1,4 +1,4 @@
-﻿package com.rajasthanexams.ui.screens
+package com.rajasthanexams.ui.screens
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -26,6 +26,18 @@ import androidx.compose.runtime.collectAsState
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.rajasthanexams.ui.viewmodels.LoginViewModel
 import com.rajasthanexams.ui.viewmodels.LoginUiState
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.gms.common.api.ApiException
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.material3.Divider
+import androidx.compose.foundation.layout.Row
+import androidx.compose.material3.Icon
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.ui.res.painterResource
+import com.rajasthanexams.R
 
 @Composable
 fun LoginScreen(
@@ -51,11 +63,35 @@ fun LoginScreen(
                 }
             }
             
-            val context = androidx.compose.ui.platform.LocalContext.current
+            val context = LocalContext.current
             LaunchedEffect(Unit) {
                viewModel.otpReceived.collect { otpMsg ->
                    android.widget.Toast.makeText(context, otpMsg, android.widget.Toast.LENGTH_LONG).show()
                }
+            }
+
+            // Google Sign-In Setup
+            // TODO: Ensure matching client ID from actual google-services.json or backend config is used if necessary.
+            // Assuming webclient ID is provided or using default.
+            val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken("701768114705-l2fnicghvsq1tpehe2vu5qqdf6pmnlik.apps.googleusercontent.com") // Make sure to sync this ID!
+                .requestEmail()
+                .build()
+            val googleSignInClient = GoogleSignIn.getClient(context, gso)
+
+            val launcher = rememberLauncherForActivityResult(contract = ActivityResultContracts.StartActivityForResult()) { result ->
+                val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
+                try {
+                    val account = task.getResult(ApiException::class.java)
+                    val idToken = account?.idToken
+                    if (idToken != null) {
+                        viewModel.loginWithGoogle(idToken)
+                    } else {
+                        android.widget.Toast.makeText(context, "Google sign in failed: missing token", android.widget.Toast.LENGTH_SHORT).show()
+                    }
+                } catch (e: ApiException) {
+                    android.widget.Toast.makeText(context, "Google sign in failed: ${e.statusCode}", android.widget.Toast.LENGTH_SHORT).show()
+                }
             }
 
             Text(
@@ -122,6 +158,33 @@ fun LoginScreen(
                 },
                 enabled = if (uiState is LoginUiState.OtpSent) otp.length >= 4 else mobile.length == 10
             )
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            if (uiState !is LoginUiState.OtpSent) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Divider(modifier = Modifier.weight(1f))
+                    Text(
+                        text = "  OR  ", 
+                        style = MaterialTheme.typography.bodySmall, 
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Divider(modifier = Modifier.weight(1f))
+                }
+
+                Spacer(modifier = Modifier.height(24.dp))
+
+                OutlinedButton(
+                    onClick = { launcher.launch(googleSignInClient.signInIntent) },
+                    modifier = Modifier.fillMaxWidth().height(56.dp),
+                    enabled = uiState !is LoginUiState.Loading
+                ) {
+                    Text("Continue with Google", color = MaterialTheme.colorScheme.onSurface)
+                }
+            }
         }
     }
 }

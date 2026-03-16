@@ -1,4 +1,11 @@
 com.rajasthanexams
+anim fragment_fast_out_extra_slow_in
+animator fragment_close_enter
+animator fragment_close_exit
+animator fragment_fade_enter
+animator fragment_fade_exit
+animator fragment_open_enter
+animator fragment_open_exit
 attr action
 attr alpha
 attr ambientEnabled
@@ -18,7 +25,6 @@ attr cameraTilt
 attr cameraZoom
 attr circleCrop
 attr colorScheme
-attr coordinatorLayoutStyle
 attr customThemeStyle
 attr data
 attr dataPattern
@@ -42,19 +48,12 @@ attr fragmentStyle
 attr graph
 attr imageAspectRatio
 attr imageAspectRatioAdjust
-attr keylines
 attr lStar
 attr latLngBoundsNorthEastLatitude
 attr latLngBoundsNorthEastLongitude
 attr latLngBoundsSouthWestLatitude
 attr latLngBoundsSouthWestLongitude
 attr launchSingleTop
-attr layout_anchor
-attr layout_anchorGravity
-attr layout_behavior
-attr layout_dodgeInsetEdges
-attr layout_insetEdge
-attr layout_keyline
 attr liteMode
 attr mapType
 attr maskedWalletDetailsBackground
@@ -79,7 +78,6 @@ attr route
 attr scopeUris
 attr shortcutMatchRequired
 attr startDestination
-attr statusBarBackground
 attr targetPackage
 attr toolbarTextColorStyle
 attr ttcIndex
@@ -256,7 +254,6 @@ id action_text
 id actions
 id adjust_height
 id adjust_width
-id all
 id android_pay
 id android_pay_dark
 id android_pay_light
@@ -266,19 +263,13 @@ id async
 id auto
 id blocking
 id book_now
-id bottom
 id buyButton
 id buy_now
 id buy_with
 id buy_with_google
-id center
-id center_horizontal
-id center_vertical
 id check_list
 id chronometer
 id classic
-id clip_horizontal
-id clip_vertical
 id coil_request_manager
 id compose_view_saveable_id_tag
 id consume_window_insets_tag
@@ -287,11 +278,8 @@ id dialog_button
 id donate_with
 id donate_with_google
 id edit_text_id
-id end
-id fill
-id fill_horizontal
-id fill_vertical
 id forever
+id fragment_container_view_tag
 id googleMaterial2
 id google_wallet_classic
 id google_wallet_grayscale
@@ -311,7 +299,6 @@ id inspection_slot_table_set
 id is_pooling_container_tag
 id italic
 id iv_check_mark
-id left
 id light
 id line1
 id line3
@@ -330,7 +317,6 @@ id pooling_container_listener_holder_tag
 id production
 id progressBar
 id report_drawn
-id right
 id right_icon
 id right_side
 id rzp_innerbox
@@ -341,8 +327,8 @@ id sandbox
 id satellite
 id selectionDetails
 id slide
+id special_effects_controller_view_tag
 id standard
-id start
 id strict_sandbox
 id tag_accessibility_actions
 id tag_accessibility_clickable_spans
@@ -363,13 +349,13 @@ id text
 id text2
 id time
 id title
-id top
 id tv_sub_item
 id tv_title
 id view_tree_lifecycle_owner
 id view_tree_on_back_pressed_dispatcher_owner
 id view_tree_saved_state_registry_owner
 id view_tree_view_model_store_owner
+id visible_removing_fragment_view_tag
 id wide
 id wrap_content
 id wrapped_composition_tag
@@ -510,18 +496,17 @@ style WalletFragmentDefaultDetailsTextAppearance
 style WalletFragmentDefaultStyle
 style Widget_Compat_NotificationActionContainer
 style Widget_Compat_NotificationActionText
-style Widget_Support_CoordinatorLayout
 styleable ActivityNavigator android_name action data dataPattern targetPackage
 styleable AnimatedStateListDrawableCompat android_dither android_visible android_variablePadding android_constantSize android_enterFadeDuration android_exitFadeDuration
 styleable AnimatedStateListDrawableItem android_id android_drawable
 styleable AnimatedStateListDrawableTransition android_drawable android_toId android_fromId android_reversible
 styleable Capability queryPatterns shortcutMatchRequired
 styleable ColorStateListItem android_color android_alpha android_lStar alpha lStar
-styleable CoordinatorLayout keylines statusBarBackground
-styleable CoordinatorLayout_Layout android_layout_gravity layout_anchor layout_anchorGravity layout_behavior layout_dodgeInsetEdges layout_insetEdge layout_keyline
 styleable CustomWalletTheme customThemeStyle toolbarTextColorStyle windowTransitionStyle
 styleable FontFamily fontProviderAuthority fontProviderCerts fontProviderFetchStrategy fontProviderFetchTimeout fontProviderPackage fontProviderQuery fontProviderSystemFontFamily
 styleable FontFamilyFont android_font android_fontWeight android_fontStyle android_ttcIndex android_fontVariationSettings font fontStyle fontVariationSettings fontWeight ttcIndex
+styleable Fragment android_name android_id android_tag
+styleable FragmentContainerView android_name android_tag
 styleable GradientColor android_startColor android_endColor android_type android_centerX android_centerY android_gradientRadius android_tileMode android_centerColor android_startX android_startY android_endX android_endY
 styleable GradientColorItem android_color android_offset
 styleable LoadingImageView circleCrop imageAspectRatio imageAspectRatioAdjust
