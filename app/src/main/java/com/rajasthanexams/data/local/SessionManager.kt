@@ -75,6 +75,18 @@ class SessionManager(context: Context) {
         return prefs.getString(KEY_USER_EMAIL, null)
     }
 
+    fun saveMobileNumber(mobile: String?) {
+        if (mobile != null) {
+            prefs.edit().putString("user_mobile", mobile).apply()
+        } else {
+            prefs.edit().remove("user_mobile").apply()
+        }
+    }
+    
+    fun getMobileNumber(): String? {
+        return prefs.getString("user_mobile", null)
+    }
+
     fun saveReferCode(code: String) {
         prefs.edit().putString(KEY_REFER_CODE, code).apply()
     }

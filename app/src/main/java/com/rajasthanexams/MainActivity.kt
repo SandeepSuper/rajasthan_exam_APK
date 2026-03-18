@@ -82,7 +82,7 @@ class MainActivity : ComponentActivity(), PaymentResultWithDataListener {
 }
 
 enum class Screen {
-    SPLASH, LOGIN, HOME, TESTS, RANKERS, COMMUNITY, PROFILE, DETAIL, PRACTICE, RESULT, TEST_TYPES, TESTS_BY_TYPE, LIVE_TESTS, NOTIFICATIONS, USER_INFO, BOOKMARKS, REFERRAL, CURRENT_AFFAIRS, PERFORMANCE, TEST_HISTORY, PRIVACY_POLICY, DOWNLOADS, INSTRUCTIONS, EXAM_PURCHASE, POST_DETAIL
+    SPLASH, LOGIN, SIGNUP, EMAIL_OTP, HOME, TESTS, RANKERS, COMMUNITY, PROFILE, DETAIL, PRACTICE, RESULT, TEST_TYPES, TESTS_BY_TYPE, LIVE_TESTS, NOTIFICATIONS, USER_INFO, BOOKMARKS, REFERRAL, CURRENT_AFFAIRS, PERFORMANCE, TEST_HISTORY, PRIVACY_POLICY, DOWNLOADS, INSTRUCTIONS, EXAM_PURCHASE, POST_DETAIL
 }
 
 @Composable
@@ -208,6 +208,9 @@ fun AppNavigation(
             Screen.SPLASH, Screen.LOGIN -> {
                 (context as? android.app.Activity)?.finish()
             }
+            Screen.SIGNUP, Screen.EMAIL_OTP -> {
+                currentScreen = Screen.LOGIN
+            }
             Screen.HOME -> {
                 (context as? android.app.Activity)?.finish()
             }
@@ -315,7 +318,26 @@ fun AppNavigation(
                     viewModel = loginViewModel,
                     onLoginSuccess = {
                        // Handled by LaunchedEffect
+                    },
+                    onNavigateToSignup = {
+                        currentScreen = Screen.SIGNUP
                     }
+                )
+            }
+            Screen.SIGNUP -> {
+                com.rajasthanexams.ui.screens.SignupScreen(
+                    viewModel = loginViewModel,
+                    onBackToLogin = { currentScreen = Screen.LOGIN },
+                    onOtpSent = { currentScreen = Screen.EMAIL_OTP }
+                )
+            }
+            Screen.EMAIL_OTP -> {
+                com.rajasthanexams.ui.screens.EmailOtpScreen(
+                    viewModel = loginViewModel,
+                    onLoginSuccess = {
+                        // Handled by LaunchedEffect
+                    },
+                    onBackToSignup = { currentScreen = Screen.SIGNUP }
                 )
             }
             Screen.USER_INFO -> {

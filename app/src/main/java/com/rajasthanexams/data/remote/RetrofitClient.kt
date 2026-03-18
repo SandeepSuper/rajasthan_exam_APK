@@ -8,7 +8,11 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 object RetrofitClient {
 
-    private const val BASE_URL = "https://exam.photopassport.in/api/"
+    private val BASE_URL = if (BuildConfig.DEBUG) {
+        "https://dev.photopassport.in/api/"
+    } else {
+        "https://exam.photopassport.in/api/"
+    }
 
     private val logging = HttpLoggingInterceptor().apply {
         level = HttpLoggingInterceptor.Level.BODY

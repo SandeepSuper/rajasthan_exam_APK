@@ -58,7 +58,13 @@ fun ExamPurchaseScreen(
     val coinValueRs = 0.10  // 1 coin = ₹0.10
     val maxCoinDiscountPercent = 10
     val maxCoinDiscountAmount = (discountedPrice * maxCoinDiscountPercent / 100.0)
-    val maxUsableCoins = minOf(userCoins, (maxCoinDiscountAmount / coinValueRs).toInt())
+    
+    val minCoinsRequired = 500
+    val maxUsableCoins = if (userCoins >= minCoinsRequired) {
+        minOf(userCoins, (maxCoinDiscountAmount / coinValueRs).toInt())
+    } else {
+        0
+    }
     val coinDiscountAmount = (maxUsableCoins * coinValueRs * 100).toLong() / 100.0
 
     var useCoins by remember { mutableStateOf(false) }
@@ -269,44 +275,75 @@ fun ExamPurchaseScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // ── Coin Discount Toggle ──────────────────────────────────────────────
-            if (userCoins > 0 && maxUsableCoins > 0) {
-                Card(
-                    modifier = Modifier.padding(horizontal = 20.dp).fillMaxWidth(),
-                    shape = RoundedCornerShape(16.dp),
-                    elevation = CardDefaults.cardElevation(4.dp),
-                    colors = CardDefaults.cardColors(
-                        containerColor = if (useCoins) Color(0xFFFFF8E1) else surface
-                    ),
-                    border = if (useCoins) androidx.compose.foundation.BorderStroke(1.5.dp, Color(0xFFFFD700)) else null
-                ) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth().padding(16.dp),
-                        verticalAlignment = Alignment.CenterVertically
+            // ── Coin Discount Toggle / Info ───────────────────────────────────────
+            if (userCoins > 0) {
+                if (userCoins >= minCoinsRequired && maxUsableCoins > 0) {
+                    Card(
+                        modifier = Modifier.padding(horizontal = 20.dp).fillMaxWidth(),
+                        shape = RoundedCornerShape(16.dp),
+                        elevation = CardDefaults.cardElevation(4.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = if (useCoins) Color(0xFFFFF8E1) else surface
+                        ),
+                        border = if (useCoins) androidx.compose.foundation.BorderStroke(1.5.dp, Color(0xFFFFD700)) else null
                     ) {
-                        Text("🪙", fontSize = 28.sp)
-                        Spacer(Modifier.width(12.dp))
-                        Column(modifier = Modifier.weight(1f)) {
-                            Text(
-                                "Use $maxUsableCoins Coins",
-                                fontWeight = FontWeight.Bold,
-                                color = Color(0xFF795548)
-                            )
-                            Text(
-                                if (useCoins) "Saving ₹${String.format("%.0f", coinDiscountAmount)}  →  Pay ₹${finalPrice.toInt()}"
-                                else "Save ₹${String.format("%.0f", coinDiscountAmount)} on this purchase",
-                                style = MaterialTheme.typography.bodySmall,
-                                color = Color(0xFF8D6E63)
+                        Row(
+                            modifier = Modifier.fillMaxWidth().padding(16.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text("🪙", fontSize = 28.sp)
+                            Spacer(Modifier.width(12.dp))
+                            Column(modifier = Modifier.weight(1f)) {
+                                Text(
+                                    "Use $maxUsableCoins Coins",
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color(0xFF795548)
+                                )
+                                Text(
+                                    if (useCoins) "Saving ₹${String.format("%.0f", coinDiscountAmount)}  →  Pay ₹${finalPrice.toInt()}"
+                                    else "Save ₹${String.format("%.0f", coinDiscountAmount)} on this purchase",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = Color(0xFF8D6E63)
+                                )
+                            }
+                            Switch(
+                                checked = useCoins,
+                                onCheckedChange = { useCoins = it },
+                                colors = SwitchDefaults.colors(
+                                    checkedThumbColor = Color(0xFFFFD700),
+                                    checkedTrackColor = Color(0xFFFF8F00)
+                                )
                             )
                         }
-                        Switch(
-                            checked = useCoins,
-                            onCheckedChange = { useCoins = it },
-                            colors = SwitchDefaults.colors(
-                                checkedThumbColor = Color(0xFFFFD700),
-                                checkedTrackColor = Color(0xFFFF8F00)
-                            )
-                        )
+                    }
+                } else {
+                    // Show short informational message about needing 500 coins to unlock discount
+                    Card(
+                        modifier = Modifier.padding(horizontal = 20.dp).fillMaxWidth(),
+                        shape = RoundedCornerShape(16.dp),
+                        elevation = CardDefaults.cardElevation(2.dp),
+                        colors = CardDefaults.cardColors(containerColor = surface)
+                    ) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text("🪙", fontSize = 20.sp)
+                            Spacer(Modifier.width(12.dp))
+                            Column(modifier = Modifier.weight(1f)) {
+                                Text(
+                                    "You have $userCoins Coins",
+                                    fontWeight = FontWeight.Bold,
+                                    color = primary,
+                                    fontSize = 14.sp
+                                )
+                                Text(
+                                    "Collect at least $minCoinsRequired coins to unlock additional discounts on your purchases!",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = onSurface60
+                                )
+                            }
+                        }
                     }
                 }
                 Spacer(modifier = Modifier.height(8.dp))

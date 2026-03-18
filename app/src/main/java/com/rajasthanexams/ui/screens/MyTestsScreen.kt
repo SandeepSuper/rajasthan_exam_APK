@@ -48,6 +48,10 @@ fun MyTestsScreen(
         else emptyList()
     }
 
+    LaunchedEffect(Unit) {
+        viewModel.load()
+    }
+
 
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background

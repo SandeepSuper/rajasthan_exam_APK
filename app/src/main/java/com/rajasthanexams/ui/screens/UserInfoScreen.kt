@@ -43,6 +43,11 @@ fun UserInfoScreen(
 ) {
     var name by remember { mutableStateOf(initialName ?: "") }
     var email by remember { mutableStateOf(initialEmail ?: "") }
+    // We try to grab the mobile from the backend response or SessionManager as context
+    val context = androidx.compose.ui.platform.LocalContext.current
+    val sessionManager = remember { com.rajasthanexams.data.local.SessionManager(context) }
+    var mobile by remember { mutableStateOf(sessionManager.getMobileNumber() ?: "") }
+    
     var selectedAvatarId by remember { mutableStateOf<String?>(
         if (AvatarHelper.isAvatar(initialProfilePicture)) initialProfilePicture else "avatar_1"
     ) }
@@ -192,6 +197,24 @@ fun UserInfoScreen(
                 )
             )
 
+            Spacer(modifier = Modifier.height(16.dp))
+
+            OutlinedTextField(
+                value = mobile,
+                onValueChange = { 
+                    // Only allow digits, max 10
+                    if (it.all { char -> char.isDigit() } && it.length <= 10) mobile = it 
+                },
+                label = { Text("Mobile Number (Optional)") },
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true,
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Phone,
+                    imeAction = ImeAction.Next
+                ),
+                shape = RoundedCornerShape(12.dp)
+            )
+
             // Referral code field — only for new users (first-time profile setup)
             if (isEmailEditable) {
                 Spacer(modifier = Modifier.height(16.dp))
@@ -236,6 +259,7 @@ fun UserInfoScreen(
                             viewModel.updateProfile(
                                 name,
                                 email,
+                                mobile.ifBlank { null },
                                 selectedAvatarId,
                                 referredByCode.ifBlank { null }
                             ) { success, error ->

@@ -37,17 +37,31 @@ data class AppConfigResponse(
 
 interface ApiService {
 
-    @POST("auth/send-otp")
-    suspend fun sendOtp(@Body request: OtpRequest): Response<OtpResponse>
+    // ── Email + Password Auth ─────────────────────────────────────
 
-    @POST("auth/verify-otp")
-    suspend fun verifyOtp(@Body request: VerifyOtpRequest): Response<AuthResponse>
+    @POST("auth/register")
+    suspend fun registerWithEmail(@Body request: EmailRegisterRequest): Response<ApiResponse>
+
+    @POST("auth/send-email-otp")
+    suspend fun sendEmailOtp(@Body request: SendEmailOtpRequest): Response<ApiResponse>
+
+    @POST("auth/verify-email-otp")
+    suspend fun verifyEmailOtp(@Body request: VerifyEmailOtpRequest): Response<AuthResponse>
+
+    @POST("auth/login")
+    suspend fun loginWithEmail(@Body request: EmailLoginRequest): Response<AuthResponse>
 
     @POST("auth/google")
     suspend fun loginWithGoogle(@Body request: GoogleLoginRequest): Response<AuthResponse>
 
     @POST("auth/update-profile")
     suspend fun updateProfile(@Body request: com.rajasthanexams.data.remote.dto.UpdateProfileRequest): Response<com.rajasthanexams.data.remote.dto.ApiResponse>
+
+    @retrofit2.http.PATCH("users/profile/mobile")
+    suspend fun updateMobile(
+        @Header("Authorization") token: String,
+        @Body request: Map<String, String?>
+    ): Response<com.rajasthanexams.data.remote.dto.ApiResponse>
 
     @retrofit2.http.Multipart
     @POST("upload")

@@ -47,7 +47,9 @@ class HomeViewModel : ViewModel() {
                 if (token != null) {
                     val profileRes = com.rajasthanexams.data.remote.RetrofitClient.api.getProfile("Bearer $token")
                     if (profileRes.isSuccessful && profileRes.body() != null) {
-                        sessionManager.updateCoins(profileRes.body()!!.coins)
+                        val body = profileRes.body()!!
+                        sessionManager.updateCoins(body.coins)
+                        sessionManager.saveMobileNumber(body.mobile)
                     }
                 }
             } catch (e: Exception) {
