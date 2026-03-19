@@ -38,7 +38,8 @@ import com.google.android.gms.common.api.ApiException
 fun LoginScreen(
     viewModel: LoginViewModel,
     onLoginSuccess: () -> Unit,
-    onNavigateToSignup: () -> Unit
+    onNavigateToSignup: () -> Unit,
+    onNavigateToForgotPassword: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val emailVal by viewModel.email.collectAsState()
@@ -125,6 +126,19 @@ fun LoginScreen(
                 modifier = Modifier.fillMaxWidth(),
                 enabled = uiState !is LoginUiState.Loading,
                 shape = RoundedCornerShape(12.dp)
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            // Forgot Password Link
+            Text(
+                text = "Forgot Password?",
+                style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold),
+                color = MaterialTheme.colorScheme.primary,
+                modifier = Modifier
+                    .align(Alignment.End)
+                    .clickable { onNavigateToForgotPassword() }
+                    .padding(vertical = 4.dp)
             )
 
             // Error message

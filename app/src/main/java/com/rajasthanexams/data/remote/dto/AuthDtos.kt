@@ -30,6 +30,16 @@ data class VerifyEmailOtpRequest(
     @SerializedName("otp") val otp: String
 )
 
+data class ForgotPasswordRequest(
+    @SerializedName("email") val email: String
+)
+
+data class ResetPasswordRequest(
+    @SerializedName("email") val email: String,
+    @SerializedName("otp") val otp: String,
+    @SerializedName("newPassword") val newPassword: String
+)
+
 // ── Legacy DTOs (kept in case old sessions use them) ─────────
 
 data class OtpRequest(

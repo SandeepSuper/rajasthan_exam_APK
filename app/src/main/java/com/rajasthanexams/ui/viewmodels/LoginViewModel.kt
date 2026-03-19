@@ -16,6 +16,8 @@ sealed class LoginUiState {
     object Idle : LoginUiState()
     object Loading : LoginUiState()
     object EmailOtpSent : LoginUiState()
+    object ForgotPasswordOtpSent : LoginUiState()
+    object PasswordResetSuccess : LoginUiState()
     object LoggedIn : LoginUiState()
     data class Error(val message: String) : LoginUiState()
 }
@@ -55,7 +57,8 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
                 if (response.isSuccessful && response.body() != null) {
                     handleAuthResponse(response.body()!!, isNew = false)
                 } else {
-                    val errorMsg = parseErrorMessage(response.code())
+                    val apiError = parseApiError(response.errorBody())
+                    val errorMsg = apiError ?: parseErrorMessage(response.code())
                     _uiState.value = LoginUiState.Error(errorMsg)
                 }
             } catch (e: Exception) {
@@ -83,7 +86,8 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
                     otp.value = ""
                     _uiState.value = LoginUiState.EmailOtpSent
                 } else {
-                    val msg = response.body()?.message ?: "Registration failed. Please try again."
+                    val apiError = parseApiError(response.errorBody())
+                    val msg = apiError ?: "Registration failed. Please try again."
                     _uiState.value = LoginUiState.Error(msg)
                 }
             } catch (e: Exception) {
@@ -106,7 +110,8 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
                 if (response.isSuccessful && response.body() != null) {
                     handleAuthResponse(response.body()!!, isNew = true)
                 } else {
-                    _uiState.value = LoginUiState.Error("Invalid OTP. Please check and try again.")
+                    val apiError = parseApiError(response.errorBody())
+                    _uiState.value = LoginUiState.Error(apiError ?: "Invalid OTP. Please check and try again.")
                 }
             } catch (e: Exception) {
                 _uiState.value = LoginUiState.Error(friendlyNetworkError(e))
@@ -126,6 +131,46 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+    // ─── Forgot Password ────────────────────────────────────────────
+
+    fun sendForgotPasswordOtp(emailVal: String) {
+        if (emailVal.isBlank()) return
+        viewModelScope.launch {
+            _uiState.value = LoginUiState.Loading
+            try {
+                val response = api.forgotPassword(ForgotPasswordRequest(emailVal.trim()))
+                if (response.isSuccessful && response.body()?.success == true) {
+                    pendingEmail.value = emailVal.trim()
+                    _uiState.value = LoginUiState.ForgotPasswordOtpSent
+                } else {
+                    val apiError = parseApiError(response.errorBody())
+                    _uiState.value = LoginUiState.Error(apiError ?: "Failed to send reset OTP.")
+                }
+            } catch (e: Exception) {
+                _uiState.value = LoginUiState.Error(friendlyNetworkError(e))
+            }
+        }
+    }
+
+    fun resetPassword(otpVal: String, newPasswordVal: String) {
+        val emailVal = pendingEmail.value
+        if (emailVal.isBlank() || otpVal.isBlank() || newPasswordVal.isBlank()) return
+        viewModelScope.launch {
+            _uiState.value = LoginUiState.Loading
+            try {
+                val response = api.resetPassword(ResetPasswordRequest(emailVal, otpVal, newPasswordVal))
+                if (response.isSuccessful && response.body()?.success == true) {
+                    _uiState.value = LoginUiState.PasswordResetSuccess
+                } else {
+                    val apiError = parseApiError(response.errorBody())
+                    _uiState.value = LoginUiState.Error(apiError ?: "Failed to reset password.")
+                }
+            } catch (e: Exception) {
+                _uiState.value = LoginUiState.Error(friendlyNetworkError(e))
+            }
+        }
+    }
+
     // ─── Google Login ───────────────────────────────────────────────
 
     fun loginWithGoogle(idToken: String, referredByCode: String? = null) {
@@ -136,7 +181,8 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
                 if (response.isSuccessful && response.body() != null) {
                     handleAuthResponse(response.body()!!, isNew = response.body()!!.isNewUser)
                 } else {
-                    _uiState.value = LoginUiState.Error("Google Login Failed")
+                    val apiError = parseApiError(response.errorBody())
+                    _uiState.value = LoginUiState.Error(apiError ?: "Google Login Failed")
                 }
             } catch (e: Exception) {
                 _uiState.value = LoginUiState.Error(friendlyNetworkError(e))
@@ -232,6 +278,16 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
         }
         _isNewUser.value = isNew || authResponse.isNewUser
         _uiState.value = LoginUiState.LoggedIn
+    }
+
+    private fun parseApiError(errorBody: okhttp3.ResponseBody?): String? {
+        if (errorBody == null) return null
+        return try {
+            val json = org.json.JSONObject(errorBody.string())
+            json.optString("message").takeIf { it.isNotBlank() }
+        } catch (e: Exception) {
+            null
+        }
     }
 
     private fun parseErrorMessage(code: Int): String = when (code) {

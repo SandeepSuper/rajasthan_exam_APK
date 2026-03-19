@@ -82,7 +82,7 @@ class MainActivity : ComponentActivity(), PaymentResultWithDataListener {
 }
 
 enum class Screen {
-    SPLASH, LOGIN, SIGNUP, EMAIL_OTP, HOME, TESTS, RANKERS, COMMUNITY, PROFILE, DETAIL, PRACTICE, RESULT, TEST_TYPES, TESTS_BY_TYPE, LIVE_TESTS, NOTIFICATIONS, USER_INFO, BOOKMARKS, REFERRAL, CURRENT_AFFAIRS, PERFORMANCE, TEST_HISTORY, PRIVACY_POLICY, DOWNLOADS, INSTRUCTIONS, EXAM_PURCHASE, POST_DETAIL
+    SPLASH, LOGIN, SIGNUP, EMAIL_OTP, FORGOT_PASSWORD, HOME, TESTS, RANKERS, COMMUNITY, PROFILE, DETAIL, PRACTICE, RESULT, TEST_TYPES, TESTS_BY_TYPE, LIVE_TESTS, NOTIFICATIONS, USER_INFO, BOOKMARKS, REFERRAL, CURRENT_AFFAIRS, PERFORMANCE, TEST_HISTORY, PRIVACY_POLICY, DOWNLOADS, INSTRUCTIONS, EXAM_PURCHASE, POST_DETAIL
 }
 
 @Composable
@@ -208,7 +208,7 @@ fun AppNavigation(
             Screen.SPLASH, Screen.LOGIN -> {
                 (context as? android.app.Activity)?.finish()
             }
-            Screen.SIGNUP, Screen.EMAIL_OTP -> {
+            Screen.SIGNUP, Screen.EMAIL_OTP, Screen.FORGOT_PASSWORD -> {
                 currentScreen = Screen.LOGIN
             }
             Screen.HOME -> {
@@ -321,6 +321,9 @@ fun AppNavigation(
                     },
                     onNavigateToSignup = {
                         currentScreen = Screen.SIGNUP
+                    },
+                    onNavigateToForgotPassword = {
+                        currentScreen = Screen.FORGOT_PASSWORD
                     }
                 )
             }
@@ -338,6 +341,12 @@ fun AppNavigation(
                         // Handled by LaunchedEffect
                     },
                     onBackToSignup = { currentScreen = Screen.SIGNUP }
+                )
+            }
+            Screen.FORGOT_PASSWORD -> {
+                com.rajasthanexams.ui.screens.ForgotPasswordScreen(
+                    viewModel = loginViewModel,
+                    onBackToLogin = { currentScreen = Screen.LOGIN }
                 )
             }
             Screen.USER_INFO -> {

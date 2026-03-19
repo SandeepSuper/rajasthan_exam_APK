@@ -51,6 +51,12 @@ interface ApiService {
     @POST("auth/login")
     suspend fun loginWithEmail(@Body request: EmailLoginRequest): Response<AuthResponse>
 
+    @POST("auth/forgot-password")
+    suspend fun forgotPassword(@Body request: ForgotPasswordRequest): Response<ApiResponse>
+
+    @POST("auth/reset-password")
+    suspend fun resetPassword(@Body request: ResetPasswordRequest): Response<ApiResponse>
+
     @POST("auth/google")
     suspend fun loginWithGoogle(@Body request: GoogleLoginRequest): Response<AuthResponse>
 
