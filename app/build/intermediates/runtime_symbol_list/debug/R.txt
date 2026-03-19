@@ -375,6 +375,7 @@ int layout sdk_integration_status 0x7f0a000b
 int layout single_item 0x7f0a000c
 int layout wallet_test_layout 0x7f0a000d
 int mipmap ic_launcher 0x7f0b0000
+int mipmap ic_launcher_round 0x7f0b0001
 int raw rzp_config 0x7f0c0000
 int string androidx_startup 0x7f0d0000
 int string bottom_sheet_collapse_description 0x7f0d0001

@@ -163,9 +163,9 @@ fun AppNavigation(
     }
     
     
-    androidx.compose.runtime.LaunchedEffect(currentScreen) {
+    androidx.compose.runtime.LaunchedEffect(currentScreen, selectedTestType) {
         val window = (context as? android.app.Activity)?.window
-        if (currentScreen == Screen.PRACTICE) {
+        if (currentScreen == Screen.PRACTICE && (selectedTestType == TestType.FULL || selectedTestType == TestType.LIVE)) {
             window?.setFlags(
                 android.view.WindowManager.LayoutParams.FLAG_SECURE,
                 android.view.WindowManager.LayoutParams.FLAG_SECURE
@@ -198,6 +198,15 @@ fun AppNavigation(
              }
         }
     }
+
+    // After login/registration, token is now saved → refresh home data
+    // (HomeViewModel.init() runs before login, so its first fetchTests() has no token)
+    androidx.compose.runtime.LaunchedEffect(loginState) {
+        if (loginState is com.rajasthanexams.ui.viewmodels.LoginUiState.LoggedIn) {
+            homeViewModel.fetchTests()
+        }
+    }
+
 
     // Listen for Purchase Success to Navigate away from Purchase Screen
 

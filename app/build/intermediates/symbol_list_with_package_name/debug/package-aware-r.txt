@@ -376,6 +376,7 @@ layout sdk_integration_status
 layout single_item
 layout wallet_test_layout
 mipmap ic_launcher
+mipmap ic_launcher_round
 raw rzp_config
 string androidx_startup
 string bottom_sheet_collapse_description
