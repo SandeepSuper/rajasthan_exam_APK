@@ -205,7 +205,7 @@ fun UserInfoScreen(
                     // Only allow digits, max 10
                     if (it.all { char -> char.isDigit() } && it.length <= 10) mobile = it 
                 },
-                label = { Text("Mobile Number (Optional)") },
+                label = { Text("Mobile Number") },
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(
@@ -215,27 +215,25 @@ fun UserInfoScreen(
                 shape = RoundedCornerShape(12.dp)
             )
 
-            // Referral code field — only for new users (first-time profile setup)
-            if (isEmailEditable) {
-                Spacer(modifier = Modifier.height(16.dp))
-                OutlinedTextField(
-                    value = referredByCode,
-                    onValueChange = { referredByCode = it.uppercase().trim() },
-                    label = { Text("Referral Code (Optional)") },
-                    placeholder = { Text("e.g. RAJ-XYZABC") },
-                    modifier = Modifier.fillMaxWidth(),
-                    singleLine = true,
-                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-                    shape = RoundedCornerShape(12.dp),
-                    leadingIcon = {
-                        Icon(
-                            androidx.compose.material.icons.Icons.Default.Redeem,
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.primary
-                        )
-                    }
-                )
-            }
+            // Referral code field — accessible anytime
+            Spacer(modifier = Modifier.height(16.dp))
+            OutlinedTextField(
+                value = referredByCode,
+                onValueChange = { referredByCode = it.uppercase().trim() },
+                label = { Text("Referral Code (Optional)") },
+                placeholder = { Text("e.g. RAJ-XYZABC") },
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true,
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                shape = RoundedCornerShape(12.dp),
+                leadingIcon = {
+                    Icon(
+                        androidx.compose.material.icons.Icons.Default.Redeem,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+                }
+            )
 
             if (errorMessage != null) {
                 Spacer(modifier = Modifier.height(16.dp))
@@ -249,8 +247,10 @@ fun UserInfoScreen(
                 onClick = {
                     val emailPattern = "[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+"
                     when {
-                        name.isBlank() || email.isBlank() ->
-                            errorMessage = "Please fill all fields"
+                        name.isBlank() || email.isBlank() || mobile.isBlank() ->
+                            errorMessage = "Please fill all required fields"
+                        mobile.length < 10 ->
+                            errorMessage = "Please enter a valid 10-digit mobile number"
                         !email.matches(emailPattern.toRegex()) ->
                             errorMessage = "Invalid email address"
                         else -> {

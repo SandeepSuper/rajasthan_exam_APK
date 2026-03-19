@@ -1,4 +1,4 @@
-﻿package com.rajasthanexams.ui.screens
+package com.rajasthanexams.ui.screens
 
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.Canvas
@@ -81,31 +81,10 @@ fun PerformanceScreen(
 
                 is PerformanceUiState.Error -> {
                     val msg = (uiState as PerformanceUiState.Error).message
-                    Column(
-                        Modifier.fillMaxSize().padding(32.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center
-                    ) {
-                        Icon(
-                            Icons.Default.Warning, contentDescription = null,
-                            tint = RedWeak, modifier = Modifier.size(48.dp)
-                        )
-                        Spacer(Modifier.height(12.dp))
-                        Text(
-                            if (isHindi) "डेटा लोड नहीं हो सका" else "Could not load performance data",
-                            fontWeight = FontWeight.Bold, textAlign = TextAlign.Center
-                        )
-                        Spacer(Modifier.height(6.dp))
-                        Text(msg, style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
-                            textAlign = TextAlign.Center)
-                        Spacer(Modifier.height(20.dp))
-                        Button(onClick = { vm.load() }) {
-                            Icon(Icons.Default.Refresh, null, Modifier.size(18.dp))
-                            Spacer(Modifier.width(6.dp))
-                            Text(if (isHindi) "पुनः प्रयास करें" else "Retry")
-                        }
-                    }
+                    com.rajasthanexams.ui.components.NetworkErrorView(
+                        message = msg,
+                        onRetry = { vm.load() }
+                    )
                 }
 
                 is PerformanceUiState.Success -> {

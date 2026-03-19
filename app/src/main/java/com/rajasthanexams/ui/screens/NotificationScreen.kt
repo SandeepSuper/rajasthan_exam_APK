@@ -91,21 +91,10 @@ fun NotificationScreen(
                 }
 
                 is NotificationsUiState.Error -> {
-                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                            Text(
-                                text = state.message,
-                                color = MaterialTheme.colorScheme.error,
-                                style = MaterialTheme.typography.bodyLarge
-                            )
-                            Spacer(modifier = Modifier.height(12.dp))
-                            Button(onClick = { viewModel.load() }) {
-                                Icon(Icons.Default.Refresh, contentDescription = null)
-                                Spacer(modifier = Modifier.width(6.dp))
-                                Text("Retry")
-                            }
-                        }
-                    }
+                    com.rajasthanexams.ui.components.NetworkErrorView(
+                        message = state.message,
+                        onRetry = { viewModel.load() }
+                    )
                 }
 
                 is NotificationsUiState.Success -> {

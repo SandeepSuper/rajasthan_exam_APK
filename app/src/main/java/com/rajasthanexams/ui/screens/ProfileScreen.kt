@@ -1,4 +1,4 @@
-﻿package com.rajasthanexams.ui.screens
+package com.rajasthanexams.ui.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -328,35 +328,6 @@ fun ProfileScreen(
                     }
                 }
 
-                // Test History Link
-                Surface(
-                    shape = RoundedCornerShape(12.dp),
-                    color = MaterialTheme.colorScheme.surface,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 4.dp)
-                        .clickable { onTestHistoryClick() },
-                    shadowElevation = 1.dp
-                ) {
-                    Row(
-                        modifier = Modifier.padding(16.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(
-                            Icons.Default.History,
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.primary
-                        )
-                        Spacer(modifier = Modifier.width(16.dp))
-                        Text(
-                            if(isHindi) "टेस्ट इतिहास" else "Test History",
-                            style = MaterialTheme.typography.bodyLarge,
-                            modifier = Modifier.weight(1f),
-                            color = MaterialTheme.colorScheme.onSurface
-                        )
-                        Icon(Icons.Default.ChevronRight, contentDescription = null, tint = Color.Gray)
-                    }
-                }
 
                 // Downloads (New)
                 Surface(
@@ -482,12 +453,7 @@ fun ProfileScreen(
                     }
                 }
 
-                Spacer(modifier = Modifier.height(32.dp))
-                ProfileOption(
-                    icon = Icons.Default.Logout,
-                    title = if(isHindi) "लॉग आउट" else "Logout",
-                    isDestructive = true
-                )
+
                 // Extra spacer to clear Bottom Navigation Bar
                 Spacer(modifier = Modifier.height(100.dp))
             }

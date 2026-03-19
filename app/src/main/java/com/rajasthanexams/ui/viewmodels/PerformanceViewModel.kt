@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.rajasthanexams.data.remote.dto.PerformanceResponse
 import com.rajasthanexams.data.repository.ContentRepository
+import com.rajasthanexams.utils.toFriendlyMessage
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -29,7 +30,7 @@ class PerformanceViewModel : ViewModel() {
             _uiState.value = PerformanceUiState.Loading
             repository.getPerformance()
                 .onSuccess { _uiState.value = PerformanceUiState.Success(it) }
-                .onFailure { _uiState.value = PerformanceUiState.Error(it.message ?: "Unknown error") }
+                .onFailure { _uiState.value = PerformanceUiState.Error(it.toFriendlyMessage()) }
         }
     }
 }

@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.rajasthanexams.data.remote.RetrofitClient
 import com.rajasthanexams.data.remote.dto.NewsItemResponse
+import com.rajasthanexams.utils.toFriendlyMessage
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -33,7 +34,7 @@ class CurrentAffairsViewModel : ViewModel() {
                     _uiState.value = CurrentAffairsUiState.Error("Failed (${response.code()})")
                 }
             } catch (e: Exception) {
-                _uiState.value = CurrentAffairsUiState.Error(e.message ?: "Unknown error")
+                _uiState.value = CurrentAffairsUiState.Error(e.toFriendlyMessage())
             }
         }
     }

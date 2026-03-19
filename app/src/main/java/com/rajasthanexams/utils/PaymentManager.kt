@@ -21,7 +21,9 @@ object PaymentManager {
 
     fun startPayment(
         activity: Activity,
-        orderData: CreateOrderResponse
+        orderData: CreateOrderResponse,
+        email: String?,
+        contact: String?
     ) {
         val checkout = Checkout()
         checkout.setKeyID(orderData.key)
@@ -35,8 +37,9 @@ object PaymentManager {
             options.put("theme.color", "#3399cc")
             options.put("currency", "INR")
             options.put("amount", orderData.amount.toString())
-            options.put("prefill.email", "student@rajasthanexams.com")
-            options.put("prefill.contact", "9999999999")
+            
+            if (!email.isNullOrBlank()) options.put("prefill.email", email)
+            if (!contact.isNullOrBlank()) options.put("prefill.contact", contact)
             
             checkout.open(activity, options)
         } catch (e: Exception) {

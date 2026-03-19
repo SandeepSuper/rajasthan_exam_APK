@@ -1,4 +1,4 @@
-﻿package com.rajasthanexams.ui.screens
+package com.rajasthanexams.ui.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -82,21 +82,10 @@ fun CurrentAffairsScreen(
                 }
 
                 is CurrentAffairsUiState.Error -> {
-                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                            Text(
-                                state.message,
-                                style = MaterialTheme.typography.bodyLarge,
-                                color = MaterialTheme.colorScheme.error
-                            )
-                            Spacer(modifier = Modifier.height(12.dp))
-                            Button(onClick = { viewModel.load() }) {
-                                Icon(Icons.Default.Refresh, contentDescription = null)
-                                Spacer(modifier = Modifier.width(6.dp))
-                                Text("Retry")
-                            }
-                        }
-                    }
+                    com.rajasthanexams.ui.components.NetworkErrorView(
+                        message = state.message,
+                        onRetry = { viewModel.load() }
+                    )
                 }
 
                 is CurrentAffairsUiState.Success -> {

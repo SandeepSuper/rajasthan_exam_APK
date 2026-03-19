@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.rajasthanexams.data.remote.RetrofitClient
 import com.rajasthanexams.data.remote.NotificationWebSocketClient
 import com.rajasthanexams.data.remote.dto.NotificationResponse
+import com.rajasthanexams.utils.toFriendlyMessage
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -94,7 +95,7 @@ class NotificationsViewModel : ViewModel() {
                 }
             } catch (e: Exception) {
                 if (_uiState.value !is NotificationsUiState.Success) {
-                    _uiState.value = NotificationsUiState.Error(e.message ?: "Unknown error")
+                    _uiState.value = NotificationsUiState.Error(e.toFriendlyMessage())
                 }
             }
         }

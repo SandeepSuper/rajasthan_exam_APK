@@ -189,7 +189,9 @@ class HomeViewModel : ViewModel() {
                     fetchTests() // Refresh purchase status
                     _purchaseSuccess.emit(Unit)
                 } else {
-                    com.rajasthanexams.utils.PaymentManager.startPayment(context as android.app.Activity, orderResponse)
+                    val email = sessionManager.getUserEmail()
+                    val contact = sessionManager.getMobileNumber()
+                    com.rajasthanexams.utils.PaymentManager.startPayment(context as android.app.Activity, orderResponse, email, contact)
                 }
             }.onFailure {
                 android.widget.Toast.makeText(context, "Failed to create order: ${it.message}", android.widget.Toast.LENGTH_LONG).show()
