@@ -89,7 +89,7 @@ fun PrivacyPolicyScreen(
 
                 SectionTitle("5. Contact Us")
                 SectionBody(
-                    "If you have any questions about this privacy policy or our privacy practices, please contact us at: support@rajasthanexams.com"
+                    "If you have any questions about this privacy policy or our privacy practices, please contact us at: support@rajasthanexam.in"
                 )
             }
         }

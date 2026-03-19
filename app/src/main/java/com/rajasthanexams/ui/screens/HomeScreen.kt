@@ -1,4 +1,4 @@
-﻿package com.rajasthanexams.ui.screens
+package com.rajasthanexams.ui.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -272,17 +272,19 @@ fun HomeScreen(
                 }
             }
 
-            // Promotional Carousel
-            item {
-                val promoCategories = if (uiState is com.rajasthanexams.ui.viewmodels.HomeUiState.Success) {
-                    (uiState as com.rajasthanexams.ui.viewmodels.HomeUiState.Success)
-                        .categories
-                        .filter { it.isPremium && !it.isPurchased && it.price > 0 }
-                } else emptyList()
-                PromotionCarousel(
-                    categories = promoCategories,
-                    onItemClick = onPromotionClick
-                )
+            // Promotional Carousel — only show when there are purchasable exams
+            val promoCategories = if (uiState is com.rajasthanexams.ui.viewmodels.HomeUiState.Success) {
+                (uiState as com.rajasthanexams.ui.viewmodels.HomeUiState.Success)
+                    .categories
+                    .filter { it.isPremium && !it.isPurchased && it.price > 0 }
+            } else emptyList()
+            if (promoCategories.isNotEmpty()) {
+                item {
+                    PromotionCarousel(
+                        categories = promoCategories,
+                        onItemClick = onPromotionClick
+                    )
+                }
             }
 
             // Daily Current Affairs (News)
@@ -295,99 +297,97 @@ fun HomeScreen(
                ReferAndEarnCard(onClick = onReferralClick)
             }
 
-            // Categories Section
-            item {
-                Column(modifier = Modifier.padding(top = 24.dp)) {
-                    Text(
-                        "Select Category",
-                        style = MaterialTheme.typography.titleLarge,
-                        color = MaterialTheme.colorScheme.primary,
-                        fontWeight = FontWeight.Bold,
-                        modifier = Modifier.padding(horizontal = 16.dp)
-                    )
-                    
-                    // Replaced LazyRow with Row + Scroll for stability
-                    // Get dynamic categories from state if available
-                    val categories = if (uiState is com.rajasthanexams.ui.viewmodels.HomeUiState.Success) {
-                        (uiState as com.rajasthanexams.ui.viewmodels.HomeUiState.Success).categories
-                    } else {
-                        MockData.categories
-                    }
-
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 16.dp, vertical = 16.dp)
-                            .horizontalScroll(rememberScrollState()),
-                        horizontalArrangement = Arrangement.spacedBy(16.dp)
-                    ) {
-                        categories.forEach { category ->
-                            CategoryItem(category = category, onClick = { onCategoryClick(category) })
+            // Categories Section — only show when data is loaded (hide offline/mock)
+            if (uiState is com.rajasthanexams.ui.viewmodels.HomeUiState.Success) {
+                val categories = (uiState as com.rajasthanexams.ui.viewmodels.HomeUiState.Success).categories
+                if (categories.isNotEmpty()) {
+                    item {
+                        Column(modifier = Modifier.padding(top = 24.dp)) {
+                            Text(
+                                "Select Category",
+                                style = MaterialTheme.typography.titleLarge,
+                                color = MaterialTheme.colorScheme.primary,
+                                fontWeight = FontWeight.Bold,
+                                modifier = Modifier.padding(horizontal = 16.dp)
+                            )
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 16.dp, vertical = 16.dp)
+                                    .horizontalScroll(rememberScrollState()),
+                                horizontalArrangement = Arrangement.spacedBy(16.dp)
+                            ) {
+                                categories.forEach { category ->
+                                    CategoryItem(category = category, onClick = { onCategoryClick(category) })
+                                }
+                            }
                         }
                     }
                 }
             }
 
-            // Test Type Quick Navigation Section
-            item {
-                Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
-                    Text(
-                        "Select Test Type",
-                        style = MaterialTheme.typography.titleLarge,
-                        color = MaterialTheme.colorScheme.primary,
-                        fontWeight = FontWeight.Bold,
-                        modifier = Modifier.padding(bottom = 12.dp)
-                    )
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .horizontalScroll(rememberScrollState()),
-                        horizontalArrangement = Arrangement.spacedBy(16.dp)
-                    ) {
-                        data class TestTypeInfo(
-                            val label: String,
-                            val type: com.rajasthanexams.data.TestType,
-                            val color: Color,
-                            val icon: androidx.compose.ui.graphics.vector.ImageVector
+            // Test Type Quick Navigation — only show when online (Success state)
+            if (uiState is com.rajasthanexams.ui.viewmodels.HomeUiState.Success) {
+                item {
+                    Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
+                        Text(
+                            "Select Test Type",
+                            style = MaterialTheme.typography.titleLarge,
+                            color = MaterialTheme.colorScheme.primary,
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier.padding(bottom = 12.dp)
                         )
-                        val types = listOf(
-                            TestTypeInfo("Mock\nTests", com.rajasthanexams.data.TestType.MOCK, Color(0xFFE67E22), Icons.Default.Assignment),
-                            TestTypeInfo("Topic\nTests", com.rajasthanexams.data.TestType.TOPIC, Color(0xFF27AE60), Icons.Default.MenuBook),
-                            TestTypeInfo("Full\nTests", com.rajasthanexams.data.TestType.FULL, Color(0xFF2980B9), Icons.Default.LibraryBooks),
-                            TestTypeInfo("PYQ\nPapers", com.rajasthanexams.data.TestType.PYQ, Color(0xFF8E44AD), Icons.Default.History),
-                            TestTypeInfo("Daily\nQuiz", com.rajasthanexams.data.TestType.DAILY_QUIZ, Color(0xFF009688), Icons.Default.Bolt),
-                            TestTypeInfo("Live\nTests", com.rajasthanexams.data.TestType.LIVE, Color(0xFFEB5757), Icons.Default.PlayArrow)
-                        )
-                        types.forEach { info ->
-                            Column(
-                                horizontalAlignment = Alignment.CenterHorizontally,
-                                modifier = Modifier
-                                    .width(64.dp)
-                                    .clickable { onTestTypeClick(info.type) }
-                            ) {
-                                Surface(
-                                    shape = androidx.compose.foundation.shape.CircleShape,
-                                    color = info.color.copy(alpha = 0.12f),
-                                    border = androidx.compose.foundation.BorderStroke(1.5.dp, info.color.copy(alpha = 0.35f)),
-                                    modifier = Modifier.size(56.dp)
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .horizontalScroll(rememberScrollState()),
+                            horizontalArrangement = Arrangement.spacedBy(16.dp)
+                        ) {
+                            data class TestTypeInfo(
+                                val label: String,
+                                val type: com.rajasthanexams.data.TestType,
+                                val color: Color,
+                                val icon: androidx.compose.ui.graphics.vector.ImageVector
+                            )
+                            val types = listOf(
+                                TestTypeInfo("Mock\nTests", com.rajasthanexams.data.TestType.MOCK, Color(0xFFE67E22), Icons.Default.Assignment),
+                                TestTypeInfo("Topic\nTests", com.rajasthanexams.data.TestType.TOPIC, Color(0xFF27AE60), Icons.Default.MenuBook),
+                                TestTypeInfo("Full\nTests", com.rajasthanexams.data.TestType.FULL, Color(0xFF2980B9), Icons.Default.LibraryBooks),
+                                TestTypeInfo("PYQ\nPapers", com.rajasthanexams.data.TestType.PYQ, Color(0xFF8E44AD), Icons.Default.History),
+                                TestTypeInfo("Daily\nQuiz", com.rajasthanexams.data.TestType.DAILY_QUIZ, Color(0xFF009688), Icons.Default.Bolt),
+                                TestTypeInfo("Live\nTests", com.rajasthanexams.data.TestType.LIVE, Color(0xFFEB5757), Icons.Default.PlayArrow)
+                            )
+                            types.forEach { info ->
+                                Column(
+                                    horizontalAlignment = Alignment.CenterHorizontally,
+                                    modifier = Modifier
+                                        .width(64.dp)
+                                        .clickable { onTestTypeClick(info.type) }
                                 ) {
-                                    Box(contentAlignment = Alignment.Center) {
-                                        Icon(
-                                            imageVector = info.icon,
-                                            contentDescription = info.label,
-                                            tint = info.color,
-                                            modifier = Modifier.size(26.dp)
-                                        )
+                                    Surface(
+                                        shape = androidx.compose.foundation.shape.CircleShape,
+                                        color = info.color.copy(alpha = 0.12f),
+                                        border = androidx.compose.foundation.BorderStroke(1.5.dp, info.color.copy(alpha = 0.35f)),
+                                        modifier = Modifier.size(56.dp)
+                                    ) {
+                                        Box(contentAlignment = Alignment.Center) {
+                                            Icon(
+                                                imageVector = info.icon,
+                                                contentDescription = info.label,
+                                                tint = info.color,
+                                                modifier = Modifier.size(26.dp)
+                                            )
+                                        }
                                     }
+                                    Spacer(modifier = Modifier.height(6.dp))
+                                    Text(
+                                        info.label,
+                                        style = MaterialTheme.typography.labelMedium,
+                                        fontWeight = FontWeight.SemiBold,
+                                        textAlign = TextAlign.Center,
+                                        color = MaterialTheme.colorScheme.onSurface
+                                    )
                                 }
-                                Spacer(modifier = Modifier.height(6.dp))
-                                Text(
-                                    info.label,
-                                    style = MaterialTheme.typography.labelMedium,
-                                    fontWeight = FontWeight.SemiBold,
-                                    textAlign = TextAlign.Center,
-                                    color = MaterialTheme.colorScheme.onSurface
-                                )
                             }
                         }
                     }
@@ -735,12 +735,8 @@ fun PromotionCarousel(
         Pair(Color(0xFF1A1A2E), Color(0xFF16213E))
     )
 
-    // Use live data if available, otherwise fall back to mock
-    val items: List<Pair<String, Any>> = if (categories.isNotEmpty()) {
-        categories.map { it.title to (it as Any) }
-    } else {
-        MockData.promotions.map { it.title to (it as Any) }
-    }
+    // Only show real categories — no mock fallback
+    val items: List<Pair<String, Any>> = categories.map { it.title to (it as Any) }
 
     if (items.isEmpty()) return
 
