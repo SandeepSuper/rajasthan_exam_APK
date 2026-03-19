@@ -389,8 +389,6 @@ fun ProfileScreen(
                     }
                 }
 
-                Spacer(modifier = Modifier.height(16.dp))
-
                 // Refer & Earn (New)
                 Surface(
                     shape = RoundedCornerShape(12.dp),
@@ -420,8 +418,6 @@ fun ProfileScreen(
                         Icon(Icons.Default.ChevronRight, contentDescription = null, tint = Color.Gray)
                     }
                 }
-
-                Spacer(modifier = Modifier.height(16.dp))
 
                 // Privacy Policy Link
                 Surface(

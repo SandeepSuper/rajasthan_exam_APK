@@ -1,4 +1,4 @@
-﻿package com.rajasthanexams.ui.screens
+package com.rajasthanexams.ui.screens
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -480,10 +480,16 @@ fun PracticeScreen(
         }
     }
 
-    // Reset Question Timer when dialog closes
+    // Reset Question Timer when dialog closes + Snap pager to resumed question
     LaunchedEffect(showResumeDialog) {
         if (!showResumeDialog) {
-             questionStartTime = System.currentTimeMillis()
+            questionStartTime = System.currentTimeMillis()
+            // Snap pager to the correct question index after resume dialog is dismissed.
+            // We use scrollToPage (instant) instead of animateScrollToPage so the pager
+            // doesn't land visually between two questions during the scroll animation.
+            if (isResumed && pagerState.currentPage != currentQuestionIndex) {
+                pagerState.scrollToPage(currentQuestionIndex)
+            }
         }
     }
 
@@ -860,33 +866,66 @@ fun PracticeScreen(
             Column(modifier = Modifier.fillMaxSize()) {
                 // Subject Tabs
                 if (subjects.size > 1) {
-                    ScrollableTabRow(
-                        selectedTabIndex = selectedTabIndex,
-                        edgePadding = 16.dp,
-                        containerColor = Color.Transparent,
-                        contentColor = MaterialTheme.colorScheme.primary,
-                        indicator = { tabPositions ->
-                            TabRowDefaults.Indicator(
-                                Modifier.tabIndicatorOffset(tabPositions[selectedTabIndex]),
-                                color = MaterialTheme.colorScheme.primary
-                            )
+                    if (subjects.size <= 3) {
+                        // Full-width equal tabs for small number of subjects (e.g. English + Hindi)
+                        androidx.compose.material3.TabRow(
+                            selectedTabIndex = selectedTabIndex,
+                            containerColor = Color.Transparent,
+                            contentColor = MaterialTheme.colorScheme.primary,
+                            indicator = { tabPositions ->
+                                TabRowDefaults.Indicator(
+                                    Modifier.tabIndicatorOffset(tabPositions[selectedTabIndex]),
+                                    color = MaterialTheme.colorScheme.primary
+                                )
+                            }
+                        ) {
+                            subjects.forEachIndexed { index, subject ->
+                                Tab(
+                                    selected = selectedTabIndex == index,
+                                    onClick = {
+                                        scope.launch {
+                                            val qIndex = questions.indexOfFirst {
+                                                (it.subject ?: if(isUiHindi) "सामान्य" else "General") == subject
+                                            }
+                                            if (qIndex != -1) {
+                                                pagerState.scrollToPage(qIndex)
+                                            }
+                                        }
+                                    },
+                                    text = { Text(subject, style = MaterialTheme.typography.titleSmall) }
+                                )
+                            }
                         }
-                    ) {
-                        subjects.forEachIndexed { index, subject ->
-                            Tab(
-                                selected = selectedTabIndex == index,
-                                onClick = {
-                                    scope.launch {
-                                        val qIndex = questions.indexOfFirst { 
-                                            (it.subject ?: if(isUiHindi) "सामान्य" else "General") == subject 
+                    } else {
+                        // Scrollable tabs for many subjects
+                        ScrollableTabRow(
+                            selectedTabIndex = selectedTabIndex,
+                            edgePadding = 0.dp,
+                            containerColor = Color.Transparent,
+                            contentColor = MaterialTheme.colorScheme.primary,
+                            indicator = { tabPositions ->
+                                TabRowDefaults.Indicator(
+                                    Modifier.tabIndicatorOffset(tabPositions[selectedTabIndex]),
+                                    color = MaterialTheme.colorScheme.primary
+                                )
+                            }
+                        ) {
+                            subjects.forEachIndexed { index, subject ->
+                                Tab(
+                                    selected = selectedTabIndex == index,
+                                    onClick = {
+                                        scope.launch {
+                                            val qIndex = questions.indexOfFirst {
+                                                (it.subject ?: if(isUiHindi) "सामान्य" else "General") == subject
+                                            }
+                                            if (qIndex != -1) {
+                                                pagerState.scrollToPage(qIndex)
+                                            }
                                         }
-                                        if (qIndex != -1) {
-                                            pagerState.scrollToPage(qIndex)
-                                        }
-                                    }
-                                },
-                                text = { Text(subject, style = MaterialTheme.typography.titleSmall) }
-                            )
+                                    },
+                                    text = { Text(subject, style = MaterialTheme.typography.titleSmall) }
+                                )
+                            }
                         }
                     }
                 }

@@ -1,4 +1,4 @@
-﻿package com.rajasthanexams.ui.screens
+package com.rajasthanexams.ui.screens
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -13,18 +13,23 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.CloudUpload
 import androidx.compose.material.icons.filled.EmojiEvents
+import androidx.compose.material.icons.filled.GridView
+import androidx.compose.material.icons.filled.NavigateBefore
+import androidx.compose.material.icons.filled.NavigateNext
 import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
@@ -32,6 +37,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -44,8 +50,17 @@ import com.rajasthanexams.ui.components.AppButton
 import com.rajasthanexams.ui.components.HeritagePatternBackground
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.material3.ExperimentalMaterial3Api
+import kotlinx.coroutines.launch
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.GridCells
 
-import androidx.compose.material.icons.filled.Star // Added import
+import androidx.compose.material.icons.filled.Star
 
 @Composable
 fun ResultScreen(
@@ -85,223 +100,17 @@ fun ResultScreen(
 
     HeritagePatternBackground {
         if (activeView == ResultView.REVIEW) {
-            // ... (Content hidden for brevity, no changes here)
-             Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(16.dp)
-            ) {
-                // Header with Toggle
-                Row(
-                    modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    val filterTitle = when(reviewFilter) {
-                        ReviewFilter.ALL -> if (isUiHindi) "कोन समीक्षा" else "All Questions"
-                        ReviewFilter.CORRECT -> if (isUiHindi) "सही उत्तर" else "Correct Answers" 
-                        ReviewFilter.WRONG -> if (isUiHindi) "गलत उत्तर" else "Wrong Answers"
-                        ReviewFilter.SKIPPED -> if (isUiHindi) "छोड़े गए प्रश्न" else "Skipped Questions"
-                    }
-                    Text(
-                        text = if (reviewFilter == ReviewFilter.ALL) (if (isUiHindi) "उत्तर समीक्षा" else "Review Answers") else filterTitle,
-                        style = MaterialTheme.typography.headlineSmall,
-                        color = MaterialTheme.colorScheme.primary,
-                        fontWeight = FontWeight.Bold
-                    )
-
-                    androidx.compose.material3.IconButton(onClick = { isContentHindi = !isContentHindi }) {
-                        // Custom Icon: Mixed English (E) and Hindi (अ)
-                        androidx.compose.foundation.layout.Box(
-                            modifier = Modifier
-                                .size(28.dp)
-                                .border(1.5.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(6.dp)),
-                            contentAlignment = Alignment.Center
-                        ) {
-                             Row(
-                                 verticalAlignment = Alignment.CenterVertically, 
-                                 horizontalArrangement = Arrangement.Center,
-                                 modifier = Modifier.padding(2.dp)
-                             ) {
-                                 Text(
-                                     text = "E", 
-                                     style = MaterialTheme.typography.labelSmall, 
-                                     fontSize = 10.sp, 
-                                     fontWeight = FontWeight.Black, 
-                                     color = MaterialTheme.colorScheme.primary
-                                 )
-                                 Text(
-                                     text = "/", 
-                                     style = MaterialTheme.typography.labelSmall, 
-                                     fontSize = 10.sp, 
-                                     color = MaterialTheme.colorScheme.primary
-                                 )
-                                 Text(
-                                     text = "अ", 
-                                     style = MaterialTheme.typography.labelSmall, 
-                                     fontSize = 10.sp, 
-                                     fontWeight = FontWeight.Black, 
-                                     color = MaterialTheme.colorScheme.primary
-                                 )
-                             }
-                        }
-                    }
+            ReviewAnswerView(
+                questions = questions,
+                userAnswers = userAnswers,
+                timePerQuestion = timePerQuestion,
+                isUiHindi = isUiHindi,
+                initialFilter = reviewFilter,
+                onClose = {
+                    activeView = ResultView.SUMMARY
+                    reviewFilter = ReviewFilter.ALL
                 }
-
-                LazyColumn(modifier = Modifier.weight(1f)) {
-                    val filteredQuestions = questions.mapIndexed { index, question -> index to question }
-                        .filter { (originalIndex, question) ->
-                            val userAnswerIndex = userAnswers[originalIndex]
-                            val correctOptionIndex = question.correctOptionIndex
-                            when (reviewFilter) {
-                                ReviewFilter.ALL -> true
-                                ReviewFilter.CORRECT -> userAnswerIndex != null && userAnswerIndex == correctOptionIndex
-                                ReviewFilter.WRONG -> userAnswerIndex != null && userAnswerIndex != correctOptionIndex
-                                ReviewFilter.SKIPPED -> userAnswerIndex == null
-                            }
-                        }
-
-                    if (filteredQuestions.isEmpty()) {
-                        item {
-                            Box(modifier = Modifier.fillMaxWidth().padding(32.dp), contentAlignment = Alignment.Center) {
-                                Text(
-                                    text = if(isUiHindi) "कोई प्रश्न नहीं मिला" else "No questions found for this filter",
-                                    style = MaterialTheme.typography.bodyLarge,
-                                    color = Color.Gray
-                                )
-                            }
-                        }
-                    }
-
-                    itemsIndexed(filteredQuestions) { _, (originalIndex, question) ->
-                        val index = originalIndex
-                        val userAnswerIndex = userAnswers[index]
-                        val correctOptionIndex = question.correctOptionIndex
-                        val isCorrect = userAnswerIndex != null && userAnswerIndex == correctOptionIndex
-                        val isSkipped = userAnswerIndex == null
-
-                        Card(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 8.dp),
-                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-                            elevation = CardDefaults.cardElevation(2.dp)
-                        ) {
-                            Column(modifier = Modifier.padding(16.dp)) {
-                                Row(verticalAlignment = Alignment.Top) {
-                                    Text(
-                                        "Q${index + 1}.",
-                                        style = MaterialTheme.typography.titleMedium,
-                                        fontWeight = FontWeight.Bold,
-                                        color = MaterialTheme.colorScheme.primary
-                                    )
-                                    Spacer(modifier = Modifier.width(8.dp))
-                                    Text(
-                                        if (isContentHindi) question.questionHi else question.questionEn,
-                                        style = MaterialTheme.typography.bodyLarge,
-                                        fontWeight = FontWeight.Medium
-                                    )
-                                }
-                                
-                                // Time Spent Display
-                                val timeSpent = timePerQuestion[index] ?: 0L
-                                val timeSec = timeSpent / 1000
-                                val timeMin = timeSec / 60
-                                val timeSecRem = timeSec % 60
-                                val timeStr = String.format("%02d:%02d", timeMin, timeSecRem)
-                                
-                                Row(
-                                    modifier = Modifier.padding(top = 8.dp),
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    Icon(
-                                        imageVector = androidx.compose.material.icons.Icons.Default.Schedule, // Make sure to import or use explicit
-                                        contentDescription = "Time",
-                                        tint = Color.Gray,
-                                        modifier = Modifier.size(16.dp)
-                                    )
-                                    Spacer(modifier = Modifier.width(4.dp))
-                                    Text(
-                                        text = timeStr,
-                                        style = MaterialTheme.typography.bodySmall,
-                                        color = Color.Gray
-                                    )
-                                }
-                                Spacer(modifier = Modifier.height(12.dp))
-                                
-                                val questionOptions = if (isContentHindi) question.optionsHi else question.optionsEn
-                                questionOptions.forEachIndexed { optIndex, option ->
-                                    val isSelected = userAnswerIndex == optIndex
-                                    val isTheCorrectAnswer = correctOptionIndex == optIndex
-                                    
-                                    val (bgColor, textColor) = when {
-                                        isTheCorrectAnswer -> Color(0xFFE8F5E9) to Color(0xFF2E7D32) // Green bg, Dark Green text
-                                        isSelected && !isTheCorrectAnswer -> Color(0xFFFFEBEE) to Color(0xFFC62828) // Red bg, Dark Red text
-                                        else -> Color.Transparent to MaterialTheme.colorScheme.onSurface
-                                    }
-                                    
-                                    val borderColor = if (isTheCorrectAnswer || isSelected) Color.Transparent else Color.Gray.copy(alpha=0.2f)
-
-                                    Column(
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .padding(vertical = 4.dp)
-                                            .background(bgColor, RoundedCornerShape(8.dp))
-                                            .border(1.dp, borderColor, RoundedCornerShape(8.dp))
-                                            .padding(12.dp)
-                                    ) {
-                                        Row(verticalAlignment = Alignment.CenterVertically) {
-                                            if (isTheCorrectAnswer) {
-                                                Icon(Icons.Default.Check, contentDescription = null, tint = textColor, modifier = Modifier.size(20.dp))
-                                                Spacer(modifier = Modifier.width(8.dp))
-                                            } else if (isSelected) {
-                                                Icon(Icons.Default.Close, contentDescription = null, tint = textColor, modifier = Modifier.size(20.dp))
-                                                Spacer(modifier = Modifier.width(8.dp))
-                                            }
-                                            
-                                            Text(
-                                                option,
-                                                color = textColor,
-                                                fontWeight = if (isTheCorrectAnswer || isSelected) FontWeight.Bold else FontWeight.Normal
-                                            )
-                                        }
-                                    }
-                                }
-                                
-                                // Solution Block
-                                Spacer(modifier = Modifier.height(12.dp))
-                                Column(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .background(Color(0xFFFFF3E0), RoundedCornerShape(8.dp))
-                                        .padding(12.dp)
-                                    ) {
-                                    Text(
-                                        text = if(isUiHindi) "व्याख्या:" else "Solution:",
-                                        style = MaterialTheme.typography.labelLarge,
-                                        color = Color(0xFFE65100),
-                                        fontWeight = FontWeight.Bold
-                                    )
-                                    Text(
-                                        text = if(isContentHindi) question.solutionHi else question.solutionEn,
-                                        style = MaterialTheme.typography.bodySmall,
-                                        color = Color(0xFFBF360C)
-                                    )
-                                }
-                            }
-                        }
-                    }
-                }
-                
-                Spacer(modifier = Modifier.height(16.dp))
-                AppButton(
-                    text = if(isUiHindi) "बंद करें" else "Close Review", 
-                    onClick = { 
-                        activeView = ResultView.SUMMARY 
-                        reviewFilter = ReviewFilter.ALL // Reset filter on close
-                    }
-                )
-            }
+            )
         } else {
             // SCORE UI (activeView == ResultView.SUMMARY)
             Column(
@@ -544,3 +353,406 @@ fun StatItem(label: String, value: String) {
         Text(text = label, style = MaterialTheme.typography.bodyMedium, color = Color.Gray)
     }
 }
+
+@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
+@Composable
+fun ReviewAnswerView(
+    questions: List<Question>,
+    userAnswers: Map<Int, Int>,
+    timePerQuestion: Map<Int, Long>,
+    isUiHindi: Boolean,
+    initialFilter: ReviewFilter,
+    onClose: () -> Unit
+) {
+    var isContentHindi by remember { mutableStateOf(true) }
+    var activeFilter by remember { mutableStateOf(initialFilter) }
+    var showPalette by remember { mutableStateOf(false) }
+    val scope = rememberCoroutineScope()
+
+    // Build filtered list (pairs of originalIndex -> question)
+    val filteredList = remember(activeFilter, questions, userAnswers) {
+        questions.mapIndexed { index, q -> index to q }.filter { (idx, q) ->
+            val ans = userAnswers[idx]
+            when (activeFilter) {
+                ReviewFilter.ALL     -> true
+                ReviewFilter.CORRECT -> ans != null && ans == q.correctOptionIndex
+                ReviewFilter.WRONG   -> ans != null && ans != q.correctOptionIndex
+                ReviewFilter.SKIPPED -> ans == null
+            }
+        }
+    }
+
+    val pagerState = rememberPagerState(pageCount = { filteredList.size.coerceAtLeast(1) })
+
+    // Question Palette bottom sheet
+    if (showPalette) {
+        androidx.compose.material3.ModalBottomSheet(
+            onDismissRequest = { showPalette = false },
+            sheetState = androidx.compose.material3.rememberModalBottomSheetState()
+        ) {
+            Column(modifier = Modifier.padding(16.dp)) {
+                Text(
+                    text = if (isUiHindi) "प्रश्न पैलेट" else "Question Palette",
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(bottom = 12.dp)
+                )
+                // Legend
+                Row(
+                    modifier = Modifier.fillMaxWidth().padding(bottom = 12.dp),
+                    horizontalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Box(modifier = Modifier.size(14.dp).background(Color(0xFF4CAF50), CircleShape))
+                        Spacer(Modifier.width(4.dp))
+                        Text(if (isUiHindi) "सही" else "Correct", style = MaterialTheme.typography.labelSmall)
+                    }
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Box(modifier = Modifier.size(14.dp).background(Color(0xFFC62828), CircleShape))
+                        Spacer(Modifier.width(4.dp))
+                        Text(if (isUiHindi) "गलत" else "Wrong", style = MaterialTheme.typography.labelSmall)
+                    }
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Box(modifier = Modifier.size(14.dp).background(Color.Gray, CircleShape))
+                        Spacer(Modifier.width(4.dp))
+                        Text(if (isUiHindi) "छोड़े" else "Skipped", style = MaterialTheme.typography.labelSmall)
+                    }
+                }
+
+                LazyVerticalGrid(
+                    columns = GridCells.Adaptive(minSize = 52.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier.fillMaxWidth().height(300.dp)
+                ) {
+                    // Show all questions in palette (always, regardless of filter)
+                    items(questions.size) { origIdx ->
+                        val ans = userAnswers[origIdx]
+                        val correct = questions[origIdx].correctOptionIndex
+                        val isCorrect = ans != null && ans == correct
+                        val isWrong   = ans != null && ans != correct
+                        val isSkipped = ans == null
+                        val bgColor = when {
+                            isCorrect -> Color(0xFF4CAF50)
+                            isWrong   -> Color(0xFFC62828)
+                            else      -> Color.Gray
+                        }
+                        // Find position in filteredList to jump pager
+                        val filteredPos = filteredList.indexOfFirst { it.first == origIdx }
+                        val isCurrent = filteredList.getOrNull(pagerState.currentPage)?.first == origIdx
+
+                        Box(
+                            contentAlignment = Alignment.Center,
+                            modifier = Modifier
+                                .size(48.dp)
+                                .background(bgColor, CircleShape)
+                                .border(
+                                    width = if (isCurrent) 3.dp else 0.dp,
+                                    color = MaterialTheme.colorScheme.primary,
+                                    shape = CircleShape
+                                )
+                                .clickable {
+                                    if (filteredPos != -1) {
+                                        scope.launch { pagerState.scrollToPage(filteredPos) }
+                                    } else {
+                                        // Switch filter to show this question
+                                        activeFilter = when {
+                                            isCorrect -> ReviewFilter.CORRECT
+                                            isWrong   -> ReviewFilter.WRONG
+                                            else      -> ReviewFilter.SKIPPED
+                                        }
+                                    }
+                                    showPalette = false
+                                }
+                        ) {
+                            Text(
+                                text = "${origIdx + 1}",
+                                color = Color.White,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 13.sp
+                            )
+                        }
+                    }
+                }
+                Spacer(Modifier.height(24.dp))
+            }
+        }
+    }
+
+    Column(modifier = Modifier.fillMaxSize()) {
+        // Top Bar
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(MaterialTheme.colorScheme.surface)
+                .padding(horizontal = 8.dp, vertical = 4.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            IconButton(onClick = onClose) {
+                Icon(Icons.Default.Close, contentDescription = "Close")
+            }
+            Text(
+                text = if (isUiHindi) "उत्तर समीक्षा" else "Review Answers",
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.primary
+            )
+            Row {
+                // Language toggle
+                IconButton(onClick = { isContentHindi = !isContentHindi }) {
+                    Box(
+                        modifier = Modifier
+                            .size(28.dp)
+                            .border(1.5.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(6.dp)),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.Center,
+                            modifier = Modifier.padding(2.dp)
+                        ) {
+                            Text("E", style = MaterialTheme.typography.labelSmall, fontSize = 9.sp, fontWeight = FontWeight.Black, color = MaterialTheme.colorScheme.primary)
+                            Text("/", style = MaterialTheme.typography.labelSmall, fontSize = 9.sp, color = MaterialTheme.colorScheme.primary)
+                            Text("अ", style = MaterialTheme.typography.labelSmall, fontSize = 9.sp, fontWeight = FontWeight.Black, color = MaterialTheme.colorScheme.primary)
+                        }
+                    }
+                }
+                // Palette button
+                IconButton(onClick = { showPalette = true }) {
+                    Icon(Icons.Default.GridView, contentDescription = "Palette", tint = MaterialTheme.colorScheme.primary)
+                }
+            }
+        }
+
+        // Filter Chips
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 12.dp, vertical = 4.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            val filters = listOf(
+                ReviewFilter.ALL     to (if (isUiHindi) "सभी" else "All"),
+                ReviewFilter.WRONG   to (if (isUiHindi) "गलत" else "Wrong"),
+                ReviewFilter.SKIPPED to (if (isUiHindi) "छोड़े" else "Skipped"),
+                ReviewFilter.CORRECT to (if (isUiHindi) "सही" else "Correct"),
+            )
+            filters.forEach { (filter, label) ->
+                FilterChip(
+                    selected = activeFilter == filter,
+                    onClick = {
+                        activeFilter = filter
+                        scope.launch { pagerState.scrollToPage(0) }
+                    },
+                    label = { Text(label, fontSize = 12.sp) },
+                    colors = FilterChipDefaults.filterChipColors(
+                        selectedContainerColor = MaterialTheme.colorScheme.primary,
+                        selectedLabelColor = Color.White
+                    )
+                )
+            }
+        }
+
+        // Progress indicator
+        if (filteredList.isNotEmpty()) {
+            val currOrig = filteredList.getOrNull(pagerState.currentPage)?.first ?: 0
+            val label = when {
+                userAnswers[currOrig] == null -> if (isUiHindi) "छोड़ा गया" else "Skipped"
+                userAnswers[currOrig] == questions[currOrig].correctOptionIndex -> if (isUiHindi) "सही" else "Correct"
+                else -> if (isUiHindi) "गलत" else "Wrong"
+            }
+            val labelColor = when {
+                userAnswers[currOrig] == null -> Color.Gray
+                userAnswers[currOrig] == questions[currOrig].correctOptionIndex -> Color(0xFF2E7D32)
+                else -> Color(0xFFC62828)
+            }
+            Row(
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 2.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    "Q${currOrig + 1} / ${questions.size}",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = Color.Gray
+                )
+                Text(
+                    label,
+                    style = MaterialTheme.typography.labelMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = labelColor
+                )
+                Text(
+                    "${pagerState.currentPage + 1} / ${filteredList.size}",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = Color.Gray
+                )
+            }
+        }
+
+        // Empty state
+        if (filteredList.isEmpty()) {
+            Box(modifier = Modifier.weight(1f).fillMaxWidth(), contentAlignment = Alignment.Center) {
+                Text(
+                    text = if (isUiHindi) "कोई प्रश्न नहीं मिला" else "No questions for this filter",
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = Color.Gray
+                )
+            }
+        } else {
+            // Horizontal Pager
+            HorizontalPager(
+                state = pagerState,
+                modifier = Modifier.weight(1f),
+                verticalAlignment = Alignment.Top
+            ) { page ->
+                val (origIdx, question) = filteredList[page]
+                val userAnswerIndex = userAnswers[origIdx]
+                val correctOptionIndex = question.correctOptionIndex
+
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(horizontal = 16.dp, vertical = 8.dp)
+                        .verticalScroll(rememberScrollState())
+                ) {
+                    // Question text
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                        elevation = CardDefaults.cardElevation(2.dp)
+                    ) {
+                        Column(modifier = Modifier.padding(16.dp)) {
+                            Row(verticalAlignment = Alignment.Top) {
+                                Text(
+                                    "Q${origIdx + 1}.",
+                                    style = MaterialTheme.typography.titleMedium,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.primary
+                                )
+                                Spacer(Modifier.width(8.dp))
+                                Text(
+                                    if (isContentHindi) question.questionHi else question.questionEn,
+                                    style = MaterialTheme.typography.bodyLarge,
+                                    fontWeight = FontWeight.Medium
+                                )
+                            }
+                            // Time spent
+                            val timeMs = timePerQuestion[origIdx] ?: 0L
+                            val tSec = timeMs / 1000
+                            Row(
+                                modifier = Modifier.padding(top = 8.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Icon(Icons.Default.Schedule, contentDescription = null, tint = Color.Gray, modifier = Modifier.size(14.dp))
+                                Spacer(Modifier.width(4.dp))
+                                Text(
+                                    text = String.format("%02d:%02d", tSec / 60, tSec % 60),
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = Color.Gray
+                                )
+                            }
+                        }
+                    }
+
+                    Spacer(Modifier.height(12.dp))
+
+                    // Options
+                    val options = if (isContentHindi) question.optionsHi else question.optionsEn
+                    options.forEachIndexed { optIdx, opt ->
+                        val isSelected = userAnswerIndex == optIdx
+                        val isCorrectOpt = correctOptionIndex == optIdx
+                        val (bgColor, textColor) = when {
+                            isCorrectOpt -> Color(0xFFE8F5E9) to Color(0xFF2E7D32)
+                            isSelected && !isCorrectOpt -> Color(0xFFFFEBEE) to Color(0xFFC62828)
+                            else -> Color.Transparent to MaterialTheme.colorScheme.onSurface
+                        }
+                        val borderColor = if (isCorrectOpt || isSelected) Color.Transparent else Color.Gray.copy(alpha = 0.2f)
+
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 4.dp)
+                                .background(bgColor, RoundedCornerShape(8.dp))
+                                .border(1.dp, borderColor, RoundedCornerShape(8.dp))
+                                .padding(12.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            if (isCorrectOpt) {
+                                Icon(Icons.Default.Check, null, tint = textColor, modifier = Modifier.size(18.dp))
+                                Spacer(Modifier.width(8.dp))
+                            } else if (isSelected) {
+                                Icon(Icons.Default.Close, null, tint = textColor, modifier = Modifier.size(18.dp))
+                                Spacer(Modifier.width(8.dp))
+                            }
+                            Text(opt, color = textColor, fontWeight = if (isCorrectOpt || isSelected) FontWeight.Bold else FontWeight.Normal)
+                        }
+                    }
+
+                    Spacer(Modifier.height(12.dp))
+
+                    // Solution
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(Color(0xFFFFF3E0), RoundedCornerShape(8.dp))
+                            .padding(12.dp)
+                    ) {
+                        Text(
+                            text = if (isUiHindi) "व्याख्या:" else "Solution:",
+                            style = MaterialTheme.typography.labelLarge,
+                            color = Color(0xFFE65100),
+                            fontWeight = FontWeight.Bold
+                        )
+                        Text(
+                            text = if (isContentHindi) question.solutionHi else question.solutionEn,
+                            style = MaterialTheme.typography.bodySmall,
+                            color = Color(0xFFBF360C)
+                        )
+                    }
+                    Spacer(Modifier.height(80.dp))
+                }
+            }
+        }
+
+        // Bottom Nav Bar
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(MaterialTheme.colorScheme.surface)
+                .padding(horizontal = 16.dp, vertical = 8.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            OutlinedButton(
+                onClick = { scope.launch { pagerState.animateScrollToPage((pagerState.currentPage - 1).coerceAtLeast(0)) } },
+                enabled = pagerState.currentPage > 0,
+                shape = RoundedCornerShape(8.dp)
+            ) {
+                Icon(Icons.Default.NavigateBefore, null)
+                Text(if (isUiHindi) "पिछला" else "Prev")
+            }
+
+            OutlinedButton(
+                onClick = { showPalette = true },
+                shape = RoundedCornerShape(8.dp),
+                border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary)
+            ) {
+                Icon(Icons.Default.GridView, null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(18.dp))
+                Spacer(Modifier.width(4.dp))
+                Text(if (isUiHindi) "पैलेट" else "Palette", color = MaterialTheme.colorScheme.primary)
+            }
+
+            OutlinedButton(
+                onClick = { scope.launch { pagerState.animateScrollToPage((pagerState.currentPage + 1).coerceAtMost(filteredList.size - 1)) } },
+                enabled = pagerState.currentPage < filteredList.size - 1,
+                shape = RoundedCornerShape(8.dp)
+            ) {
+                Text(if (isUiHindi) "अगला" else "Next")
+                Icon(Icons.Default.NavigateNext, null)
+            }
+        }
+    }
+}
+
