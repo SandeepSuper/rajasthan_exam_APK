@@ -5,7 +5,8 @@
     
     <application
         android:name=".MainApplication"
-        android:allowBackup="true"
+        android:allowBackup="false"
+        android:fullBackupContent="false"
         android:icon="@mipmap/ic_launcher"
         android:label="Rajasthan Exams"
         android:roundIcon="@mipmap/ic_launcher"

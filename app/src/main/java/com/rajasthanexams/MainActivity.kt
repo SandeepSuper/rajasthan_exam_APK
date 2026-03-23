@@ -204,6 +204,8 @@ fun AppNavigation(
     androidx.compose.runtime.LaunchedEffect(loginState) {
         if (loginState is com.rajasthanexams.ui.viewmodels.LoginUiState.LoggedIn) {
             homeViewModel.fetchTests()
+            communityViewModel.fetchPosts()
+            notificationsViewModel.load()
         }
     }
 

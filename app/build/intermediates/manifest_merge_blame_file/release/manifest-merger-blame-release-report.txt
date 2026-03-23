@@ -1,0 +1,298 @@
+1<?xml version="1.0" encoding="utf-8"?>
+2<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+3    package="com.rajasthanexams"
+4    android:versionCode="2"
+5    android:versionName="1.0.1" >
+6
+7    <uses-sdk
+8        android:minSdkVersion="26"
+9        android:targetSdkVersion="34" />
+10
+11    <uses-permission android:name="android.permission.INTERNET" />
+11-->C:\Users\pc\.gemini\antigravity\scratch\rajasthan_exam\app\src\main\AndroidManifest.xml:4:5-67
+11-->C:\Users\pc\.gemini\antigravity\scratch\rajasthan_exam\app\src\main\AndroidManifest.xml:4:22-64
+12
+13    <queries>
+13-->[com.razorpay:checkout:1.6.33] C:\Users\pc\.gradle\caches\9.0-milestone-1\transforms\920b20a18f083741f16cfb2f728b8222\transformed\jetified-checkout-1.6.33\AndroidManifest.xml:10:5-39:15
+14        <intent>
+14-->[com.razorpay:checkout:1.6.33] C:\Users\pc\.gradle\caches\9.0-milestone-1\transforms\920b20a18f083741f16cfb2f728b8222\transformed\jetified-checkout-1.6.33\AndroidManifest.xml:11:9-17:18
+15            <action android:name="android.intent.action.VIEW" />
+15-->[com.razorpay:checkout:1.6.33] C:\Users\pc\.gradle\caches\9.0-milestone-1\transforms\920b20a18f083741f16cfb2f728b8222\transformed\jetified-checkout-1.6.33\AndroidManifest.xml:12:13-65
+15-->[com.razorpay:checkout:1.6.33] C:\Users\pc\.gradle\caches\9.0-milestone-1\transforms\920b20a18f083741f16cfb2f728b8222\transformed\jetified-checkout-1.6.33\AndroidManifest.xml:12:21-62
+16
+17            <data
+17-->[com.razorpay:checkout:1.6.33] C:\Users\pc\.gradle\caches\9.0-milestone-1\transforms\920b20a18f083741f16cfb2f728b8222\transformed\jetified-checkout-1.6.33\AndroidManifest.xml:14:13-16:38
+18                android:mimeType="*/*"
+18-->[com.razorpay:checkout:1.6.33] C:\Users\pc\.gradle\caches\9.0-milestone-1\transforms\920b20a18f083741f16cfb2f728b8222\transformed\jetified-checkout-1.6.33\AndroidManifest.xml:15:17-39
+19                android:scheme="*" />
+19-->[com.razorpay:checkout:1.6.33] C:\Users\pc\.gradle\caches\9.0-milestone-1\transforms\920b20a18f083741f16cfb2f728b8222\transformed\jetified-checkout-1.6.33\AndroidManifest.xml:16:17-35
+20        </intent>
+21        <intent>
+21-->[com.razorpay:checkout:1.6.33] C:\Users\pc\.gradle\caches\9.0-milestone-1\transforms\920b20a18f083741f16cfb2f728b8222\transformed\jetified-checkout-1.6.33\AndroidManifest.xml:18:9-27:18
+22            <action android:name="android.intent.action.VIEW" />
+22-->[com.razorpay:checkout:1.6.33] C:\Users\pc\.gradle\caches\9.0-milestone-1\transforms\920b20a18f083741f16cfb2f728b8222\transformed\jetified-checkout-1.6.33\AndroidManifest.xml:12:13-65
+22-->[com.razorpay:checkout:1.6.33] C:\Users\pc\.gradle\caches\9.0-milestone-1\transforms\920b20a18f083741f16cfb2f728b8222\transformed\jetified-checkout-1.6.33\AndroidManifest.xml:12:21-62
+23
+24            <category android:name="android.intent.category.BROWSABLE" />
+24-->[com.razorpay:checkout:1.6.33] C:\Users\pc\.gradle\caches\9.0-milestone-1\transforms\920b20a18f083741f16cfb2f728b8222\transformed\jetified-checkout-1.6.33\AndroidManifest.xml:21:13-74
+24-->[com.razorpay:checkout:1.6.33] C:\Users\pc\.gradle\caches\9.0-milestone-1\transforms\920b20a18f083741f16cfb2f728b8222\transformed\jetified-checkout-1.6.33\AndroidManifest.xml:21:23-71
+25
+26            <data
+26-->[com.razorpay:checkout:1.6.33] C:\Users\pc\.gradle\caches\9.0-milestone-1\transforms\920b20a18f083741f16cfb2f728b8222\transformed\jetified-checkout-1.6.33\AndroidManifest.xml:14:13-16:38
+27                android:host="pay"
+28                android:mimeType="*/*"
+28-->[com.razorpay:checkout:1.6.33] C:\Users\pc\.gradle\caches\9.0-milestone-1\transforms\920b20a18f083741f16cfb2f728b8222\transformed\jetified-checkout-1.6.33\AndroidManifest.xml:15:17-39
+29                android:scheme="upi" />
+29-->[com.razorpay:checkout:1.6.33] C:\Users\pc\.gradle\caches\9.0-milestone-1\transforms\920b20a18f083741f16cfb2f728b8222\transformed\jetified-checkout-1.6.33\AndroidManifest.xml:16:17-35
+30        </intent>
+31        <intent>
+31-->[com.razorpay:checkout:1.6.33] C:\Users\pc\.gradle\caches\9.0-milestone-1\transforms\920b20a18f083741f16cfb2f728b8222\transformed\jetified-checkout-1.6.33\AndroidManifest.xml:28:9-30:18
+32            <action android:name="android.intent.action.MAIN" />
+32-->C:\Users\pc\.gemini\antigravity\scratch\rajasthan_exam\app\src\main\AndroidManifest.xml:23:17-69
+32-->C:\Users\pc\.gemini\antigravity\scratch\rajasthan_exam\app\src\main\AndroidManifest.xml:23:25-66
+33        </intent>
+34        <intent>
+34-->[com.razorpay:checkout:1.6.33] C:\Users\pc\.gradle\caches\9.0-milestone-1\transforms\920b20a18f083741f16cfb2f728b8222\transformed\jetified-checkout-1.6.33\AndroidManifest.xml:31:9-35:18
+35            <action android:name="android.intent.action.SEND" />
+35-->[com.razorpay:checkout:1.6.33] C:\Users\pc\.gradle\caches\9.0-milestone-1\transforms\920b20a18f083741f16cfb2f728b8222\transformed\jetified-checkout-1.6.33\AndroidManifest.xml:32:13-65
+35-->[com.razorpay:checkout:1.6.33] C:\Users\pc\.gradle\caches\9.0-milestone-1\transforms\920b20a18f083741f16cfb2f728b8222\transformed\jetified-checkout-1.6.33\AndroidManifest.xml:32:21-62
+36
+37            <data android:mimeType="*/*" />
+37-->[com.razorpay:checkout:1.6.33] C:\Users\pc\.gradle\caches\9.0-milestone-1\transforms\920b20a18f083741f16cfb2f728b8222\transformed\jetified-checkout-1.6.33\AndroidManifest.xml:14:13-16:38
+37-->[com.razorpay:checkout:1.6.33] C:\Users\pc\.gradle\caches\9.0-milestone-1\transforms\920b20a18f083741f16cfb2f728b8222\transformed\jetified-checkout-1.6.33\AndroidManifest.xml:15:17-39
+38        </intent>
+39        <intent>
+39-->[com.razorpay:checkout:1.6.33] C:\Users\pc\.gradle\caches\9.0-milestone-1\transforms\920b20a18f083741f16cfb2f728b8222\transformed\jetified-checkout-1.6.33\AndroidManifest.xml:36:9-38:18
+40            <action android:name="rzp.device_token.share" />
+40-->[com.razorpay:checkout:1.6.33] C:\Users\pc\.gradle\caches\9.0-milestone-1\transforms\920b20a18f083741f16cfb2f728b8222\transformed\jetified-checkout-1.6.33\AndroidManifest.xml:37:13-61
+40-->[com.razorpay:checkout:1.6.33] C:\Users\pc\.gradle\caches\9.0-milestone-1\transforms\920b20a18f083741f16cfb2f728b8222\transformed\jetified-checkout-1.6.33\AndroidManifest.xml:37:21-58
+41        </intent>
+42    </queries> <!-- Include required permissions for Google Maps API to run. -->
+43    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+43-->[com.google.android.gms:play-services-maps:17.0.0] C:\Users\pc\.gradle\caches\9.0-milestone-1\transforms\f09a04fda854be90696ad392ee90bf25\transformed\jetified-play-services-maps-17.0.0\AndroidManifest.xml:23:5-79
+43-->[com.google.android.gms:play-services-maps:17.0.0] C:\Users\pc\.gradle\caches\9.0-milestone-1\transforms\f09a04fda854be90696ad392ee90bf25\transformed\jetified-play-services-maps-17.0.0\AndroidManifest.xml:23:22-76
+44
+45    <uses-feature
+45-->[com.google.android.gms:play-services-maps:17.0.0] C:\Users\pc\.gradle\caches\9.0-milestone-1\transforms\f09a04fda854be90696ad392ee90bf25\transformed\jetified-play-services-maps-17.0.0\AndroidManifest.xml:26:5-28:35
+46        android:glEsVersion="0x00020000"
+46-->[com.google.android.gms:play-services-maps:17.0.0] C:\Users\pc\.gradle\caches\9.0-milestone-1\transforms\f09a04fda854be90696ad392ee90bf25\transformed\jetified-play-services-maps-17.0.0\AndroidManifest.xml:27:9-41
+47        android:required="true" />
+47-->[com.google.android.gms:play-services-maps:17.0.0] C:\Users\pc\.gradle\caches\9.0-milestone-1\transforms\f09a04fda854be90696ad392ee90bf25\transformed\jetified-play-services-maps-17.0.0\AndroidManifest.xml:28:9-32
+48
+49    <permission
+49-->[androidx.core:core:1.13.1] C:\Users\pc\.gradle\caches\9.0-milestone-1\transforms\cef816511ea471ee061a42cbdef31dfc\transformed\core-1.13.1\AndroidManifest.xml:22:5-24:47
+50        android:name="com.rajasthanexams.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
+50-->[androidx.core:core:1.13.1] C:\Users\pc\.gradle\caches\9.0-milestone-1\transforms\cef816511ea471ee061a42cbdef31dfc\transformed\core-1.13.1\AndroidManifest.xml:23:9-81
+51        android:protectionLevel="signature" />
+51-->[androidx.core:core:1.13.1] C:\Users\pc\.gradle\caches\9.0-milestone-1\transforms\cef816511ea471ee061a42cbdef31dfc\transformed\core-1.13.1\AndroidManifest.xml:24:9-44
+52
+53    <uses-permission android:name="com.rajasthanexams.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" />
+53-->[androidx.core:core:1.13.1] C:\Users\pc\.gradle\caches\9.0-milestone-1\transforms\cef816511ea471ee061a42cbdef31dfc\transformed\core-1.13.1\AndroidManifest.xml:26:5-97
+53-->[androidx.core:core:1.13.1] C:\Users\pc\.gradle\caches\9.0-milestone-1\transforms\cef816511ea471ee061a42cbdef31dfc\transformed\core-1.13.1\AndroidManifest.xml:26:22-94
+54
+55    <application
+55-->C:\Users\pc\.gemini\antigravity\scratch\rajasthan_exam\app\src\main\AndroidManifest.xml:6:5-31:19
+56        android:name="com.rajasthanexams.MainApplication"
+56-->C:\Users\pc\.gemini\antigravity\scratch\rajasthan_exam\app\src\main\AndroidManifest.xml:7:9-40
+57        android:allowBackup="false"
+57-->C:\Users\pc\.gemini\antigravity\scratch\rajasthan_exam\app\src\main\AndroidManifest.xml:8:9-36
+58        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
+58-->[androidx.core:core:1.13.1] C:\Users\pc\.gradle\caches\9.0-milestone-1\transforms\cef816511ea471ee061a42cbdef31dfc\transformed\core-1.13.1\AndroidManifest.xml:28:18-86
+59        android:extractNativeLibs="true"
+60        android:fullBackupContent="false"
+60-->C:\Users\pc\.gemini\antigravity\scratch\rajasthan_exam\app\src\main\AndroidManifest.xml:9:9-42
+61        android:icon="@mipmap/ic_launcher"
+61-->C:\Users\pc\.gemini\antigravity\scratch\rajasthan_exam\app\src\main\AndroidManifest.xml:10:9-43
+62        android:label="Rajasthan Exams"
+62-->C:\Users\pc\.gemini\antigravity\scratch\rajasthan_exam\app\src\main\AndroidManifest.xml:11:9-40
+63        android:networkSecurityConfig="@xml/network_security_config"
+63-->C:\Users\pc\.gemini\antigravity\scratch\rajasthan_exam\app\src\main\AndroidManifest.xml:15:9-69
+64        android:roundIcon="@mipmap/ic_launcher"
+64-->C:\Users\pc\.gemini\antigravity\scratch\rajasthan_exam\app\src\main\AndroidManifest.xml:12:9-48
+65        android:supportsRtl="true"
+65-->C:\Users\pc\.gemini\antigravity\scratch\rajasthan_exam\app\src\main\AndroidManifest.xml:13:9-35
+66        android:theme="@android:style/Theme.Material.Light.NoActionBar"
+66-->C:\Users\pc\.gemini\antigravity\scratch\rajasthan_exam\app\src\main\AndroidManifest.xml:16:9-72
+67        android:usesCleartextTraffic="true" >
+67-->C:\Users\pc\.gemini\antigravity\scratch\rajasthan_exam\app\src\main\AndroidManifest.xml:14:9-44
+68        <activity
+68-->C:\Users\pc\.gemini\antigravity\scratch\rajasthan_exam\app\src\main\AndroidManifest.xml:18:9-26:20
+69            android:name="com.rajasthanexams.MainActivity"
+69-->C:\Users\pc\.gemini\antigravity\scratch\rajasthan_exam\app\src\main\AndroidManifest.xml:19:13-41
+70            android:exported="true"
+70-->C:\Users\pc\.gemini\antigravity\scratch\rajasthan_exam\app\src\main\AndroidManifest.xml:20:13-36
+71            android:theme="@android:style/Theme.Material.Light.NoActionBar" >
+71-->C:\Users\pc\.gemini\antigravity\scratch\rajasthan_exam\app\src\main\AndroidManifest.xml:21:13-76
+72            <intent-filter>
+72-->C:\Users\pc\.gemini\antigravity\scratch\rajasthan_exam\app\src\main\AndroidManifest.xml:22:13-25:29
+73                <action android:name="android.intent.action.MAIN" />
+73-->C:\Users\pc\.gemini\antigravity\scratch\rajasthan_exam\app\src\main\AndroidManifest.xml:23:17-69
+73-->C:\Users\pc\.gemini\antigravity\scratch\rajasthan_exam\app\src\main\AndroidManifest.xml:23:25-66
+74
+75                <category android:name="android.intent.category.LAUNCHER" />
+75-->C:\Users\pc\.gemini\antigravity\scratch\rajasthan_exam\app\src\main\AndroidManifest.xml:24:17-77
+75-->C:\Users\pc\.gemini\antigravity\scratch\rajasthan_exam\app\src\main\AndroidManifest.xml:24:27-74
+76            </intent-filter>
+77        </activity>
+78
+79        <meta-data
+79-->C:\Users\pc\.gemini\antigravity\scratch\rajasthan_exam\app\src\main\AndroidManifest.xml:28:9-30:55
+80            android:name="com.razorpay.ApiKey"
+80-->C:\Users\pc\.gemini\antigravity\scratch\rajasthan_exam\app\src\main\AndroidManifest.xml:29:13-47
+81            android:value="rzp_test_Rvj7jfCCdtvpMu" />
+81-->C:\Users\pc\.gemini\antigravity\scratch\rajasthan_exam\app\src\main\AndroidManifest.xml:30:13-52
+82
+83        <receiver
+83-->[com.razorpay:checkout:1.6.33] C:\Users\pc\.gradle\caches\9.0-milestone-1\transforms\920b20a18f083741f16cfb2f728b8222\transformed\jetified-checkout-1.6.33\AndroidManifest.xml:42:9-49:20
+84            android:name="com.razorpay.RzpTokenReceiver"
+84-->[com.razorpay:checkout:1.6.33] C:\Users\pc\.gradle\caches\9.0-milestone-1\transforms\920b20a18f083741f16cfb2f728b8222\transformed\jetified-checkout-1.6.33\AndroidManifest.xml:43:13-57
+85            android:exported="true" >
+85-->[com.razorpay:checkout:1.6.33] C:\Users\pc\.gradle\caches\9.0-milestone-1\transforms\920b20a18f083741f16cfb2f728b8222\transformed\jetified-checkout-1.6.33\AndroidManifest.xml:44:13-36
+86            <intent-filter>
+86-->[com.razorpay:checkout:1.6.33] C:\Users\pc\.gradle\caches\9.0-milestone-1\transforms\920b20a18f083741f16cfb2f728b8222\transformed\jetified-checkout-1.6.33\AndroidManifest.xml:46:13-48:29
+87                <action android:name="rzp.device_token.share" />
+87-->[com.razorpay:checkout:1.6.33] C:\Users\pc\.gradle\caches\9.0-milestone-1\transforms\920b20a18f083741f16cfb2f728b8222\transformed\jetified-checkout-1.6.33\AndroidManifest.xml:37:13-61
+87-->[com.razorpay:checkout:1.6.33] C:\Users\pc\.gradle\caches\9.0-milestone-1\transforms\920b20a18f083741f16cfb2f728b8222\transformed\jetified-checkout-1.6.33\AndroidManifest.xml:37:21-58
+88            </intent-filter>
+89        </receiver>
+90
+91        <activity
+91-->[com.razorpay:checkout:1.6.33] C:\Users\pc\.gradle\caches\9.0-milestone-1\transforms\920b20a18f083741f16cfb2f728b8222\transformed\jetified-checkout-1.6.33\AndroidManifest.xml:51:9-59:20
+92            android:name="com.razorpay.CheckoutActivity"
+92-->[com.razorpay:checkout:1.6.33] C:\Users\pc\.gradle\caches\9.0-milestone-1\transforms\920b20a18f083741f16cfb2f728b8222\transformed\jetified-checkout-1.6.33\AndroidManifest.xml:52:13-57
+93            android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
+93-->[com.razorpay:checkout:1.6.33] C:\Users\pc\.gradle\caches\9.0-milestone-1\transforms\920b20a18f083741f16cfb2f728b8222\transformed\jetified-checkout-1.6.33\AndroidManifest.xml:53:13-83
+94            android:exported="true"
+94-->[com.razorpay:checkout:1.6.33] C:\Users\pc\.gradle\caches\9.0-milestone-1\transforms\920b20a18f083741f16cfb2f728b8222\transformed\jetified-checkout-1.6.33\AndroidManifest.xml:54:13-36
+95            android:theme="@style/CheckoutTheme" >
+95-->[com.razorpay:checkout:1.6.33] C:\Users\pc\.gradle\caches\9.0-milestone-1\transforms\920b20a18f083741f16cfb2f728b8222\transformed\jetified-checkout-1.6.33\AndroidManifest.xml:55:13-49
+96            <intent-filter>
+96-->[com.razorpay:checkout:1.6.33] C:\Users\pc\.gradle\caches\9.0-milestone-1\transforms\920b20a18f083741f16cfb2f728b8222\transformed\jetified-checkout-1.6.33\AndroidManifest.xml:56:13-58:29
+97                <action android:name="android.intent.action.MAIN" />
+97-->C:\Users\pc\.gemini\antigravity\scratch\rajasthan_exam\app\src\main\AndroidManifest.xml:23:17-69
+97-->C:\Users\pc\.gemini\antigravity\scratch\rajasthan_exam\app\src\main\AndroidManifest.xml:23:25-66
+98            </intent-filter>
+99        </activity>
+100
+101        <meta-data
+101-->[com.razorpay:checkout:1.6.33] C:\Users\pc\.gradle\caches\9.0-milestone-1\transforms\920b20a18f083741f16cfb2f728b8222\transformed\jetified-checkout-1.6.33\AndroidManifest.xml:61:9-63:58
+102            android:name="com.razorpay.plugin.googlepay_all"
+102-->[com.razorpay:checkout:1.6.33] C:\Users\pc\.gradle\caches\9.0-milestone-1\transforms\920b20a18f083741f16cfb2f728b8222\transformed\jetified-checkout-1.6.33\AndroidManifest.xml:62:13-61
+103            android:value="com.razorpay.RzpGpayMerged" />
+103-->[com.razorpay:checkout:1.6.33] C:\Users\pc\.gradle\caches\9.0-milestone-1\transforms\920b20a18f083741f16cfb2f728b8222\transformed\jetified-checkout-1.6.33\AndroidManifest.xml:63:13-55
+104
+105        <activity
+105-->[com.google.android.gms:play-services-auth:21.0.0] C:\Users\pc\.gradle\caches\9.0-milestone-1\transforms\d6696612f9478eaac8dcc775b399efa4\transformed\jetified-play-services-auth-21.0.0\AndroidManifest.xml:23:9-27:75
+106            android:name="com.google.android.gms.auth.api.signin.internal.SignInHubActivity"
+106-->[com.google.android.gms:play-services-auth:21.0.0] C:\Users\pc\.gradle\caches\9.0-milestone-1\transforms\d6696612f9478eaac8dcc775b399efa4\transformed\jetified-play-services-auth-21.0.0\AndroidManifest.xml:24:13-93
+107            android:excludeFromRecents="true"
+107-->[com.google.android.gms:play-services-auth:21.0.0] C:\Users\pc\.gradle\caches\9.0-milestone-1\transforms\d6696612f9478eaac8dcc775b399efa4\transformed\jetified-play-services-auth-21.0.0\AndroidManifest.xml:25:13-46
+108            android:exported="false"
+108-->[com.google.android.gms:play-services-auth:21.0.0] C:\Users\pc\.gradle\caches\9.0-milestone-1\transforms\d6696612f9478eaac8dcc775b399efa4\transformed\jetified-play-services-auth-21.0.0\AndroidManifest.xml:26:13-37
+109            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+109-->[com.google.android.gms:play-services-auth:21.0.0] C:\Users\pc\.gradle\caches\9.0-milestone-1\transforms\d6696612f9478eaac8dcc775b399efa4\transformed\jetified-play-services-auth-21.0.0\AndroidManifest.xml:27:13-72
+110        <!--
+111            Service handling Google Sign-In user revocation. For apps that do not integrate with
+112            Google Sign-In, this service will never be started.
+113        -->
+114        <service
+114-->[com.google.android.gms:play-services-auth:21.0.0] C:\Users\pc\.gradle\caches\9.0-milestone-1\transforms\d6696612f9478eaac8dcc775b399efa4\transformed\jetified-play-services-auth-21.0.0\AndroidManifest.xml:33:9-37:51
+115            android:name="com.google.android.gms.auth.api.signin.RevocationBoundService"
+115-->[com.google.android.gms:play-services-auth:21.0.0] C:\Users\pc\.gradle\caches\9.0-milestone-1\transforms\d6696612f9478eaac8dcc775b399efa4\transformed\jetified-play-services-auth-21.0.0\AndroidManifest.xml:34:13-89
+116            android:exported="true"
+116-->[com.google.android.gms:play-services-auth:21.0.0] C:\Users\pc\.gradle\caches\9.0-milestone-1\transforms\d6696612f9478eaac8dcc775b399efa4\transformed\jetified-play-services-auth-21.0.0\AndroidManifest.xml:35:13-36
+117            android:permission="com.google.android.gms.auth.api.signin.permission.REVOCATION_NOTIFICATION"
+117-->[com.google.android.gms:play-services-auth:21.0.0] C:\Users\pc\.gradle\caches\9.0-milestone-1\transforms\d6696612f9478eaac8dcc775b399efa4\transformed\jetified-play-services-auth-21.0.0\AndroidManifest.xml:36:13-107
+118            android:visibleToInstantApps="true" /> <!-- Needs to be explicitly declared on P+ -->
+118-->[com.google.android.gms:play-services-auth:21.0.0] C:\Users\pc\.gradle\caches\9.0-milestone-1\transforms\d6696612f9478eaac8dcc775b399efa4\transformed\jetified-play-services-auth-21.0.0\AndroidManifest.xml:37:13-48
+119        <uses-library
+119-->[com.google.android.gms:play-services-maps:17.0.0] C:\Users\pc\.gradle\caches\9.0-milestone-1\transforms\f09a04fda854be90696ad392ee90bf25\transformed\jetified-play-services-maps-17.0.0\AndroidManifest.xml:33:9-35:40
+120            android:name="org.apache.http.legacy"
+120-->[com.google.android.gms:play-services-maps:17.0.0] C:\Users\pc\.gradle\caches\9.0-milestone-1\transforms\f09a04fda854be90696ad392ee90bf25\transformed\jetified-play-services-maps-17.0.0\AndroidManifest.xml:34:13-50
+121            android:required="false" />
+121-->[com.google.android.gms:play-services-maps:17.0.0] C:\Users\pc\.gradle\caches\9.0-milestone-1\transforms\f09a04fda854be90696ad392ee90bf25\transformed\jetified-play-services-maps-17.0.0\AndroidManifest.xml:35:13-37
+122
+123        <activity
+123-->[com.google.android.gms:play-services-base:18.0.1] C:\Users\pc\.gradle\caches\9.0-milestone-1\transforms\4dfe3a36a6127bbd5631732a73037ff6\transformed\jetified-play-services-base-18.0.1\AndroidManifest.xml:20:9-22:45
+124            android:name="com.google.android.gms.common.api.GoogleApiActivity"
+124-->[com.google.android.gms:play-services-base:18.0.1] C:\Users\pc\.gradle\caches\9.0-milestone-1\transforms\4dfe3a36a6127bbd5631732a73037ff6\transformed\jetified-play-services-base-18.0.1\AndroidManifest.xml:20:19-85
+125            android:exported="false"
+125-->[com.google.android.gms:play-services-base:18.0.1] C:\Users\pc\.gradle\caches\9.0-milestone-1\transforms\4dfe3a36a6127bbd5631732a73037ff6\transformed\jetified-play-services-base-18.0.1\AndroidManifest.xml:22:19-43
+126            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+126-->[com.google.android.gms:play-services-base:18.0.1] C:\Users\pc\.gradle\caches\9.0-milestone-1\transforms\4dfe3a36a6127bbd5631732a73037ff6\transformed\jetified-play-services-base-18.0.1\AndroidManifest.xml:21:19-78
+127
+128        <meta-data
+128-->[com.google.android.gms:play-services-basement:18.2.0] C:\Users\pc\.gradle\caches\9.0-milestone-1\transforms\dcf0c0a5340c530ee6109433e365efd0\transformed\jetified-play-services-basement-18.2.0\AndroidManifest.xml:21:9-23:69
+129            android:name="com.google.android.gms.version"
+129-->[com.google.android.gms:play-services-basement:18.2.0] C:\Users\pc\.gradle\caches\9.0-milestone-1\transforms\dcf0c0a5340c530ee6109433e365efd0\transformed\jetified-play-services-basement-18.2.0\AndroidManifest.xml:22:13-58
+130            android:value="@integer/google_play_services_version" />
+130-->[com.google.android.gms:play-services-basement:18.2.0] C:\Users\pc\.gradle\caches\9.0-milestone-1\transforms\dcf0c0a5340c530ee6109433e365efd0\transformed\jetified-play-services-basement-18.2.0\AndroidManifest.xml:23:13-66
+131
+132        <provider
+132-->[androidx.emoji2:emoji2:1.3.0] C:\Users\pc\.gradle\caches\9.0-milestone-1\transforms\408fb6230c5b9c0fcca0507b01ddf2a2\transformed\jetified-emoji2-1.3.0\AndroidManifest.xml:24:9-32:20
+133            android:name="androidx.startup.InitializationProvider"
+133-->[androidx.emoji2:emoji2:1.3.0] C:\Users\pc\.gradle\caches\9.0-milestone-1\transforms\408fb6230c5b9c0fcca0507b01ddf2a2\transformed\jetified-emoji2-1.3.0\AndroidManifest.xml:25:13-67
+134            android:authorities="com.rajasthanexams.androidx-startup"
+134-->[androidx.emoji2:emoji2:1.3.0] C:\Users\pc\.gradle\caches\9.0-milestone-1\transforms\408fb6230c5b9c0fcca0507b01ddf2a2\transformed\jetified-emoji2-1.3.0\AndroidManifest.xml:26:13-68
+135            android:exported="false" >
+135-->[androidx.emoji2:emoji2:1.3.0] C:\Users\pc\.gradle\caches\9.0-milestone-1\transforms\408fb6230c5b9c0fcca0507b01ddf2a2\transformed\jetified-emoji2-1.3.0\AndroidManifest.xml:27:13-37
+136            <meta-data
+136-->[androidx.emoji2:emoji2:1.3.0] C:\Users\pc\.gradle\caches\9.0-milestone-1\transforms\408fb6230c5b9c0fcca0507b01ddf2a2\transformed\jetified-emoji2-1.3.0\AndroidManifest.xml:29:13-31:52
+137                android:name="androidx.emoji2.text.EmojiCompatInitializer"
+137-->[androidx.emoji2:emoji2:1.3.0] C:\Users\pc\.gradle\caches\9.0-milestone-1\transforms\408fb6230c5b9c0fcca0507b01ddf2a2\transformed\jetified-emoji2-1.3.0\AndroidManifest.xml:30:17-75
+138                android:value="androidx.startup" />
+138-->[androidx.emoji2:emoji2:1.3.0] C:\Users\pc\.gradle\caches\9.0-milestone-1\transforms\408fb6230c5b9c0fcca0507b01ddf2a2\transformed\jetified-emoji2-1.3.0\AndroidManifest.xml:31:17-49
+139            <meta-data
+139-->[androidx.lifecycle:lifecycle-process:2.8.6] C:\Users\pc\.gradle\caches\9.0-milestone-1\transforms\dd137f1ff13adbef6116e5adf0c2d569\transformed\jetified-lifecycle-process-2.8.6\AndroidManifest.xml:29:13-31:52
+140                android:name="androidx.lifecycle.ProcessLifecycleInitializer"
+140-->[androidx.lifecycle:lifecycle-process:2.8.6] C:\Users\pc\.gradle\caches\9.0-milestone-1\transforms\dd137f1ff13adbef6116e5adf0c2d569\transformed\jetified-lifecycle-process-2.8.6\AndroidManifest.xml:30:17-78
+141                android:value="androidx.startup" />
+141-->[androidx.lifecycle:lifecycle-process:2.8.6] C:\Users\pc\.gradle\caches\9.0-milestone-1\transforms\dd137f1ff13adbef6116e5adf0c2d569\transformed\jetified-lifecycle-process-2.8.6\AndroidManifest.xml:31:17-49
+142            <meta-data
+142-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\pc\.gradle\caches\9.0-milestone-1\transforms\99d8984d035c60f7d97253806013d2a3\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:29:13-31:52
+143                android:name="androidx.profileinstaller.ProfileInstallerInitializer"
+143-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\pc\.gradle\caches\9.0-milestone-1\transforms\99d8984d035c60f7d97253806013d2a3\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:30:17-85
+144                android:value="androidx.startup" />
+144-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\pc\.gradle\caches\9.0-milestone-1\transforms\99d8984d035c60f7d97253806013d2a3\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:31:17-49
+145        </provider>
+146
+147        <receiver
+147-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\pc\.gradle\caches\9.0-milestone-1\transforms\99d8984d035c60f7d97253806013d2a3\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:34:9-52:20
+148            android:name="androidx.profileinstaller.ProfileInstallReceiver"
+148-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\pc\.gradle\caches\9.0-milestone-1\transforms\99d8984d035c60f7d97253806013d2a3\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:35:13-76
+149            android:directBootAware="false"
+149-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\pc\.gradle\caches\9.0-milestone-1\transforms\99d8984d035c60f7d97253806013d2a3\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:36:13-44
+150            android:enabled="true"
+150-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\pc\.gradle\caches\9.0-milestone-1\transforms\99d8984d035c60f7d97253806013d2a3\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:37:13-35
+151            android:exported="true"
+151-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\pc\.gradle\caches\9.0-milestone-1\transforms\99d8984d035c60f7d97253806013d2a3\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:38:13-36
+152            android:permission="android.permission.DUMP" >
+152-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\pc\.gradle\caches\9.0-milestone-1\transforms\99d8984d035c60f7d97253806013d2a3\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:39:13-57
+153            <intent-filter>
+153-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\pc\.gradle\caches\9.0-milestone-1\transforms\99d8984d035c60f7d97253806013d2a3\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:40:13-42:29
+154                <action android:name="androidx.profileinstaller.action.INSTALL_PROFILE" />
+154-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\pc\.gradle\caches\9.0-milestone-1\transforms\99d8984d035c60f7d97253806013d2a3\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:41:17-91
+154-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\pc\.gradle\caches\9.0-milestone-1\transforms\99d8984d035c60f7d97253806013d2a3\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:41:25-88
+155            </intent-filter>
+156            <intent-filter>
+156-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\pc\.gradle\caches\9.0-milestone-1\transforms\99d8984d035c60f7d97253806013d2a3\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:43:13-45:29
+157                <action android:name="androidx.profileinstaller.action.SKIP_FILE" />
+157-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\pc\.gradle\caches\9.0-milestone-1\transforms\99d8984d035c60f7d97253806013d2a3\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:44:17-85
+157-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\pc\.gradle\caches\9.0-milestone-1\transforms\99d8984d035c60f7d97253806013d2a3\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:44:25-82
+158            </intent-filter>
+159            <intent-filter>
+159-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\pc\.gradle\caches\9.0-milestone-1\transforms\99d8984d035c60f7d97253806013d2a3\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:46:13-48:29
+160                <action android:name="androidx.profileinstaller.action.SAVE_PROFILE" />
+160-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\pc\.gradle\caches\9.0-milestone-1\transforms\99d8984d035c60f7d97253806013d2a3\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:47:17-88
+160-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\pc\.gradle\caches\9.0-milestone-1\transforms\99d8984d035c60f7d97253806013d2a3\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:47:25-85
+161            </intent-filter>
+162            <intent-filter>
+162-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\pc\.gradle\caches\9.0-milestone-1\transforms\99d8984d035c60f7d97253806013d2a3\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:49:13-51:29
+163                <action android:name="androidx.profileinstaller.action.BENCHMARK_OPERATION" />
+163-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\pc\.gradle\caches\9.0-milestone-1\transforms\99d8984d035c60f7d97253806013d2a3\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:50:17-95
+163-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\pc\.gradle\caches\9.0-milestone-1\transforms\99d8984d035c60f7d97253806013d2a3\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:50:25-92
+164            </intent-filter>
+165        </receiver>
+166    </application>
+167
+168</manifest>
