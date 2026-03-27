@@ -1,9 +1,9 @@
 -- Merging decision tree log ---
 manifest
-ADDED from C:\Users\pc\.gemini\antigravity\scratch\rajasthan_exam\app\src\main\AndroidManifest.xml:2:1-33:12
-INJECTED from C:\Users\pc\.gemini\antigravity\scratch\rajasthan_exam\app\src\main\AndroidManifest.xml:2:1-33:12
-INJECTED from C:\Users\pc\.gemini\antigravity\scratch\rajasthan_exam\app\src\main\AndroidManifest.xml:2:1-33:12
-INJECTED from C:\Users\pc\.gemini\antigravity\scratch\rajasthan_exam\app\src\main\AndroidManifest.xml:2:1-33:12
+ADDED from C:\Users\pc\.gemini\antigravity\scratch\rajasthan_exam\app\src\main\AndroidManifest.xml:2:1-34:12
+INJECTED from C:\Users\pc\.gemini\antigravity\scratch\rajasthan_exam\app\src\main\AndroidManifest.xml:2:1-34:12
+INJECTED from C:\Users\pc\.gemini\antigravity\scratch\rajasthan_exam\app\src\main\AndroidManifest.xml:2:1-34:12
+INJECTED from C:\Users\pc\.gemini\antigravity\scratch\rajasthan_exam\app\src\main\AndroidManifest.xml:2:1-34:12
 MERGED from [androidx.navigation:navigation-common:2.8.0] C:\Users\pc\.gradle\caches\9.0-milestone-1\transforms\4422f5e9d01938a55054a7cab7ee5d70\transformed\navigation-common-2.8.0\AndroidManifest.xml:17:1-22:12
 MERGED from [androidx.navigation:navigation-runtime:2.8.0] C:\Users\pc\.gradle\caches\9.0-milestone-1\transforms\c51b3078c786dcb23cb34cc54cd00a6b\transformed\navigation-runtime-2.8.0\AndroidManifest.xml:17:1-22:12
 MERGED from [androidx.navigation:navigation-common-ktx:2.8.0] C:\Users\pc\.gradle\caches\9.0-milestone-1\transforms\479f0f7e778bab387506121bfa1d3420\transformed\navigation-common-ktx-2.8.0\AndroidManifest.xml:2:1-7:12
@@ -96,9 +96,13 @@ MERGED from [com.google.android.gms:play-services-maps:17.0.0] C:\Users\pc\.grad
 MERGED from [com.google.android.gms:play-services-maps:17.0.0] C:\Users\pc\.gradle\caches\9.0-milestone-1\transforms\f09a04fda854be90696ad392ee90bf25\transformed\jetified-play-services-maps-17.0.0\AndroidManifest.xml:24:5-67
 	android:name
 		ADDED from C:\Users\pc\.gemini\antigravity\scratch\rajasthan_exam\app\src\main\AndroidManifest.xml:4:22-64
+uses-permission#com.google.android.gms.permission.AD_ID
+ADDED from C:\Users\pc\.gemini\antigravity\scratch\rajasthan_exam\app\src\main\AndroidManifest.xml:5:5-79
+	android:name
+		ADDED from C:\Users\pc\.gemini\antigravity\scratch\rajasthan_exam\app\src\main\AndroidManifest.xml:5:22-76
 application
-ADDED from C:\Users\pc\.gemini\antigravity\scratch\rajasthan_exam\app\src\main\AndroidManifest.xml:6:5-31:19
-INJECTED from C:\Users\pc\.gemini\antigravity\scratch\rajasthan_exam\app\src\main\AndroidManifest.xml:6:5-31:19
+ADDED from C:\Users\pc\.gemini\antigravity\scratch\rajasthan_exam\app\src\main\AndroidManifest.xml:7:5-32:19
+INJECTED from C:\Users\pc\.gemini\antigravity\scratch\rajasthan_exam\app\src\main\AndroidManifest.xml:7:5-32:19
 MERGED from [com.razorpay:checkout:1.6.33] C:\Users\pc\.gradle\caches\9.0-milestone-1\transforms\920b20a18f083741f16cfb2f728b8222\transformed\jetified-checkout-1.6.33\AndroidManifest.xml:41:5-64:19
 MERGED from [com.razorpay:checkout:1.6.33] C:\Users\pc\.gradle\caches\9.0-milestone-1\transforms\920b20a18f083741f16cfb2f728b8222\transformed\jetified-checkout-1.6.33\AndroidManifest.xml:41:5-64:19
 MERGED from [com.google.android.gms:play-services-auth:21.0.0] C:\Users\pc\.gradle\caches\9.0-milestone-1\transforms\d6696612f9478eaac8dcc775b399efa4\transformed\jetified-play-services-auth-21.0.0\AndroidManifest.xml:22:5-38:19
@@ -132,49 +136,49 @@ MERGED from [androidx.startup:startup-runtime:1.1.1] C:\Users\pc\.gradle\caches\
 	android:appComponentFactory
 		ADDED from [androidx.core:core:1.13.1] C:\Users\pc\.gradle\caches\9.0-milestone-1\transforms\cef816511ea471ee061a42cbdef31dfc\transformed\core-1.13.1\AndroidManifest.xml:28:18-86
 	android:supportsRtl
-		ADDED from C:\Users\pc\.gemini\antigravity\scratch\rajasthan_exam\app\src\main\AndroidManifest.xml:13:9-35
+		ADDED from C:\Users\pc\.gemini\antigravity\scratch\rajasthan_exam\app\src\main\AndroidManifest.xml:14:9-35
 	android:label
-		ADDED from C:\Users\pc\.gemini\antigravity\scratch\rajasthan_exam\app\src\main\AndroidManifest.xml:11:9-40
+		ADDED from C:\Users\pc\.gemini\antigravity\scratch\rajasthan_exam\app\src\main\AndroidManifest.xml:12:9-40
 	android:fullBackupContent
-		ADDED from C:\Users\pc\.gemini\antigravity\scratch\rajasthan_exam\app\src\main\AndroidManifest.xml:9:9-42
+		ADDED from C:\Users\pc\.gemini\antigravity\scratch\rajasthan_exam\app\src\main\AndroidManifest.xml:10:9-42
 	android:roundIcon
-		ADDED from C:\Users\pc\.gemini\antigravity\scratch\rajasthan_exam\app\src\main\AndroidManifest.xml:12:9-48
+		ADDED from C:\Users\pc\.gemini\antigravity\scratch\rajasthan_exam\app\src\main\AndroidManifest.xml:13:9-48
 	android:icon
-		ADDED from C:\Users\pc\.gemini\antigravity\scratch\rajasthan_exam\app\src\main\AndroidManifest.xml:10:9-43
+		ADDED from C:\Users\pc\.gemini\antigravity\scratch\rajasthan_exam\app\src\main\AndroidManifest.xml:11:9-43
 	android:allowBackup
-		ADDED from C:\Users\pc\.gemini\antigravity\scratch\rajasthan_exam\app\src\main\AndroidManifest.xml:8:9-36
+		ADDED from C:\Users\pc\.gemini\antigravity\scratch\rajasthan_exam\app\src\main\AndroidManifest.xml:9:9-36
 	android:theme
-		ADDED from C:\Users\pc\.gemini\antigravity\scratch\rajasthan_exam\app\src\main\AndroidManifest.xml:16:9-72
+		ADDED from C:\Users\pc\.gemini\antigravity\scratch\rajasthan_exam\app\src\main\AndroidManifest.xml:17:9-72
 	android:networkSecurityConfig
-		ADDED from C:\Users\pc\.gemini\antigravity\scratch\rajasthan_exam\app\src\main\AndroidManifest.xml:15:9-69
+		ADDED from C:\Users\pc\.gemini\antigravity\scratch\rajasthan_exam\app\src\main\AndroidManifest.xml:16:9-69
 	android:usesCleartextTraffic
-		ADDED from C:\Users\pc\.gemini\antigravity\scratch\rajasthan_exam\app\src\main\AndroidManifest.xml:14:9-44
+		ADDED from C:\Users\pc\.gemini\antigravity\scratch\rajasthan_exam\app\src\main\AndroidManifest.xml:15:9-44
 	android:name
-		ADDED from C:\Users\pc\.gemini\antigravity\scratch\rajasthan_exam\app\src\main\AndroidManifest.xml:7:9-40
+		ADDED from C:\Users\pc\.gemini\antigravity\scratch\rajasthan_exam\app\src\main\AndroidManifest.xml:8:9-40
 activity#com.rajasthanexams.MainActivity
-ADDED from C:\Users\pc\.gemini\antigravity\scratch\rajasthan_exam\app\src\main\AndroidManifest.xml:18:9-26:20
+ADDED from C:\Users\pc\.gemini\antigravity\scratch\rajasthan_exam\app\src\main\AndroidManifest.xml:19:9-27:20
 	android:exported
-		ADDED from C:\Users\pc\.gemini\antigravity\scratch\rajasthan_exam\app\src\main\AndroidManifest.xml:20:13-36
+		ADDED from C:\Users\pc\.gemini\antigravity\scratch\rajasthan_exam\app\src\main\AndroidManifest.xml:21:13-36
 	android:theme
-		ADDED from C:\Users\pc\.gemini\antigravity\scratch\rajasthan_exam\app\src\main\AndroidManifest.xml:21:13-76
+		ADDED from C:\Users\pc\.gemini\antigravity\scratch\rajasthan_exam\app\src\main\AndroidManifest.xml:22:13-76
 	android:name
-		ADDED from C:\Users\pc\.gemini\antigravity\scratch\rajasthan_exam\app\src\main\AndroidManifest.xml:19:13-41
+		ADDED from C:\Users\pc\.gemini\antigravity\scratch\rajasthan_exam\app\src\main\AndroidManifest.xml:20:13-41
 intent-filter#action:name:android.intent.action.MAIN+category:name:android.intent.category.LAUNCHER
-ADDED from C:\Users\pc\.gemini\antigravity\scratch\rajasthan_exam\app\src\main\AndroidManifest.xml:22:13-25:29
+ADDED from C:\Users\pc\.gemini\antigravity\scratch\rajasthan_exam\app\src\main\AndroidManifest.xml:23:13-26:29
 action#android.intent.action.MAIN
-ADDED from C:\Users\pc\.gemini\antigravity\scratch\rajasthan_exam\app\src\main\AndroidManifest.xml:23:17-69
+ADDED from C:\Users\pc\.gemini\antigravity\scratch\rajasthan_exam\app\src\main\AndroidManifest.xml:24:17-69
 	android:name
-		ADDED from C:\Users\pc\.gemini\antigravity\scratch\rajasthan_exam\app\src\main\AndroidManifest.xml:23:25-66
+		ADDED from C:\Users\pc\.gemini\antigravity\scratch\rajasthan_exam\app\src\main\AndroidManifest.xml:24:25-66
 category#android.intent.category.LAUNCHER
-ADDED from C:\Users\pc\.gemini\antigravity\scratch\rajasthan_exam\app\src\main\AndroidManifest.xml:24:17-77
+ADDED from C:\Users\pc\.gemini\antigravity\scratch\rajasthan_exam\app\src\main\AndroidManifest.xml:25:17-77
 	android:name
-		ADDED from C:\Users\pc\.gemini\antigravity\scratch\rajasthan_exam\app\src\main\AndroidManifest.xml:24:27-74
+		ADDED from C:\Users\pc\.gemini\antigravity\scratch\rajasthan_exam\app\src\main\AndroidManifest.xml:25:27-74
 meta-data#com.razorpay.ApiKey
-ADDED from C:\Users\pc\.gemini\antigravity\scratch\rajasthan_exam\app\src\main\AndroidManifest.xml:28:9-30:55
+ADDED from C:\Users\pc\.gemini\antigravity\scratch\rajasthan_exam\app\src\main\AndroidManifest.xml:29:9-31:55
 	android:value
-		ADDED from C:\Users\pc\.gemini\antigravity\scratch\rajasthan_exam\app\src\main\AndroidManifest.xml:30:13-52
+		ADDED from C:\Users\pc\.gemini\antigravity\scratch\rajasthan_exam\app\src\main\AndroidManifest.xml:31:13-52
 	android:name
-		ADDED from C:\Users\pc\.gemini\antigravity\scratch\rajasthan_exam\app\src\main\AndroidManifest.xml:29:13-47
+		ADDED from C:\Users\pc\.gemini\antigravity\scratch\rajasthan_exam\app\src\main\AndroidManifest.xml:30:13-47
 uses-sdk
 INJECTED from C:\Users\pc\.gemini\antigravity\scratch\rajasthan_exam\app\src\main\AndroidManifest.xml reason: use-sdk injection requested
 INJECTED from C:\Users\pc\.gemini\antigravity\scratch\rajasthan_exam\app\src\main\AndroidManifest.xml
