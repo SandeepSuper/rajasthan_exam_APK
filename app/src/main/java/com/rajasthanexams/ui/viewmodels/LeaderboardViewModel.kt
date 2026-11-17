@@ -65,9 +65,11 @@ class LeaderboardViewModel(application: android.app.Application) : androidx.life
 
     private suspend fun syncCoinsToServer(token: String) {
         try {
-            val localCoins = sessionManager.getCoins()
-            if (localCoins > 0) {
-                api.syncCoins("Bearer $token", mapOf("coins" to localCoins))
+            // The server owns the coin balance; this call only reads it back and corrects the local copy.
+            val response = api.syncCoins("Bearer $token", mapOf("coins" to sessionManager.getCoins()))
+            val serverCoins = (response.body()?.get("coins") as? Number)?.toInt()
+            if (response.isSuccessful && serverCoins != null) {
+                sessionManager.updateCoins(serverCoins)
             }
         } catch (e: Exception) {
             println("Coin sync failed: ${e.message}")

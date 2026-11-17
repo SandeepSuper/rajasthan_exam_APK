@@ -123,7 +123,7 @@ fun SavedQuestionItem(question: Question, isHindi: Boolean) {
             
             // Show Correct Answer
             val options = if(isHindi) question.optionsHi else question.optionsEn
-            val correctOption = options[question.correctOptionIndex]
+            val correctOption = options.getOrNull(question.correctOptionIndex) ?: "—"
             Text(
                 text = (if(isHindi) "उत्तर: " else "Answer: ") + correctOption,
                 style = MaterialTheme.typography.bodyMedium,

@@ -86,6 +86,7 @@ fun PracticeScreen(
 ) {
     // 1. Live Data
     val uiState by viewModel.uiState.collectAsState()
+    val context = androidx.compose.ui.platform.LocalContext.current
     
     // Fetch on Launch
     LaunchedEffect(testId) {
@@ -244,7 +245,10 @@ fun PracticeScreen(
                 
                                 viewModel.submitTest(testId, answersMap, timeTaken.toInt()) { score, total, _, coinsEarned ->
                                     com.rajasthanexams.data.OfflineManager.clearTestProgress(testId)
-                                    onFinish(score, total, questions, selectedAnswers, timeTaken, timeSpentPerQuestion, coinsEarned)
+                                    viewModel.lastSubmitNotice?.let { notice ->
+                                        android.widget.Toast.makeText(context, notice, android.widget.Toast.LENGTH_LONG).show()
+                                    }
+                                    onFinish(score, total, viewModel.withRevealedAnswers(questions), selectedAnswers, timeTaken, timeSpentPerQuestion, coinsEarned)
                                 }
             }
         }
@@ -396,7 +400,6 @@ fun PracticeScreen(
     }
 
 
-    val context = androidx.compose.ui.platform.LocalContext.current
     if (showResumeDialog) {
         val attemptedCount = selectedAnswers.size
         val markedCount = markedQuestions.size
@@ -547,7 +550,10 @@ fun PracticeScreen(
                                 
                                 viewModel.submitTest(testId, answersMap, timeTaken.toInt()) { score, total, _, coinsEarned ->
                                     com.rajasthanexams.data.OfflineManager.clearTestProgress(testId)
-                                    onFinish(score, total, questions, selectedAnswers, timeTaken, timeSpentPerQuestion, coinsEarned)
+                                    viewModel.lastSubmitNotice?.let { notice ->
+                                        android.widget.Toast.makeText(context, notice, android.widget.Toast.LENGTH_LONG).show()
+                                    }
+                                    onFinish(score, total, viewModel.withRevealedAnswers(questions), selectedAnswers, timeTaken, timeSpentPerQuestion, coinsEarned)
                                 }
                                 showSubmitDialog = false
                            },
@@ -852,7 +858,10 @@ fun PracticeScreen(
     
                                 viewModel.submitTest(testId, answersMap, timeTaken.toInt()) { score, total, _, coinsEarned ->
                                     com.rajasthanexams.data.OfflineManager.clearTestProgress(testId)
-                                    onFinish(score, total, questions, selectedAnswers, timeTaken, timeSpentPerQuestion, coinsEarned)
+                                    viewModel.lastSubmitNotice?.let { notice ->
+                                        android.widget.Toast.makeText(context, notice, android.widget.Toast.LENGTH_LONG).show()
+                                    }
+                                    onFinish(score, total, viewModel.withRevealedAnswers(questions), selectedAnswers, timeTaken, timeSpentPerQuestion, coinsEarned)
                                 }
                             }
                         },

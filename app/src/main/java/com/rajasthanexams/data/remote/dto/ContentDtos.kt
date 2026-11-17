@@ -66,7 +66,17 @@ data class TestResultResponse(
     val accuracy: Double,
     val coinsEarned: Int = 0,
     val newTotalCoins: Int = 0, // Added
-    val solutions: Map<String, String> // QuestionID -> Solution Text
+    val solutions: Map<String, String>, // QuestionID -> correct option index (as text)
+    // Correct answer + explanation per question. Live tests only send these after submit.
+    val solutionDetails: Map<String, SolutionDetailDto>? = null,
+    val countedForRank: Boolean? = null, // false = live-test retake / late attempt (practice only)
+    val message: String? = null
+)
+
+data class SolutionDetailDto(
+    val correctOptionIndex: Int,
+    val solutionHi: String?,
+    val solutionEn: String?
 )
 
 data class LeaderboardEntry(

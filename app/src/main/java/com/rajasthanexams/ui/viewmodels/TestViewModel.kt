@@ -26,6 +26,26 @@ class TestViewModel(application: Application) : AndroidViewModel(application) {
     private val _uiState = MutableStateFlow<TestUiState>(TestUiState.Loading)
     val uiState: StateFlow<TestUiState> = _uiState
 
+    // Answers + explanations returned by the last successful submit (live tests hide them until then).
+    private var revealedAnswers: Map<String, com.rajasthanexams.data.remote.dto.SolutionDetailDto> = emptyMap()
+
+    /** Message from the last submit, e.g. "this live-test attempt is practice only". */
+    var lastSubmitNotice: String? = null
+        private set
+
+    /** Returns the questions with answers/explanations from the last submit filled in. */
+    fun withRevealedAnswers(questions: List<Question>): List<Question> {
+        if (revealedAnswers.isEmpty()) return questions
+        return questions.map { q ->
+            val d = revealedAnswers[q.id] ?: return@map q
+            q.copy(
+                correctOptionIndex = d.correctOptionIndex,
+                solutionEn = d.solutionEn ?: q.solutionEn,
+                solutionHi = d.solutionHi ?: q.solutionHi
+            )
+        }
+    }
+
     // Map Backend QuestionResponse to Frontend Question Model
     fun fetchQuestions(testId: String) {
         viewModelScope.launch {
@@ -37,7 +57,9 @@ class TestViewModel(application: Application) : AndroidViewModel(application) {
             // Try determine Test Details from Cache or MockData or Downloads
             var cachedTest: com.rajasthanexams.data.Test? = null
              
-            if (offlineQuestions != null && offlineQuestions.isNotEmpty()) {
+            // Questions cached while a live test was running have hidden answers (-1); refetch those.
+            val cacheHasHiddenAnswers = offlineQuestions?.any { it.correctOptionIndex < 0 } == true
+            if (offlineQuestions != null && offlineQuestions.isNotEmpty() && !cacheHasHiddenAnswers) {
                  // Try Cache First
                  val cachedMeta = com.rajasthanexams.data.OfflineManager.getTestMetadata(testId, com.rajasthanexams.data.remote.dto.TestResponse::class.java) as? com.rajasthanexams.data.remote.dto.TestResponse
                  if (cachedMeta != null) {
@@ -227,6 +249,13 @@ class TestViewModel(application: Application) : AndroidViewModel(application) {
                         val result = response.body()!!
                         // Update Coins
                         sessionManager.updateCoins(result.newTotalCoins)
+
+                        // Keep the revealed answers so the result / review screens can show them.
+                        revealedAnswers = result.solutionDetails ?: emptyMap()
+                        lastSubmitNotice = result.message
+                        com.rajasthanexams.data.OfflineManager.getStoredQuestions(testId)?.let { stored ->
+                            com.rajasthanexams.data.OfflineManager.saveQuestions(testId, withRevealedAnswers(stored))
+                        }
                         
                         onResult(result.score, result.totalQuestions, result.solutions, result.coinsEarned)
                         isOnlineSuccess = true
@@ -242,6 +271,12 @@ class TestViewModel(application: Application) : AndroidViewModel(application) {
                 loadLocalResult(testId) { score, total, questions, _, _, _, coinsEarned ->
                      val solutions = questions.associate { q -> 
                          q.id to (if (q.solutionEn.isNotEmpty()) q.solutionEn else q.solutionHi) 
+                     }
+                     // Live test with hidden answers: the score can't be worked out offline.
+                     if (questions.any { it.correctOptionIndex < 0 }) {
+                         lastSubmitNotice = "Internet nahi hai, isliye live test submit nahi hua. Result ke liye online hokar dobara submit karein."
+                         onResult(0.0, total, solutions, 0)
+                         return@loadLocalResult
                      }
                      // Update Local Coins immediately for feedback
                      val currentCoins = sessionManager.getCoins()
