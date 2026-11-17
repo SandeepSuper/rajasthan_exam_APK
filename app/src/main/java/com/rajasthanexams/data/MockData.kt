@@ -1,4 +1,4 @@
-﻿package com.rajasthanexams.data
+package com.rajasthanexams.data
 
 import androidx.compose.ui.graphics.Color
 import com.rajasthanexams.ui.theme.RoyalBlue
@@ -163,8 +163,8 @@ data class Test(
                 "q1", 
                 "Where is the Hawa Mahal located?", 
                 "हवा महल कहां स्थित है?",
-                listOf("Udaipur", "Jodhpur", "Jaipur", "Bikaner"),
-                listOf("उदयपुर", "जोधपुर", "जयपुर", "बीकानेर"),
+                listOf("Udaipur", "Jodhpur", "Jaipur", "Bikaner", "Ajmer"),
+                listOf("उदयपुर", "जोधपुर", "जयपुर", "बीकानेर", "अजमेर"),
                 2, // Jaipur
                 "Hawa Mahal is a palace in Jaipur, India. Built from red and pink sandstone, it is on the edge of the City Palace.",
                 "हवा महल जयपुर, भारत में एक महल है। लाल और गुलाबी बलुआ पत्थर से निर्मित, यह सिटी पैलेस के किनारे पर स्थित है।"
@@ -173,11 +173,11 @@ data class Test(
                 "q2", 
                 "Who was the first Chief Minister of Rajasthan?", 
                 "राजस्थान के प्रथम मुख्यमंत्री कौन थे?",
-                listOf("Mohan Lal Sukhadia", "Heera Lal Shastri", "Jai Narayan Vyas", "Vasundhara Raje"),
-                listOf("मोहन लाल सुखाड़िया", "हीरा लाल शास्त्री", "जय नारायण व्यास", "वसुंधरा राजे"),
+                listOf("Mohan Lal Sukhadia", "Heera Lal Shastri", "Jai Narayan Vyas", "Vasundhara Raje", "Ashok Gehlot"),
+                listOf("मोहन लाल सुखाड़िया", "हीरा लाल शास्त्री", "जय नारायण व्यास", "वसुंधरा राजे", "अशोक गहलोत"),
                 1, // Heera Lal Shastri
                 "Heera Lal Shastri was the first Chief Minister of Rajasthan. He took office on April 7, 1949.",
-                "हीरा लाल शास्त्री राजस्थान के पहले मुख्यमंत्री थे। उन्होंने 7 अप्रैल, 1949 को पदभार ग्रहण किया。",
+                "हीरा लाल शास्त्री राजस्थान के पहले मुख्यमंत्री थे। उन्होंने 7 अप्रैल, 1949 को पदभार ग्रहण किया।",
                 marksPerQuestion = 2.0, // Override Example
                 negativeMarks = 0.66
             ),

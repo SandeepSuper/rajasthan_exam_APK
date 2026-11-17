@@ -9,7 +9,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 object RetrofitClient {
 
     private val BASE_URL = if (BuildConfig.DEBUG) {
-        "https://dev.photopassport.in/api/"
+        "https://rajasthan-exam-api-50047311976.development.catalystappsail.in/api/"
     } else {
         "https://exam.photopassport.in/api/"
     }
